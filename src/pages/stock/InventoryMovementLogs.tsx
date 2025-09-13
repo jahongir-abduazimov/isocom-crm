@@ -159,9 +159,6 @@ export default function InventoryMovementLogsPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
             Inventory Movement Logs
           </h1>
-          <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Track all material and product movements between locations
-          </p>
         </div>
         <Button
           className="flex items-center gap-2 w-full sm:w-auto justify-center"

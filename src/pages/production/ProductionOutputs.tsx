@@ -124,9 +124,6 @@ export default function ProductionOutputsPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
             Production Outputs
           </h1>
-          <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Track and monitor production output performance
-          </p>
         </div>
         <Button
           className="flex items-center gap-2 w-full sm:w-auto justify-center"

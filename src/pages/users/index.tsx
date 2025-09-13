@@ -114,10 +114,7 @@ const UsersPage = () => {
     <div className="">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Foydalanuvchilar</h1>
-          <p className="text-gray-600 mt-1">
-            Tizim foydalanuvchilarini boshqarish va kuzatish
-          </p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Foydalanuvchilar</h1>
         </div>
         <Button
           className="flex items-center gap-2"

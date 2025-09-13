@@ -136,9 +136,6 @@ export default function ProductionStepsPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
             Production Steps
           </h1>
-          <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Define and manage production workflow steps
-          </p>
         </div>
         <Button
           className="flex items-center gap-2 w-full sm:w-auto justify-center"

@@ -97,9 +97,6 @@ export default function LocationsPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
             Locations
           </h1>
-          <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Manage warehouse locations, work centers, and workshops
-          </p>
         </div>
         <Button
           className="flex items-center gap-2 w-full sm:w-auto justify-center"

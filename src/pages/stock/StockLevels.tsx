@@ -215,9 +215,6 @@ export default function StockLevelsPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
             Stock Levels
           </h1>
-          <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Monitor current stock levels and inventory status
-          </p>
         </div>
         <Button
           className="flex items-center gap-2 w-full sm:w-auto justify-center"

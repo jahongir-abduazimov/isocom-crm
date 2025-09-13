@@ -14,7 +14,7 @@ export default function MainLayout() {
         <Header />
 
         {/* Asosiy kontent */}
-        <main className="flex-1 overflow-y-auto bg-white/90 p-5 rounded-xl my-5 mx-2 shadow-lg max-h-[calc(100vh-84px)]">
+        <main className="flex-1 overflow-y-auto bg-white/90 p-5 rounded-xl my-3 mx-2 shadow-lg max-h-[calc(100vh-84px)]">
           <Outlet />
         </main>
       </div>
