@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Search, Loader2, Trash2, Edit } from "lucide-react";
+import { Plus, Search, Loader2, Trash2, Edit, CheckCircle, Clock, XCircle, AlertCircle, TrendingUp, Calendar, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -44,15 +44,30 @@ export default function OrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status.toUpperCase()) {
       case "COMPLETED":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 border-green-200";
       case "IN_PROGRESS":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 border-blue-200";
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "CANCELLED":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 border-red-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status.toUpperCase()) {
+      case "COMPLETED":
+        return <CheckCircle className="h-4 w-4" />;
+      case "IN_PROGRESS":
+        return <Loader2 className="h-4 w-4 animate-spin" />;
+      case "PENDING":
+        return <Clock className="h-4 w-4" />;
+      case "CANCELLED":
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <AlertCircle className="h-4 w-4" />;
     }
   };
 
@@ -176,122 +191,136 @@ export default function OrdersPage() {
         </div>
       )}
 
-      {/* Orders Table */}
+      {/* Orders Cards */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  {/* <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order ID
-                  </th> */}
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
-                  </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Unit
-                  </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Progress
-                  </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Start Date
-                  </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
-                  </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50">
-                    {/* <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{order.id.slice(0, 8)}...</span>
-                        <span className="text-xs text-gray-500 md:hidden">
-                          {formatUnitOfMeasure(order.unit_of_measure)}
-                        </span>
-                      </div>
-                    </td> */}
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
-                        {order.produced_product_name || "N/A"}
-                      </div>
-                    </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{order.produced_quantity}</span>
-                        <span className="text-xs text-gray-500 lg:hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+          {filteredOrders.map((order) => (
+            <div
+              key={order.id}
+              className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow duration-200 cursor-pointer"
+              onClick={() => navigate(`/production/orders/${order.id}`)}
+            >
+              {/* Card Header */}
+              <div className="p-4 border-b border-gray-100">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-gray-900 truncate">
+                      {order.produced_product_name || "N/A"}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Order #{order.id.slice(0, 8)}...
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(
+                      order.status
+                    )}`}
+                  >
+                    {getStatusIcon(order.status)}
+                    {formatStatus(order.status)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Body */}
+              <div className="p-4 space-y-4">
+                {/* Quantity and Unit */}
+                <div className="flex items-center gap-3">
+                  <Package className="h-4 w-4 text-gray-400" />
+                  <div className="flex-1">
+                    <span className="text-sm text-gray-600">Quantity</span>
+                    <p className="text-sm font-medium text-gray-900">
+                      {order.produced_quantity} {formatUnitOfMeasure(order.unit_of_measure)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Progress */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="h-4 w-4 text-gray-400" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Progress</span>
+                        <span className="text-sm font-medium text-gray-900">
                           {order.completion_percentage}%
                         </span>
                       </div>
-                    </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatUnitOfMeasure(order.unit_of_measure)}
-                    </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
-                          order.status
-                        )}`}
-                      >
-                        {formatStatus(order.status)}
-                      </span>
-                    </td>
-                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex items-center">
-                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{ width: `${order.completion_percentage}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-500">
-                          {order.completion_percentage}%
-                        </span>
+                      <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${order.completion_percentage}%` }}
+                        ></div>
                       </div>
-                    </td>
-                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(order.start_date)}
-                    </td>
-                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(order.created_at)}
-                    </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
-                          onClick={() => navigate(`/production/orders/${order.id}/edit`)}
-                        >
-                          <Edit size={14} />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleDeleteClick(order.id)}
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dates */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <div className="flex-1">
+                      <span className="text-sm text-gray-600">Start Date</span>
+                      <p className="text-sm text-gray-900">
+                        {formatDate(order.start_date)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                {order.description && (
+                  <div className="pt-2 border-t border-gray-100">
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {order.description}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Card Footer */}
+              <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-lg">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs px-2 sm:px-3 py-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/production/orders/${order.id}/edit`);
+                      }}
+                    >
+                      <Edit size={12} className="sm:mr-1" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs px-2 sm:px-3 py-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(order.id);
+                      }}
+                    >
+                      <Trash2 size={12} className="sm:mr-1" />
+                    </Button>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-blue-600 hover:text-blue-700 w-full sm:w-auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/production/orders/${order.id}`);
+                    }}
+                  >
+                    View Details →
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

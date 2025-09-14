@@ -1,6 +1,18 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-import { Box, BarChart3, Layers, ChevronDown, ChevronUp, Factory, Settings, Warehouse, Package, Users } from "lucide-react";
+import {
+  Box,
+  BarChart3,
+  Layers,
+  ChevronDown,
+  ChevronUp,
+  Factory,
+  Settings,
+  Warehouse,
+  Package,
+  Users,
+} from "lucide-react";
+import { ScrollArea } from "../ui/scroll-area";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: <BarChart3 size={20} /> },
@@ -11,8 +23,8 @@ const navItems = [
     menuKey: "products",
     children: [
       { path: "/products", label: "Maxsulotlar" },
-      { path: "/products-components", label: "Maxsulot komponentlari" }
-    ]
+      { path: "/products-components", label: "Maxsulot komponentlari" },
+    ],
   },
   { path: "/materials", label: "Materiallar", icon: <Layers size={20} /> },
   { path: "/workcenters", label: "Stanoklar", icon: <Settings size={20} /> },
@@ -24,8 +36,8 @@ const navItems = [
     menuKey: "warehouse",
     children: [
       { path: "/warehouse/locations", label: "Locations" },
-      { path: "/warehouse/warehouses", label: "Warehouses" }
-    ]
+      { path: "/warehouse/warehouses", label: "Warehouses" },
+    ],
   },
   {
     label: "Production",
@@ -35,10 +47,13 @@ const navItems = [
     children: [
       { path: "/production/orders", label: "Orders" },
       { path: "/production/outputs", label: "Production outputs" },
-      { path: "/production/step-executions", label: "Production step executions" },
+      {
+        path: "/production/step-executions",
+        label: "Step executions",
+      },
       { path: "/production/steps", label: "Production steps" },
-      { path: "/production/used-materials", label: "Used materials" }
-    ]
+      { path: "/production/used-materials", label: "Used materials" },
+    ],
   },
   {
     label: "Stock",
@@ -46,10 +61,13 @@ const navItems = [
     isCollapsible: true,
     menuKey: "stock",
     children: [
-      { path: "/stock/inventory-movement-logs", label: "Inventory movement logs" },
-      { path: "/stock/stock-levels", label: "Stock levels" }
-    ]
-  }
+      {
+        path: "/stock/inventory-movement-logs",
+        label: "Inventory movement logs",
+      },
+      { path: "/stock/stock-levels", label: "Stock levels" },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -61,14 +79,14 @@ export default function Sidebar() {
   });
 
   const toggleMenu = (menuKey: string) => {
-    setExpandedMenus(prev => ({
+    setExpandedMenus((prev) => ({
       ...prev,
-      [menuKey]: !prev[menuKey]
+      [menuKey]: !prev[menuKey],
     }));
   };
 
   return (
-    <aside className="max-w-54 min-w-54 lg:min-w-64 lg:max-w-64 h-[calc(100vh-16px)] bg-primary to-blue-700 text-white flex flex-col shadow-lg rounded-xl m-2">
+    <ScrollArea className="max-w-54 min-w-54 lg:min-w-64 lg:max-w-64 h-[calc(100vh-16px)] bg-primary to-blue-700 text-white flex flex-col shadow-lg rounded-xl m-2">
       <div className="min-h-16 flex items-center justify-center text-2xl font-extrabold tracking-wide border-b border-white/10">
         <span className="drop-shadow">ISOCOM</span>
       </div>
@@ -97,7 +115,10 @@ export default function Sidebar() {
                         key={child.path}
                         to={child.path}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${isActive ? "bg-white text-primary shadow font-semibold" : "hover:bg-white/10 hover:scale-[1.03]"
+                          `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
+                            isActive
+                              ? "bg-white text-primary shadow font-semibold"
+                              : "hover:bg-white/10 hover:scale-[1.03]"
                           }`
                         }
                       >
@@ -115,7 +136,10 @@ export default function Sidebar() {
               key={item.path}
               to={item.path!}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${isActive ? "bg-white text-primary shadow font-semibold" : "hover:bg-white/10 hover:scale-[1.03]"
+                `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${
+                  isActive
+                    ? "bg-white text-primary shadow font-semibold"
+                    : "hover:bg-white/10 hover:scale-[1.03]"
                 }`
               }
             >
@@ -125,7 +149,6 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="p-4 text-xs text-white/70 border-t border-white/10 mt-auto">© 2025 ISOCOM</div>
-    </aside>
+    </ScrollArea>
   );
 }

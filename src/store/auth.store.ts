@@ -33,7 +33,7 @@ export const useAuthStore = create<AuthState>()(
         set({ loading: true, error: null });
         try {
           const res = await axios.post<{ access: string }>(
-            `${API_CONFIG.BASE_URL}/auth/token/`,
+            `${API_CONFIG.BASE_URL}/auth/login/`,
             {
               username,
               password,

@@ -19,6 +19,7 @@ import EditProductPage from "@/pages/products/EditProduct";
 import OrdersPage from "@/pages/production";
 import AddOrderPage from "@/pages/production/AddOrder";
 import EditOrderPage from "@/pages/production/EditOrder";
+import OrderDetailPage from "@/pages/production/OrderDetail";
 import ProductionOutputsPage from "@/pages/production/ProductionOutputs";
 import AddProductionOutputPage from "@/pages/production/AddProductionOutput";
 import EditProductionOutputPage from "@/pages/production/EditProductionOutput";
@@ -83,6 +84,7 @@ export default function App() {
           {/* Production Routes */}
           <Route path="/production/orders" element={<OrdersPage />} />
           <Route path="/production/orders/add" element={<AddOrderPage />} />
+          <Route path="/production/orders/:id" element={<OrderDetailPage />} />
           <Route path="/production/orders/:id/edit" element={<EditOrderPage />} />
           <Route path="/production/outputs" element={<ProductionOutputsPage />} />
           <Route path="/production/outputs/add" element={<AddProductionOutputPage />} />

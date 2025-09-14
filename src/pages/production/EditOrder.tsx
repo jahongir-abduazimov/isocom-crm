@@ -46,6 +46,7 @@ export default function EditOrderPage() {
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -59,6 +60,9 @@ export default function EditOrderPage() {
       completion_date: "",
     },
   });
+
+  // Watch form values for Select components
+  const watchedValues = watch();
 
   // Fetch products and order data on component mount
   useEffect(() => {
@@ -206,7 +210,7 @@ export default function EditOrderPage() {
               </Label>
               <Select
                 onValueChange={(val) => setValue("produced_product", val)}
-                value={selectedOrder?.produced_product || ""}
+                value={watchedValues.produced_product || ""}
               >
                 <SelectTrigger className={errors.produced_product ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select product" />
@@ -233,7 +237,7 @@ export default function EditOrderPage() {
               </Label>
               <Select
                 onValueChange={(val) => setValue("unit_of_measure", val)}
-                value={selectedOrder?.unit_of_measure || "KG"}
+                value={watchedValues.unit_of_measure || "KG"}
               >
                 <SelectTrigger className={errors.unit_of_measure ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select unit" />
@@ -275,7 +279,7 @@ export default function EditOrderPage() {
               </Label>
               <Select
                 onValueChange={(val) => setValue("status", val)}
-                value={selectedOrder?.status || "PENDING"}
+                value={watchedValues.status || "PENDING"}
               >
                 <SelectTrigger className={errors.status ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select status" />
