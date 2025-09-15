@@ -27,6 +27,7 @@ import { useMaterialsStore } from "@/store/materials.store";
 import { useLocationsStore } from "@/store/locations.store";
 import { useProductsStore } from "@/store/products.store";
 import { useStockStore } from "@/store/stock.store";
+import { useAuthStore } from "@/store/auth.store";
 
 export default function StockLevelsPage() {
   const navigate = useNavigate();
@@ -44,6 +45,10 @@ export default function StockLevelsPage() {
   const { products, fetchProducts } = useProductsStore();
   const { locations, fetchLocations } = useLocationsStore();
   const { deleteStockLevel } = useStockStore();
+  const { user } = useAuthStore();
+
+  // Check if user is operator
+  const isOperator = user?.role === "WORKER" || user?.is_operator;
 
   useEffect(() => {
     fetchStockLevels();
@@ -325,8 +330,8 @@ export default function StockLevelsPage() {
       {/* Stock Levels Table */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+          <div className={`overflow-x-auto w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'}`}>
+            <table className={`w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'} overflow-x-auto`}>
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -359,8 +364,8 @@ export default function StockLevelsPage() {
                           {item.material
                             ? getMaterialName(item.material)
                             : item.product
-                            ? getProductName(item.product)
-                            : "Unknown Item"}
+                              ? getProductName(item.product)
+                              : "Unknown Item"}
                         </div>
                         <div className="lg:hidden mt-1">
                           <span

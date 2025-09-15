@@ -15,6 +15,7 @@ import { stockService, type InventoryMovement } from "@/services/stock.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import { useMaterialsStore } from "@/store/materials.store";
 import { useLocationsStore } from "@/store/locations.store";
+import { useAuthStore } from "@/store/auth.store";
 
 export default function InventoryMovementLogsPage() {
   const navigate = useNavigate();
@@ -31,6 +32,10 @@ export default function InventoryMovementLogsPage() {
   // Get materials and locations from stores
   const { materials, fetchMaterials } = useMaterialsStore();
   const { locations, fetchLocations } = useLocationsStore();
+  const { user } = useAuthStore();
+
+  // Check if user is operator
+  const isOperator = user?.role === "WORKER" || user?.is_operator;
 
   useEffect(() => {
     fetchInventoryMovements();
@@ -276,8 +281,8 @@ export default function InventoryMovementLogsPage() {
       {/* Movements Table */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+          <div className={`overflow-x-auto w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'}`}>
+            <table className={`w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'} overflow-x-auto`}>
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

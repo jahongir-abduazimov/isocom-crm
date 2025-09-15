@@ -26,3 +26,20 @@ export const notifyInfo = (message: string, options?: ToastOptions) => {
 export const notifyWarning = (message: string, options?: ToastOptions) => {
     toast.warn(message, { ...defaultOptions, ...options });
 };
+
+export const showNotification = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', options?: ToastOptions) => {
+    switch (type) {
+        case 'success':
+            notifySuccess(message, options);
+            break;
+        case 'error':
+            notifyError(message, options);
+            break;
+        case 'warning':
+            notifyWarning(message, options);
+            break;
+        default:
+            notifyInfo(message, options);
+            break;
+    }
+};

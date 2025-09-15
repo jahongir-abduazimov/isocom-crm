@@ -4,10 +4,30 @@ import axios, { AxiosError } from "axios";
 import { API_CONFIG } from "@/config/api.config";
 
 interface User {
-  id: number;
-  name: string;
-  role: "admin" | "qc" | "packaging" | "warehouse" | "user";
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
   email: string;
+  phone_number: string | null;
+  role: string | null;
+  role_display: string | null;
+  role_display_uz: string | null;
+  employee_id: string | null;
+  is_active: boolean;
+  is_staff: boolean;
+  is_superuser: boolean;
+  shift: string | null;
+  is_operator: boolean;
+  is_supervisor: boolean;
+  is_specialist: boolean;
+  role_level: number;
+  profile_picture: string | null;
+  date_joined: string;
+  last_login: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AuthState {
@@ -16,6 +36,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   login: (username: string, password: string) => Promise<void>;
+  fetchCurrentUser: () => Promise<void>;
   logout: () => void;
   clearToken: () => void;
 }
@@ -42,12 +63,54 @@ export const useAuthStore = create<AuthState>()(
 
           const { access } = res.data;
           set({ token: access, loading: false });
+
+          // Login muvaffaqiyatli bo'lgandan keyin foydalanuvchi ma'lumotlarini olish
+          // Token'ni header'ga qo'shish uchun axios instance yaratamiz
+          const authAxios = axios.create({
+            baseURL: API_CONFIG.BASE_URL,
+            headers: {
+              Authorization: `Bearer ${access}`,
+            },
+          });
+
+          try {
+            const userRes = await authAxios.get<User>("/users/me/");
+            set({ user: userRes.data });
+          } catch (userErr) {
+            console.warn("Foydalanuvchi ma'lumotlarini olishda xatolik:", userErr);
+            // Foydalanuvchi ma'lumotlarini olishda xatolik bo'lsa ham login muvaffaqiyatli
+          }
         } catch (err) {
           const error = err as AxiosError<{ message?: string }>;
           set({
             error:
               error.response?.data?.message ||
-              "Kirishda xatolik. Login yoki parol noto‘g‘ri.",
+              "Kirishda xatolik. Login yoki parol noto'g'ri.",
+            loading: false,
+          });
+        }
+      },
+
+      // Joriy foydalanuvchi ma'lumotlarini olish
+      fetchCurrentUser: async () => {
+        const { token } = useAuthStore.getState();
+        if (!token) return;
+
+        set({ loading: true, error: null });
+        try {
+          const authAxios = axios.create({
+            baseURL: API_CONFIG.BASE_URL,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const userRes = await authAxios.get<User>("/users/me/");
+          set({ user: userRes.data, loading: false });
+        } catch (err) {
+          const error = err as AxiosError<{ message?: string }>;
+          set({
+            error: error.response?.data?.message || "Foydalanuvchi ma'lumotlarini olishda xatolik",
             loading: false,
           });
         }

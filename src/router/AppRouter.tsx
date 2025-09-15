@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "@/components/layout/MainLayout";
 import ProtectedRoute from "@/router/ProtectedRoute";
+import OperatorProtectedRoute from "@/router/OperatorProtectedRoute";
 
 import DashboardPage from "@/pages/dashboard";
 import LoginPage from "@/pages/auth/LoginPage";
@@ -53,6 +54,14 @@ import UsersPage from "@/pages/users";
 import AddUserPage from "@/pages/users/AddUser";
 import EditUserPage from "@/pages/users/EditUser";
 
+// Worker pages
+import WorkerDashboardPage from "@/pages/worker";
+import WorkerOperatorSelectionPage from "@/pages/worker/OperatorSelection";
+import WorkerOrderListPage from "@/pages/worker/OrderList";
+import WorkerOrderDetailPage from "@/pages/worker/OrderDetail";
+import WorkerStockSelectionPage from "@/pages/worker/StockSelection";
+import WorkerConfirmationPage from "@/pages/worker/Confirmation";
+
 // import QCPage from "@/pages/qc/QCPage";
 // import PackagingPage from "@/pages/packaging/PackagingPage";
 // import ReportsPage from "@/pages/reports/ReportsPage";
@@ -69,60 +78,71 @@ export default function App() {
             <MainLayout />
           </ProtectedRoute>
         }>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/products/add" element={<AddProductPage />} />
-          <Route path="/products/:id/edit" element={<EditProductPage />} />
-          <Route path="/products-components" element={<ProductsComponentsPage />} />
-          <Route path="/materials" element={<MaterialsPage />} />
-          <Route path="/materials/add" element={<AddMaterialPage />} />
-          <Route path="/materials/:id/edit" element={<EditMaterialPage />} />
-          <Route path="/workcenters" element={<WorkcentersPage />} />
-          <Route path="/workcenters/add" element={<AddWorkcenterPage />} />
-          <Route path="/workcenters/:id/edit" element={<EditWorkcenterPage />} />
+          {/* Operator Routes - No additional protection needed */}
+          <Route path="/worker" element={<WorkerDashboardPage />} />
+          <Route path="/worker/operator-selection" element={<WorkerOperatorSelectionPage />} />
+          <Route path="/worker/orders" element={<WorkerOrderListPage />} />
+          <Route path="/worker/orders/:id" element={<WorkerOrderDetailPage />} />
+          <Route path="/worker/orders/:id/steps/:stepId" element={<WorkerStockSelectionPage />} />
+          <Route path="/worker/orders/:id/steps/:stepId/confirm" element={<WorkerConfirmationPage />} />
+
+          {/* Stock Routes - Operators can access these */}
+          <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />
+          <Route path="/stock/stock-levels" element={<StockLevels />} />
+
+          {/* Superadmin Routes - Protected from operators */}
+          <Route path="/" element={<OperatorProtectedRoute><DashboardPage /></OperatorProtectedRoute>} />
+          <Route path="/products" element={<OperatorProtectedRoute><ProductsPage /></OperatorProtectedRoute>} />
+          <Route path="/products/add" element={<OperatorProtectedRoute><AddProductPage /></OperatorProtectedRoute>} />
+          <Route path="/products/:id/edit" element={<OperatorProtectedRoute><EditProductPage /></OperatorProtectedRoute>} />
+          <Route path="/products-components" element={<OperatorProtectedRoute><ProductsComponentsPage /></OperatorProtectedRoute>} />
+          <Route path="/materials" element={<OperatorProtectedRoute><MaterialsPage /></OperatorProtectedRoute>} />
+          <Route path="/materials/add" element={<OperatorProtectedRoute><AddMaterialPage /></OperatorProtectedRoute>} />
+          <Route path="/materials/:id/edit" element={<OperatorProtectedRoute><EditMaterialPage /></OperatorProtectedRoute>} />
+          <Route path="/workcenters" element={<OperatorProtectedRoute><WorkcentersPage /></OperatorProtectedRoute>} />
+          <Route path="/workcenters/add" element={<OperatorProtectedRoute><AddWorkcenterPage /></OperatorProtectedRoute>} />
+          <Route path="/workcenters/:id/edit" element={<OperatorProtectedRoute><EditWorkcenterPage /></OperatorProtectedRoute>} />
 
           {/* Production Routes */}
-          <Route path="/production/orders" element={<OrdersPage />} />
-          <Route path="/production/orders/add" element={<AddOrderPage />} />
-          <Route path="/production/orders/:id" element={<OrderDetailPage />} />
-          <Route path="/production/orders/:id/edit" element={<EditOrderPage />} />
-          <Route path="/production/outputs" element={<ProductionOutputsPage />} />
-          <Route path="/production/outputs/add" element={<AddProductionOutputPage />} />
-          <Route path="/production/outputs/:id/edit" element={<EditProductionOutputPage />} />
-          <Route path="/production/step-executions" element={<ProductionStepExecutionsPage />} />
-          <Route path="/production/step-executions/add" element={<AddProductionStepExecutionPage />} />
-          <Route path="/production/step-executions/:id/edit" element={<EditProductionStepExecutionPage />} />
-          <Route path="/production/steps" element={<ProductionStepsPage />} />
-          <Route path="/production/steps/add" element={<AddProductionStepPage />} />
-          <Route path="/production/steps/:id/edit" element={<EditProductionStepPage />} />
-          <Route path="/production/used-materials" element={<UsedMaterialsPage />} />
-          <Route path="/production/used-materials/add" element={<AddUsedMaterialPage />} />
-          <Route path="/production/used-materials/:id/edit" element={<EditUsedMaterialPage />} />
+          <Route path="/production/orders" element={<OperatorProtectedRoute><OrdersPage /></OperatorProtectedRoute>} />
+          <Route path="/production/orders/add" element={<OperatorProtectedRoute><AddOrderPage /></OperatorProtectedRoute>} />
+          <Route path="/production/orders/:id" element={<OperatorProtectedRoute><OrderDetailPage /></OperatorProtectedRoute>} />
+          <Route path="/production/orders/:id/edit" element={<OperatorProtectedRoute><EditOrderPage /></OperatorProtectedRoute>} />
+          <Route path="/production/outputs" element={<OperatorProtectedRoute><ProductionOutputsPage /></OperatorProtectedRoute>} />
+          <Route path="/production/outputs/add" element={<OperatorProtectedRoute><AddProductionOutputPage /></OperatorProtectedRoute>} />
+          <Route path="/production/outputs/:id/edit" element={<OperatorProtectedRoute><EditProductionOutputPage /></OperatorProtectedRoute>} />
+          <Route path="/production/step-executions" element={<OperatorProtectedRoute><ProductionStepExecutionsPage /></OperatorProtectedRoute>} />
+          <Route path="/production/step-executions/add" element={<OperatorProtectedRoute><AddProductionStepExecutionPage /></OperatorProtectedRoute>} />
+          <Route path="/production/step-executions/:id/edit" element={<OperatorProtectedRoute><EditProductionStepExecutionPage /></OperatorProtectedRoute>} />
+          <Route path="/production/steps" element={<OperatorProtectedRoute><ProductionStepsPage /></OperatorProtectedRoute>} />
+          <Route path="/production/steps/add" element={<OperatorProtectedRoute><AddProductionStepPage /></OperatorProtectedRoute>} />
+          <Route path="/production/steps/:id/edit" element={<OperatorProtectedRoute><EditProductionStepPage /></OperatorProtectedRoute>} />
+          <Route path="/production/used-materials" element={<OperatorProtectedRoute><UsedMaterialsPage /></OperatorProtectedRoute>} />
+          <Route path="/production/used-materials/add" element={<OperatorProtectedRoute><AddUsedMaterialPage /></OperatorProtectedRoute>} />
+          <Route path="/production/used-materials/:id/edit" element={<OperatorProtectedRoute><EditUsedMaterialPage /></OperatorProtectedRoute>} />
 
           {/* Warehouse Routes */}
-          <Route path="/warehouse/locations" element={<LocationsPage />} />
-          <Route path="/warehouse/locations/add" element={<AddLocationPage />} />
-          <Route path="/warehouse/locations/:id/edit" element={<EditLocationPage />} />
-          <Route path="/warehouse/warehouses" element={<WarehousesPage />} />
-          <Route path="/warehouse/warehouses/add" element={<AddWarehousePage />} />
-          <Route path="/warehouse/warehouses/:id/edit" element={<EditWarehousePage />} />
+          <Route path="/warehouse/locations" element={<OperatorProtectedRoute><LocationsPage /></OperatorProtectedRoute>} />
+          <Route path="/warehouse/locations/add" element={<OperatorProtectedRoute><AddLocationPage /></OperatorProtectedRoute>} />
+          <Route path="/warehouse/locations/:id/edit" element={<OperatorProtectedRoute><EditLocationPage /></OperatorProtectedRoute>} />
+          <Route path="/warehouse/warehouses" element={<OperatorProtectedRoute><WarehousesPage /></OperatorProtectedRoute>} />
+          <Route path="/warehouse/warehouses/add" element={<OperatorProtectedRoute><AddWarehousePage /></OperatorProtectedRoute>} />
+          <Route path="/warehouse/warehouses/:id/edit" element={<OperatorProtectedRoute><EditWarehousePage /></OperatorProtectedRoute>} />
 
-          {/* Stock Routes */}
-          <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />
-          <Route path="/stock/inventory-movement-logs/add" element={<AddInventoryMovementPage />} />
-          <Route path="/stock/inventory-movement-logs/:id/edit" element={<EditInventoryMovementPage />} />
-          <Route path="/stock/stock-levels" element={<StockLevels />} />
-          <Route path="/stock/stock-levels/add" element={<AddStockLevelPage />} />
-          <Route path="/stock/stock-levels/:id/edit" element={<EditStockLevelPage />} />
+          {/* Stock Management Routes - Add/Edit operations */}
+          <Route path="/stock/inventory-movement-logs/add" element={<OperatorProtectedRoute><AddInventoryMovementPage /></OperatorProtectedRoute>} />
+          <Route path="/stock/inventory-movement-logs/:id/edit" element={<OperatorProtectedRoute><EditInventoryMovementPage /></OperatorProtectedRoute>} />
+          <Route path="/stock/stock-levels/add" element={<OperatorProtectedRoute><AddStockLevelPage /></OperatorProtectedRoute>} />
+          <Route path="/stock/stock-levels/:id/edit" element={<OperatorProtectedRoute><EditStockLevelPage /></OperatorProtectedRoute>} />
 
           {/* Users Routes */}
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/users/add" element={<AddUserPage />} />
-          <Route path="/users/:id/edit" element={<EditUserPage />} />
+          <Route path="/users" element={<OperatorProtectedRoute><UsersPage /></OperatorProtectedRoute>} />
+          <Route path="/users/add" element={<OperatorProtectedRoute><AddUserPage /></OperatorProtectedRoute>} />
+          <Route path="/users/:id/edit" element={<OperatorProtectedRoute><EditUserPage /></OperatorProtectedRoute>} />
 
-          <Route path="/qc" element={"qc"} />
-          <Route path="/packaging" element={"packaging"} />
-          <Route path="/reports" element={"reports"} />
+          <Route path="/qc" element={<OperatorProtectedRoute><div>qc</div></OperatorProtectedRoute>} />
+          <Route path="/packaging" element={<OperatorProtectedRoute><div>packaging</div></OperatorProtectedRoute>} />
+          <Route path="/reports" element={<OperatorProtectedRoute><div>reports</div></OperatorProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

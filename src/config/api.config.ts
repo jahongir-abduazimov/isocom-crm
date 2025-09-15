@@ -63,6 +63,14 @@ export const API_CONFIG = {
     WAREHOUSE_BY_ID: (id: string) => `/warehouses/${id}/`,
     LOCATIONS: "/locations/",
     LOCATION_BY_ID: (id: string) => `/locations/${id}/`,
+
+    // Worker API endpoints
+    WORKER_ORDERS: "/worker/used-materials/orders/",
+    WORKER_ORDER_STEPS: () => `/production-steps/`,
+    WORKER_WORKCENTER_STOCK: (workcenterId: string) => `/worker/used-materials/workcenter_stock/?workcenter_id=${workcenterId}`,
+    WORKER_BULK_CREATE: "/worker/used-materials/bulk_create/",
+    WORKER_MATERIALS: "/worker/used-materials/materials/",
+    WORKER_PRODUCTS: "/worker/used-materials/products/",
   },
   TIMEOUT: 10000, // 10 seconds
   RETRY_ATTEMPTS: 3,

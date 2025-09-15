@@ -11,8 +11,10 @@ import {
   Warehouse,
   Package,
   Users,
+  Wrench,
 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
+import { useAuthStore } from "@/store/auth.store";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: <BarChart3 size={20} /> },
@@ -29,6 +31,7 @@ const navItems = [
   { path: "/materials", label: "Materiallar", icon: <Layers size={20} /> },
   { path: "/workcenters", label: "Stanoklar", icon: <Settings size={20} /> },
   { path: "/users", label: "Foydalanuvchilar", icon: <Users size={20} /> },
+  { path: "/worker", label: "Operator paneli", icon: <Wrench size={20} /> },
   {
     label: "Warehouse",
     icon: <Warehouse size={20} />,
@@ -71,6 +74,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const { user } = useAuthStore();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
     products: false,
     warehouse: false,
@@ -85,13 +89,29 @@ export default function Sidebar() {
     }));
   };
 
+  // Operator rolini tekshirish
+  const isOperator = user?.role === "WORKER" || user?.is_operator;
+
+  // Agar operator bo'lsa, sidebar'ni ko'rsatmaslik
+  if (isOperator) {
+    return null;
+  }
+
+  // Superadmin rollari uchun Operator panelini olib tashlash
+  const filteredNavItems = navItems.filter(item => {
+    if (item.path === "/worker") {
+      return false; // Operator panelini olib tashlash
+    }
+    return true;
+  });
+
   return (
     <ScrollArea className="max-w-54 min-w-54 lg:min-w-64 lg:max-w-64 h-[calc(100vh-16px)] bg-primary to-blue-700 text-white flex flex-col shadow-lg rounded-xl m-2">
       <div className="min-h-16 flex items-center justify-center text-2xl font-extrabold tracking-wide border-b border-white/10">
         <span className="drop-shadow">ISOCOM</span>
       </div>
       <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
-        {navItems.map((item, index) => {
+        {filteredNavItems.map((item, index) => {
           if (item.isCollapsible) {
             const isExpanded = expandedMenus[item.menuKey!];
             return (
@@ -115,10 +135,9 @@ export default function Sidebar() {
                         key={child.path}
                         to={child.path}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
-                            isActive
-                              ? "bg-white text-primary shadow font-semibold"
-                              : "hover:bg-white/10 hover:scale-[1.03]"
+                          `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${isActive
+                            ? "bg-white text-primary shadow font-semibold"
+                            : "hover:bg-white/10 hover:scale-[1.03]"
                           }`
                         }
                       >
@@ -136,10 +155,9 @@ export default function Sidebar() {
               key={item.path}
               to={item.path!}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${
-                  isActive
-                    ? "bg-white text-primary shadow font-semibold"
-                    : "hover:bg-white/10 hover:scale-[1.03]"
+                `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${isActive
+                  ? "bg-white text-primary shadow font-semibold"
+                  : "hover:bg-white/10 hover:scale-[1.03]"
                 }`
               }
             >
