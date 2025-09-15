@@ -1,14 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { Wrench, Package, FileText, LogOut } from "lucide-react";
+import { Wrench, Package, FileText } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
-import { Button } from "../ui/button";
 
 export default function OperatorTopNav() {
-  const { user, logout } = useAuthStore();
-
-  const handleLogout = () => {
-    logout();
-  };
+  const { user } = useAuthStore();
 
   return (
     <header className="h-16 bg-white/80 backdrop-blur-md shadow-lg flex items-center justify-between px-2 sm:px-4 rounded-xl border border-gray-200 mt-2 mx-2">

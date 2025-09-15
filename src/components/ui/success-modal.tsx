@@ -14,7 +14,6 @@ export default function SuccessModal({
   isOpen,
   onClose,
   title = "Muvaffaqiyat!",
-  message = "Amal muvaffaqiyatli bajarildi",
   onConfirm,
   confirmText = "OK",
 }: SuccessModalProps) {
