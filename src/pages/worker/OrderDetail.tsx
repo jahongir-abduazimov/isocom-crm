@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import StepIndicator from "@/components/ui/step-indicator";
 import { useWorkerStore } from "@/store/worker.store";
 
 export default function WorkerOrderDetailPage() {
@@ -30,6 +31,8 @@ export default function WorkerOrderDetailPage() {
     stepsError,
     fetchOrderSteps,
     setSelectedStep,
+    currentStep,
+    setCurrentStep,
   } = useWorkerStore();
 
   // Filter production steps based on search term
@@ -56,7 +59,8 @@ export default function WorkerOrderDetailPage() {
 
   useEffect(() => {
     fetchOrderSteps();
-  }, [fetchOrderSteps]);
+    setCurrentStep(2); // Set current step to 2 (Step selection)
+  }, [fetchOrderSteps, setCurrentStep]);
 
   const formatStatus = (status: string) => {
     switch (status.toUpperCase()) {
@@ -168,6 +172,9 @@ export default function WorkerOrderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Progress Indicator */}
+      <StepIndicator currentStep={currentStep} />
 
       {/* Order Overview */}
       <div className="bg-white rounded-lg shadow-sm border p-6">

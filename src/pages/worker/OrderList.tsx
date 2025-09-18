@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import StepIndicator from "@/components/ui/step-indicator";
 import { useWorkerStore } from "@/store/worker.store";
 
 export default function WorkerOrderListPage() {
@@ -28,12 +29,13 @@ export default function WorkerOrderListPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
 
-  const { orders, ordersLoading, ordersError, fetchOrders, setSelectedOrder } =
+  const { orders, ordersLoading, ordersError, fetchOrders, setSelectedOrder, currentStep, setCurrentStep } =
     useWorkerStore();
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    setCurrentStep(1); // Set current step to 1 (Order selection)
+  }, [fetchOrders, setCurrentStep]);
 
   const formatStatus = (status: string) => {
     switch (status.toUpperCase()) {
@@ -126,7 +128,7 @@ export default function WorkerOrderListPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate("/worker/operator-selection")}
+            onClick={() => navigate("/worker")}
             className="flex items-center gap-2"
           >
             <ArrowLeft size={16} />
@@ -144,44 +146,7 @@ export default function WorkerOrderListPage() {
       </div>
 
       {/* Progress Indicator */}
-      <div className="flex justify-center">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-              ✓
-            </div>
-            <span className="ml-2 text-sm font-medium text-green-600">Operator</span>
-          </div>
-          <div className="w-16 h-0.5 bg-blue-600"></div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-              2
-            </div>
-            <span className="ml-2 text-sm font-medium text-blue-600">Buyurtma</span>
-          </div>
-          <div className="w-16 h-0.5 bg-gray-300"></div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">
-              3
-            </div>
-            <span className="ml-2 text-sm font-medium text-gray-500">Qadam</span>
-          </div>
-          <div className="w-16 h-0.5 bg-gray-300"></div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">
-              4
-            </div>
-            <span className="ml-2 text-sm font-medium text-gray-500">Material</span>
-          </div>
-          <div className="w-16 h-0.5 bg-gray-300"></div>
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-sm font-medium">
-              5
-            </div>
-            <span className="ml-2 text-sm font-medium text-gray-500">Tasdiqlash</span>
-          </div>
-        </div>
-      </div>
+      <StepIndicator currentStep={currentStep} />
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-sm border p-4">

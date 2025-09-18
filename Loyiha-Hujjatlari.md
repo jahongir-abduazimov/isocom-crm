@@ -428,7 +428,7 @@
 
 ## API Integration
 
-**Backend URL**: `http://192.168.0.105:8001/api`
+**Backend URL**: `http://172.30.150.162:8001/api`
 
 **Asosiy Endpoint'lar**:
 

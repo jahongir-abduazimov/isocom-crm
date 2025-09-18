@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: "http://192.168.0.105:8001/api",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://172.30.150.162:8001/api",
   ENDPOINTS: {
     // Orders
     ORDERS: "/orders/",
@@ -71,6 +71,15 @@ export const API_CONFIG = {
     WORKER_BULK_CREATE: "/worker/used-materials/bulk_create/",
     WORKER_MATERIALS: "/worker/used-materials/materials/",
     WORKER_PRODUCTS: "/worker/used-materials/products/",
+
+    // Bunker API endpoints
+    BUNKERS: "/extruder-bunkers/",
+    BUNKER_BY_ID: (id: string) => `/extruder-bunkers/${id}/`,
+    BUNKER_STATUS: (id: string) => `/extruder-bunkers/${id}/bunker_status/`,
+    BUNKER_FILL: (id: string) => `/extruder-bunkers/${id}/fill_bunker/`,
+    BUNKER_SHIFT_STATUS: (id: string) => `/extruder-bunkers/${id}/shift_status/`,
+    BUNKER_START_SHIFT: (id: string) => `/extruder-bunkers/${id}/start_shift/`,
+    BUNKER_END_SHIFT: (id: string) => `/extruder-bunkers/${id}/end_shift/`,
   },
   TIMEOUT: 10000, // 10 seconds
   RETRY_ATTEMPTS: 3,

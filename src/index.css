@@ -131,3 +131,120 @@ body {
     overflow: hidden;
   }
 }
+
+/* Bunker Components Styles */
+@layer components {
+  /* Progress Bar Animations */
+  .bunker-progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-3 overflow-hidden;
+  }
+
+  .bunker-progress-fill {
+    @apply h-full transition-all duration-500 ease-in-out;
+  }
+
+  .bunker-progress-fill.green {
+    @apply bg-gradient-to-r from-green-500 to-green-400;
+  }
+
+  .bunker-progress-fill.yellow {
+    @apply bg-gradient-to-r from-yellow-500 to-yellow-400;
+  }
+
+  .bunker-progress-fill.red {
+    @apply bg-gradient-to-r from-red-500 to-red-400;
+  }
+
+  /* Bunker Card Hover Effects */
+  .bunker-card {
+    @apply bg-white rounded-lg shadow-sm border p-6 transition-all duration-200;
+  }
+
+  .bunker-card:hover {
+    @apply shadow-md transform scale-[1.02];
+  }
+
+  /* Status Badges */
+  .status-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-badge.filled {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-badge.empty {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  .status-badge.started {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-badge.ended {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  .status-badge.not-started {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  /* Form Styling */
+  .bunker-form {
+    @apply max-w-2xl mx-auto bg-white rounded-lg shadow-sm border p-8;
+  }
+
+  .bunker-form .form-group {
+    @apply space-y-2;
+  }
+
+  .bunker-form .form-group label {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  /* Action Buttons */
+  .bunker-action-buttons {
+    @apply flex gap-4 pt-4;
+  }
+
+  .bunker-action-buttons button {
+    @apply flex-1;
+  }
+
+  /* Info Cards */
+  .bunker-info-card {
+    @apply bg-white rounded-lg shadow-sm border p-6;
+  }
+
+  .bunker-info-card h3 {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+  }
+
+  /* Recent Fills */
+  .recent-fill-item {
+    @apply flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-colors duration-200;
+  }
+
+  .recent-fill-item:hover {
+    @apply bg-gray-100;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .bunker-card {
+      @apply p-4;
+    }
+
+    .bunker-form {
+      @apply p-6 mx-4;
+    }
+
+    .bunker-action-buttons {
+      @apply flex-col;
+    }
+
+    .recent-fill-item {
+      @apply flex-col items-start gap-2;
+    }
+  }
+}

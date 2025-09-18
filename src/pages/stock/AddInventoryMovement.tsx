@@ -12,11 +12,14 @@ import {
 import { LocationsService } from "@/services/locations.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import request from "@/components/config";
+import { useAuthStore } from "@/store/auth.store";
+
 
 interface User {
   id: string;
   username: string;
   email: string;
+  role_display_uz?: string;
 }
 
 interface Material {
@@ -41,6 +44,7 @@ interface Location {
 
 export default function AddInventoryMovementPage() {
   const navigate = useNavigate();
+  const { selectedOperator, user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -48,6 +52,11 @@ export default function AddInventoryMovementPage() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [stockLevels, setStockLevels] = useState<any[]>([]);
+
+  // Check if current user is superadmin
+  const isSuperAdmin = user?.is_superuser || false;
+  const isOperator = user?.is_operator || false;
 
   const [formData, setFormData] = useState<CreateInventoryMovementLogRequest>({
     material: "",
@@ -101,16 +110,30 @@ export default function AddInventoryMovementPage() {
           setLocations([]);
         }
 
-        // Fetch users
-        try {
-          console.log("Fetching users...");
-          const usersRes = await request.get("/users/");
-          console.log("Users response:", usersRes.data);
-          setUsers(usersRes.data.results || []);
-        } catch (err) {
-          console.error("Error fetching users:", err);
-          setUsers([]);
+        // Fetch users only for superadmin
+        if (isSuperAdmin) {
+          try {
+            console.log("Fetching users...");
+            const usersRes = await request.get("/users/");
+            console.log("Users response:", usersRes.data);
+            setUsers(usersRes.data.results || []);
+          } catch (err) {
+            console.error("Error fetching users:", err);
+            setUsers([]);
+          }
         }
+
+        // Fetch stock levels
+        try {
+          console.log("Fetching stock levels...");
+          const stockRes = await stockService.getStockLevels();
+          console.log("Stock levels response:", stockRes);
+          setStockLevels(stockRes.results || []);
+        } catch (err) {
+          console.error("Error fetching stock levels:", err);
+          setStockLevels([]);
+        }
+
 
         console.log("Data fetching completed");
       } catch (err) {
@@ -124,6 +147,75 @@ export default function AddInventoryMovementPage() {
 
     fetchData();
   }, []);
+
+  const checkStockAvailability = () => {
+    if (!formData.from_location || !formData.quantity) {
+      return { available: true, message: "" };
+    }
+
+    const requestedQuantity = Number(formData.quantity);
+    if (isNaN(requestedQuantity) || requestedQuantity <= 0) {
+      return { available: true, message: "" };
+    }
+
+    // Check stock for material
+    if (formData.material) {
+      const stockLevel = stockLevels.find(
+        (stock) =>
+          stock.material === formData.material &&
+          stock.location === formData.from_location
+      );
+
+      if (!stockLevel) {
+        const materialName = materials.find(m => m.id === formData.material)?.name || "Unknown Material";
+        const locationName = locations.find(l => l.id === formData.from_location)?.name || "Unknown Location";
+        return {
+          available: false,
+          message: `${materialName} material is not available at ${locationName} location!`
+        };
+      }
+
+      const availableQuantity = Number(stockLevel.quantity);
+      if (availableQuantity < requestedQuantity) {
+        const materialName = materials.find(m => m.id === formData.material)?.name || "Unknown Material";
+        const locationName = locations.find(l => l.id === formData.from_location)?.name || "Unknown Location";
+        return {
+          available: false,
+          message: `${materialName} material is not available in sufficient quantity at ${locationName} location! Available: ${availableQuantity}, Requested: ${requestedQuantity}`
+        };
+      }
+    }
+
+    // Check stock for product
+    if (formData.product) {
+      const stockLevel = stockLevels.find(
+        (stock) =>
+          stock.product === formData.product &&
+          stock.location === formData.from_location
+      );
+
+      if (!stockLevel) {
+        const productName = products.find(p => p.id === formData.product)?.name || "Unknown Product";
+        const locationName = locations.find(l => l.id === formData.from_location)?.name || "Unknown Location";
+        return {
+          available: false,
+          message: `${productName} product is not available at ${locationName} location!`
+        };
+      }
+
+      const availableQuantity = Number(stockLevel.quantity);
+      if (availableQuantity < requestedQuantity) {
+        const productName = products.find(p => p.id === formData.product)?.name || "Unknown Product";
+        const locationName = locations.find(l => l.id === formData.from_location)?.name || "Unknown Location";
+        return {
+          available: false,
+          message: `${productName} product is not available in sufficient quantity at ${locationName} location! Available: ${availableQuantity}, Requested: ${requestedQuantity}`
+        };
+      }
+    }
+
+    return { available: true, message: "" };
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -158,8 +250,17 @@ export default function AddInventoryMovementPage() {
       newErrors.quantity = "Quantity must be a valid number";
     }
 
-    if (!formData.user) {
-      newErrors.user = "User is required";
+    // Validation based on user role
+    if (isSuperAdmin) {
+      // For superadmin, check if user is selected
+      if (!formData.user) {
+        newErrors.user = "User is required";
+      }
+    } else if (isOperator) {
+      // For operator, check if selectedOperator is available
+      if (!selectedOperator) {
+        newErrors.user = "Please select an operator first";
+      }
     }
 
     setErrors(newErrors);
@@ -219,6 +320,14 @@ export default function AddInventoryMovementPage() {
       return;
     }
 
+    // Check stock availability before submitting
+    const stockCheck = checkStockAvailability();
+    if (!stockCheck.available) {
+      setError(stockCheck.message);
+      notifyError(stockCheck.message);
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -228,17 +337,28 @@ export default function AddInventoryMovementPage() {
         // Only include material or product, not both
         material: formData.material || undefined,
         product: formData.product || undefined,
+        // Use different user based on role
+        user: isSuperAdmin ? formData.user : (selectedOperator?.id || ""),
       };
 
       await stockService.createInventoryMovementLog(submitData);
 
       notifySuccess("Inventory movement created successfully");
       navigate("/stock/inventory-movement-logs");
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Failed to create inventory movement";
+    } catch (err: any) {
+      let errorMessage = "Failed to create inventory movement";
+
+      // Handle different types of errors
+      if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail;
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
       setError(errorMessage);
       notifyError(errorMessage);
       console.error("Error creating inventory movement:", err);
@@ -250,6 +370,26 @@ export default function AddInventoryMovementPage() {
   const handleCancel = () => {
     navigate("/stock/inventory-movement-logs");
   };
+
+  // Get current stock level for selected material/product and location
+  const getCurrentStockLevel = () => {
+    if (!formData.from_location || (!formData.material && !formData.product)) {
+      return null;
+    }
+
+    const stockLevel = stockLevels.find((stock) => {
+      if (formData.material) {
+        return stock.material === formData.material && stock.location === formData.from_location;
+      } else if (formData.product) {
+        return stock.product === formData.product && stock.location === formData.from_location;
+      }
+      return false;
+    });
+
+    return stockLevel;
+  };
+
+  const currentStock = getCurrentStockLevel();
 
   if (loadingData) {
     return (
@@ -329,11 +469,20 @@ export default function AddInventoryMovementPage() {
           {/* Warning if no data available */}
           {(materials.length === 0 ||
             locations.length === 0 ||
-            users.length === 0) && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-              <p className="text-yellow-800 text-sm">
-                Some data is not available. Please check if materials,
-                locations, and users are properly configured.
+            (isSuperAdmin && users.length === 0)) && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <p className="text-yellow-800 text-sm">
+                  Some data is not available. Please check if materials,
+                  locations{isSuperAdmin ? " and users" : ""} are properly configured.
+                </p>
+              </div>
+            )}
+
+          {/* Warning if no operator selected (only for operators) */}
+          {isOperator && !selectedOperator && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <p className="text-red-800 text-sm">
+                Please select an operator first before creating inventory movement.
               </p>
             </div>
           )}
@@ -362,9 +511,8 @@ export default function AddInventoryMovementPage() {
                 value={formData.material}
                 onChange={(e) => handleInputChange("material", e.target.value)}
                 disabled={!!formData.product}
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.material ? "border-red-500" : "border-gray-300"
-                } ${formData.product ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.material ? "border-red-500" : "border-gray-300"
+                  } ${formData.product ? "bg-gray-100 cursor-not-allowed" : ""}`}
               >
                 <option value="">None</option>
                 {materials.length === 0 ? (
@@ -399,9 +547,8 @@ export default function AddInventoryMovementPage() {
                 value={formData.product}
                 onChange={(e) => handleInputChange("product", e.target.value)}
                 disabled={!!formData.material}
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.product ? "border-red-500" : "border-gray-300"
-                } ${formData.material ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.product ? "border-red-500" : "border-gray-300"
+                  } ${formData.material ? "bg-gray-100 cursor-not-allowed" : ""}`}
               >
                 <option value="">None</option>
                 {products.length === 0 ? (
@@ -432,9 +579,8 @@ export default function AddInventoryMovementPage() {
                 onChange={(e) =>
                   handleInputChange("from_location", e.target.value)
                 }
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.from_location ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.from_location ? "border-red-500" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select from location</option>
                 {locations.length === 0 ? (
@@ -465,9 +611,8 @@ export default function AddInventoryMovementPage() {
                 onChange={(e) =>
                   handleInputChange("to_location", e.target.value)
                 }
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.to_location ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.to_location ? "border-red-500" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select to location</option>
                 {locations.length === 0 ? (
@@ -504,45 +649,105 @@ export default function AddInventoryMovementPage() {
               {errors.quantity && (
                 <p className="text-red-500 text-xs">{errors.quantity}</p>
               )}
-            </div>
 
-            {/* User */}
-            <div className="space-y-2">
-              <Label htmlFor="user" className="text-sm font-medium">
-                User *
-              </Label>
-              <select
-                id="user"
-                value={formData.user}
-                onChange={(e) => handleInputChange("user", e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.user ? "border-red-500" : "border-gray-300"
-                }`}
-              >
-                <option value="">Select user</option>
-                {users.length === 0 ? (
-                  <option value="" disabled>
-                    No users available
-                  </option>
-                ) : (
-                  users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.username} ({user.email})
-                    </option>
-                  ))
+              {/* Stock Level Display */}
+              {currentStock && (
+                <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800">
+                    <strong>Current Stock:</strong> {currentStock.quantity}
+                  </p>
+                  {formData.quantity && !isNaN(Number(formData.quantity)) && (
+                    <p className="text-sm text-blue-700 mt-1">
+                      <strong>After Movement:</strong> {Number(currentStock.quantity) - Number(formData.quantity)}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Stock Warning */}
+              {currentStock && formData.quantity && !isNaN(Number(formData.quantity)) &&
+                Number(currentStock.quantity) < Number(formData.quantity) && (
+                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-sm text-red-800">
+                      <strong>Warning:</strong> Insufficient stock! Available: {currentStock.quantity}, Requested: {formData.quantity}
+                    </p>
+                  </div>
                 )}
-              </select>
-              {errors.user && (
-                <p className="text-red-500 text-xs">{errors.user}</p>
+
+              {/* No Stock Warning */}
+              {formData.from_location && (formData.material || formData.product) && !currentStock && (
+                <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Warning:</strong> No stock available for the selected item at this location.
+                  </p>
+                </div>
               )}
             </div>
+
+            {/* User Selection - Different based on role */}
+            {isSuperAdmin ? (
+              /* User Selection for SuperAdmin */
+              <div className="space-y-2">
+                <Label htmlFor="user" className="text-sm font-medium">
+                  User *
+                </Label>
+                <select
+                  id="user"
+                  value={formData.user}
+                  onChange={(e) => handleInputChange("user", e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-md text-sm ${errors.user ? "border-red-500" : "border-gray-300"
+                    }`}
+                >
+                  <option value="">Select user</option>
+                  {users.length === 0 ? (
+                    <option value="" disabled>
+                      No users available
+                    </option>
+                  ) : (
+                    users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.username} ({user.role_display_uz || user.email})
+                      </option>
+                    ))
+                  )}
+                </select>
+                {errors.user && (
+                  <p className="text-red-500 text-xs">{errors.user}</p>
+                )}
+              </div>
+            ) : (
+              /* Selected Operator Display for Operators */
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Selected Operator
+                </Label>
+                <div className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-50">
+                  {selectedOperator ? (
+                    <span className="text-gray-900">
+                      {selectedOperator.username} ({selectedOperator.role_display_uz})
+                    </span>
+                  ) : (
+                    <span className="text-gray-500">No operator selected</span>
+                  )}
+                </div>
+                {errors.user && (
+                  <p className="text-red-500 text-xs">{errors.user}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Form Actions */}
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
             <Button
               type="submit"
-              disabled={loading}
+              disabled={
+                loading ||
+                (isOperator && !selectedOperator) ||
+                (isSuperAdmin && !formData.user) ||
+                (currentStock && formData.quantity && Number(currentStock.quantity) < Number(formData.quantity)) ||
+                (!currentStock && formData.from_location && (formData.material || formData.product))
+              }
               className="flex items-center gap-2 w-full sm:w-auto"
             >
               {loading ? (

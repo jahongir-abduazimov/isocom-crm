@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -9,7 +9,9 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import StepIndicator from "@/components/ui/step-indicator";
 import { useWorkerStore } from "@/store/worker.store";
+import { useAuthStore } from "@/store/auth.store";
 import { showNotification } from "@/lib/notification";
 import SuccessModal from "@/components/ui/success-modal";
 
@@ -20,13 +22,15 @@ export default function ConfirmationPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
+  const { selectedOperator } = useAuthStore();
   const {
-    selectedOperator,
     selectedOrder,
     selectedStep,
     selectedItems,
     submitBulkCreate,
     clearSelectedItems,
+    currentStep,
+    setCurrentStep,
   } = useWorkerStore();
 
   const handleSubmit = async () => {
@@ -57,6 +61,10 @@ export default function ConfirmationPage() {
   const handleCancel = () => {
     navigate(`/worker/orders/${id}/steps/${stepId}`);
   };
+
+  useEffect(() => {
+    setCurrentStep(4); // Set current step to 4 (Confirmation)
+  }, [setCurrentStep]);
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
@@ -116,6 +124,9 @@ export default function ConfirmationPage() {
         </div>
       </div>
 
+      {/* Progress Indicator */}
+      <StepIndicator currentStep={currentStep} />
+
       {/* Operator Summary */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex items-center gap-3 mb-4">
@@ -144,9 +155,9 @@ export default function ConfirmationPage() {
             <p className="font-medium text-gray-900">{selectedOperator.role}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Workcenter</p>
+            <p className="text-sm text-gray-600">Rol darajasi</p>
             <p className="font-medium text-gray-900">
-              {selectedOperator.work_center || "Yo'q"}
+              {selectedOperator.role_level || "Yo'q"}
             </p>
           </div>
         </div>

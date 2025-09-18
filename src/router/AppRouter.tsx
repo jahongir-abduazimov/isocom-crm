@@ -56,11 +56,17 @@ import EditUserPage from "@/pages/users/EditUser";
 
 // Worker pages
 import WorkerDashboardPage from "@/pages/worker";
-import WorkerOperatorSelectionPage from "@/pages/worker/OperatorSelection";
 import WorkerOrderListPage from "@/pages/worker/OrderList";
 import WorkerOrderDetailPage from "@/pages/worker/OrderDetail";
 import WorkerStockSelectionPage from "@/pages/worker/StockSelection";
 import WorkerConfirmationPage from "@/pages/worker/Confirmation";
+
+// Worker Bunker pages
+import BunkersDashboardPage from "@/pages/worker/bunkers";
+import BunkerListPage from "@/pages/worker/bunkers/BunkerList";
+import FillBunkerPage from "@/pages/worker/bunkers/FillBunker";
+import ShiftManagementPage from "@/pages/worker/bunkers/ShiftManagement";
+import BunkerStatusPage from "@/pages/worker/bunkers/BunkerStatus";
 
 // import QCPage from "@/pages/qc/QCPage";
 // import PackagingPage from "@/pages/packaging/PackagingPage";
@@ -80,11 +86,17 @@ export default function App() {
         }>
           {/* Operator Routes - No additional protection needed */}
           <Route path="/worker" element={<WorkerDashboardPage />} />
-          <Route path="/worker/operator-selection" element={<WorkerOperatorSelectionPage />} />
           <Route path="/worker/orders" element={<WorkerOrderListPage />} />
           <Route path="/worker/orders/:id" element={<WorkerOrderDetailPage />} />
           <Route path="/worker/orders/:id/steps/:stepId" element={<WorkerStockSelectionPage />} />
           <Route path="/worker/orders/:id/steps/:stepId/confirm" element={<WorkerConfirmationPage />} />
+
+          {/* Worker Bunker Routes */}
+          <Route path="/worker/bunkers" element={<BunkersDashboardPage />} />
+          <Route path="/worker/bunkers/list" element={<BunkerListPage />} />
+          <Route path="/worker/bunkers/:bunkerId/fill" element={<FillBunkerPage />} />
+          <Route path="/worker/bunkers/:bunkerId/shift" element={<ShiftManagementPage />} />
+          <Route path="/worker/bunkers/:bunkerId/status" element={<BunkerStatusPage />} />
 
           {/* Stock Routes - Operators can access these */}
           <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />

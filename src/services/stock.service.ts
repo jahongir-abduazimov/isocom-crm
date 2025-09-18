@@ -79,6 +79,7 @@ class StockService {
         location?: string;
         startDate?: string;
         endDate?: string;
+        userId?: string;
     }): Promise<{ results: InventoryMovement[]; count: number; next: string | null; previous: string | null }> {
         try {
             const paginationParams = this.getDefaultPaginationParams(params);
@@ -90,6 +91,7 @@ class StockService {
             if (params?.location) searchParams.append('location', params.location);
             if (params?.startDate) searchParams.append('start_date', params.startDate);
             if (params?.endDate) searchParams.append('end_date', params.endDate);
+            if (params?.userId) searchParams.append('user', params.userId);
 
             const url = `${API_CONFIG.ENDPOINTS.INVENTORY_MOVEMENT_LOGS}?${searchParams}`;
             console.log('Fetching inventory movements from:', url);

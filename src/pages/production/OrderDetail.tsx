@@ -12,9 +12,15 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Users,
+  Settings,
+  Activity,
+  MapPin,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProductionStore } from "@/store/production.store";
+import { useWorkerStore } from "@/store/worker.store";
 import { STATUS_MAPPINGS } from "@/config/api.config";
 import ConfirmModal from "@/components/ui/confirm-modal";
 
@@ -32,15 +38,19 @@ export default function OrderDetailPage() {
     setSelectedOrder,
   } = useProductionStore();
 
+  const { operators, fetchOperators } = useWorkerStore();
+
   useEffect(() => {
     if (id) {
       fetchOrderById(id);
     }
+    // Fetch operators for displaying operator information
+    fetchOperators();
 
     return () => {
       setSelectedOrder(null);
     };
-  }, [id, fetchOrderById, setSelectedOrder]);
+  }, [id, fetchOrderById, setSelectedOrder, fetchOperators]);
 
   const formatStatus = (status: string) => {
     return (
@@ -99,6 +109,10 @@ export default function OrderDetailPage() {
     }
   };
 
+  // Helper function to get operator details by ID
+  const getOperatorById = (operatorId: string) => {
+    return operators.find((operator) => operator.id === operatorId);
+  };
 
   const handleDeleteClick = () => {
     setDeleteModalOpen(true);
@@ -289,6 +303,283 @@ export default function OrderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Additional Information Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Operators Section */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Users className="h-5 w-5 text-blue-600" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              Assigned Operators
+            </h3>
+          </div>
+          {selectedOrder.operators && selectedOrder.operators.length > 0 ? (
+            <div className="space-y-3">
+              {selectedOrder.operators.map((operatorId, index) => {
+                const operator = getOperatorById(operatorId);
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                  >
+                    <User className="h-4 w-4 text-gray-500" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-900">
+                          {(operator &&
+                            `${operator.first_name} ${operator.last_name}`.trim()) ||
+                            operator?.username}
+                        </span>
+                        {operator && (
+                          <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                            {operator.role}
+                          </span>
+                        )}
+                      </div>
+                      {operator && (
+                        <div className="mt-1 text-xs text-gray-600">
+                          {operator.email}
+                          {operator.work_center && (
+                            <span className="ml-2">
+                              • {operator.work_center}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No operators assigned</p>
+          )}
+        </div>
+
+        {/* Current Step Section */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Activity className="h-5 w-5 text-green-600" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              Current Step
+            </h3>
+          </div>
+          {selectedOrder.current_step ? (
+            <div className="space-y-3">
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-900">
+                    {selectedOrder.current_step.production_step_name}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      selectedOrder.current_step.status
+                    )}`}
+                  >
+                    {getStatusIcon(selectedOrder.current_step.status)}
+                    {formatStatus(selectedOrder.current_step.status)}
+                  </span>
+                </div>
+                {selectedOrder.current_step.assigned_operator && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <User className="h-3 w-3" />
+                    <span>
+                      {(() => {
+                        const operator = getOperatorById(selectedOrder.current_step.assigned_operator);
+                        return (
+                          operator?.first_name && operator?.last_name
+                            ? `${operator.first_name} ${operator.last_name}`.trim()
+                            : operator?.username || selectedOrder.current_step.assigned_operator_name
+                        );
+                      })()}
+                    </span>
+                  </div>
+                )}
+                {selectedOrder.current_step.work_center && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                    <MapPin className="h-3 w-3" />
+                    <span>{selectedOrder.current_step.work_center}</span>
+                  </div>
+                )}
+                {selectedOrder.current_step.notes && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    <span className="font-medium">Notes: </span>
+                    {selectedOrder.current_step.notes}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm">No current step information</p>
+          )}
+        </div>
+      </div>
+
+      {/* Used Materials Section */}
+      {selectedOrder.used_materials &&
+        selectedOrder.used_materials.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Package className="h-5 w-5 text-orange-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
+                Used Materials
+              </h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium text-gray-700">
+                      Material
+                    </th>
+                    <th className="text-left py-2 font-medium text-gray-700">
+                      Quantity
+                    </th>
+                    <th className="text-left py-2 font-medium text-gray-700">
+                      Available
+                    </th>
+                    <th className="text-left py-2 font-medium text-gray-700">
+                      Work Center
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOrder.used_materials.map((material) => (
+                    <tr key={material.id} className="border-b border-gray-100">
+                      <td className="py-3 text-gray-900">
+                        {material.material_name}
+                      </td>
+                      <td className="py-3 text-gray-600">
+                        {material.quantity}
+                      </td>
+                      <td className="py-3 text-gray-600">
+                        {material.available_quantity}
+                      </td>
+                      <td className="py-3 text-gray-600">
+                        {material.workcenter_name}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+      {/* Step Executions Section */}
+      {selectedOrder.step_executions &&
+        selectedOrder.step_executions.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Settings className="h-5 w-5 text-purple-600" />
+              <h3 className="text-lg font-semibold text-gray-900">
+                Production Steps
+              </h3>
+            </div>
+            <div className="space-y-4">
+              {selectedOrder.step_executions.map((step, index) => (
+                <div
+                  key={step.id}
+                  className="border border-gray-200 rounded-lg p-4"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-full text-sm font-medium">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">
+                          {step.production_step_name}
+                        </h4>
+                        {step.assigned_operator && (
+                          <p className="text-sm text-gray-600">
+                            Operator:{" "}
+                            {(() => {
+                              const operator = getOperatorById(step.assigned_operator);
+                              return (
+                                operator?.first_name && operator?.last_name
+                                  ? `${operator.first_name} ${operator.last_name}`.trim()
+                                  : operator?.username || step.assigned_operator_name
+                              );
+                            })()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <span
+                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                        step.status
+                      )}`}
+                    >
+                      {getStatusIcon(step.status)}
+                      {formatStatus(step.status)}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    {step.start_time && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-gray-600">Start Time</p>
+                          <p className="font-medium text-gray-900">
+                            {formatDate(step.start_time)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {step.end_time && (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-gray-600">End Time</p>
+                          <p className="font-medium text-gray-900">
+                            {formatDate(step.end_time)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    {step.actual_duration_hours && (
+                      <div className="flex items-center gap-2">
+                        <Activity className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-gray-600">Duration</p>
+                          <p className="font-medium text-gray-900">
+                            {step.actual_duration_hours}h
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {(step.notes || step.quality_notes) && (
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      {step.notes && (
+                        <div className="mb-2">
+                          <p className="text-sm text-gray-600 font-medium">
+                            Notes:
+                          </p>
+                          <p className="text-sm text-gray-800">{step.notes}</p>
+                        </div>
+                      )}
+                      {step.quality_notes && (
+                        <div>
+                          <p className="text-sm text-gray-600 font-medium">
+                            Quality Notes:
+                          </p>
+                          <p className="text-sm text-gray-800">
+                            {step.quality_notes}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal

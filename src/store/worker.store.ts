@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { workerService } from "@/services/worker.service";
+import { useAuthStore } from "@/store/auth.store";
 import type {
   WorkerOrder,
   ProductionStep,
@@ -28,9 +29,8 @@ interface Operator {
 }
 
 interface WorkerState {
-  // Operators
+  // Operators (for modal)
   operators: Operator[];
-  selectedOperator: Operator | null;
   operatorsLoading: boolean;
   operatorsError: string | null;
 
@@ -54,13 +54,15 @@ interface WorkerState {
   // Selected Items
   selectedItems: SelectedItem[];
 
+  // Current Step in workflow
+  currentStep: number;
+
   // Submission
   submitting: boolean;
   submitError: string | null;
 
   // Actions
   fetchOperators: () => Promise<void>;
-  setSelectedOperator: (operator: Operator | null) => void;
   fetchOrders: () => Promise<void>;
   setSelectedOrder: (order: WorkerOrder | null) => void;
   fetchOrderSteps: () => Promise<void>;
@@ -70,6 +72,7 @@ interface WorkerState {
   removeSelectedItem: (itemId: string) => void;
   updateSelectedItemQuantity: (itemId: string, quantity: number) => void;
   clearSelectedItems: () => void;
+  setCurrentStep: (step: number) => void;
   submitBulkCreate: () => Promise<{
     success: boolean;
     data?: BulkCreateResponse;
@@ -81,7 +84,6 @@ interface WorkerState {
 export const useWorkerStore = create<WorkerState>((set, get) => ({
   // Initial state
   operators: [],
-  selectedOperator: null,
   operatorsLoading: false,
   operatorsError: null,
 
@@ -101,6 +103,8 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
 
   selectedItems: [],
 
+  currentStep: 1,
+
   submitting: false,
   submitError: null,
 
@@ -119,20 +123,6 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
     }
   },
 
-  setSelectedOperator: (operator) => {
-    set({ selectedOperator: operator });
-    // Clear related data when operator changes
-    if (operator) {
-      set({
-        orders: [],
-        selectedOrder: null,
-        productionSteps: [],
-        selectedStep: null,
-        stockData: null,
-        selectedItems: [],
-      });
-    }
-  },
 
   fetchOrders: async () => {
     set({ ordersLoading: true, ordersError: null });
@@ -243,8 +233,13 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
     set({ selectedItems: [] });
   },
 
+  setCurrentStep: (step) => {
+    set({ currentStep: step });
+  },
+
   submitBulkCreate: async () => {
-    const { selectedOperator, selectedOrder, selectedStep, selectedItems } = get();
+    const { selectedOrder, selectedStep, selectedItems } = get();
+    const { selectedOperator } = useAuthStore.getState();
 
     if (!selectedOperator || !selectedOrder || !selectedStep || selectedItems.length === 0) {
       return { success: false, error: "Missing required data" };
@@ -279,7 +274,6 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
   reset: () => {
     set({
       operators: [],
-      selectedOperator: null,
       operatorsLoading: false,
       operatorsError: null,
       orders: [],
@@ -294,6 +288,7 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
       stockLoading: false,
       stockError: null,
       selectedItems: [],
+      currentStep: 1,
       submitting: false,
       submitError: null,
     });

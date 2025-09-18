@@ -21,7 +21,7 @@ export default function WorkerDashboardPage() {
   }, [fetchOrders]);
 
   const handleStartWorkflow = () => {
-    navigate("/worker/operator-selection");
+    navigate("/worker/orders");
   };
 
   if (ordersLoading) {
@@ -57,52 +57,69 @@ export default function WorkerDashboardPage() {
         </p>
       </div>
 
-      {/* Main Action Card */}
-      <div className="bg-white rounded-lg shadow-sm border p-8">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Package className="h-8 w-8 text-blue-600" />
+      {/* Main Action Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Material Usage Card */}
+        <div className="bg-white rounded-lg shadow-sm border p-8">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="h-8 w-8 text-blue-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Material ishlatish
+            </h2>
+            <p className="text-gray-600 mb-8 max-w-lg mx-auto">
+              Ishlab chiqarish buyurtmalari uchun material va mahsulot ishlatish
+              jarayonini boshqaring
+            </p>
+            <div className="flex justify-end">
+              <Button
+                onClick={handleStartWorkflow}
+                size="lg"
+                className="flex items-center gap-2"
+              >
+                Jarayonni boshlash
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Material ishlatish
-          </h2>
-          <p className="text-gray-600 mb-8 max-w-lg mx-auto">
-            Ishlab chiqarish buyurtmalari uchun material va mahsulot ishlatish
-            jarayonini boshqaring
-          </p>
-          <div className="flex justify-end">
-          <Button
-            onClick={handleStartWorkflow}
-            size="lg"
-            className="flex items-center gap-2"
-          >
-            Jarayonni boshlash
-            <ArrowRight className="h-5 w-5" />
-          </Button>
+        </div>
+
+        {/* Bunker Management Card */}
+        <div className="bg-white rounded-lg shadow-sm border p-8">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Package className="h-8 w-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Ekstruder Baklar
+            </h2>
+            <p className="text-gray-600 mb-8 max-w-lg mx-auto">
+              Ekstruder baklarini boshqarish, to'ldirish va smena jarayonlarini kuzatish
+            </p>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => navigate("/worker/bunkers")}
+                size="lg"
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                Baklar boshqaruvi
+                <ArrowRight className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Workflow Steps */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Users className="h-5 w-5 text-blue-600" />
-          </div>
-          <h3 className="font-semibold text-gray-900 mb-2 text-sm">
-            1. Operator tanlash
-          </h3>
-          <p className="text-xs text-gray-600">
-            Amalni bajaruvchi operatorni tanlang
-          </p>
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
           <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
             <Package className="h-5 w-5 text-green-600" />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2 text-sm">
-            2. Buyurtma tanlash
+            1. Buyurtma tanlash
           </h3>
           <p className="text-xs text-gray-600">
             Ishlab chiqarish buyurtmasini tanlang
@@ -114,7 +131,7 @@ export default function WorkerDashboardPage() {
             <Users className="h-5 w-5 text-purple-600" />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2 text-sm">
-            3. Qadam tanlash
+            2. Qadam tanlash
           </h3>
           <p className="text-xs text-gray-600">
             Ishlab chiqarish qadamini tanlang
@@ -126,7 +143,7 @@ export default function WorkerDashboardPage() {
             <CheckCircle className="h-5 w-5 text-orange-600" />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2 text-sm">
-            4. Material tanlash
+            3. Material tanlash
           </h3>
           <p className="text-xs text-gray-600">
             Material va mahsulotlarni tanlang
@@ -138,7 +155,7 @@ export default function WorkerDashboardPage() {
             <Clock className="h-5 w-5 text-red-600" />
           </div>
           <h3 className="font-semibold text-gray-900 mb-2 text-sm">
-            5. Tasdiqlash
+            4. Tasdiqlash
           </h3>
           <p className="text-xs text-gray-600">
             Ma'lumotlarni tekshiring va tasdiqlang
@@ -172,8 +189,9 @@ export default function WorkerDashboardPage() {
                 Jarayon haqida
               </h4>
               <p className="text-sm text-green-700">
-                Material ishlatish jarayoni 5 bosqichdan iborat. Har bir
-                bosqichda kerakli ma'lumotlarni to'ldiring va keyingi bosqichga
+                Material ishlatish jarayoni 4 bosqichdan iborat. Operator tanlash
+                global bo'lib, tizimga kirganda avtomatik ravishda amalga oshiriladi.
+                Har bir bosqichda kerakli ma'lumotlarni to'ldiring va keyingi bosqichga
                 o'ting.
               </p>
             </div>

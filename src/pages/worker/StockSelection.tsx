@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import StepIndicator from "@/components/ui/step-indicator";
 import { useWorkerStore } from "@/store/worker.store";
 
 // Available unit of measure options
@@ -48,6 +49,8 @@ export default function StockSelectionPage() {
     addSelectedItem,
     removeSelectedItem,
     updateSelectedItemQuantity,
+    currentStep,
+    setCurrentStep,
   } = useWorkerStore();
 
   useEffect(() => {
@@ -56,7 +59,8 @@ export default function StockSelectionPage() {
       // In real implementation, you'd need to get workcenter_id from the step data
       fetchWorkcenterStock(stepId);
     }
-  }, [stepId, fetchWorkcenterStock]);
+    setCurrentStep(3); // Set current step to 3 (Material selection)
+  }, [stepId, fetchWorkcenterStock, setCurrentStep]);
 
   const handleQuantityChange = (
     itemId: string,
@@ -189,6 +193,9 @@ export default function StockSelectionPage() {
           </div>
         </div>
       </div>
+
+      {/* Progress Indicator */}
+      <StepIndicator currentStep={currentStep} />
 
       {/* Workcenter Info */}
       <div className="bg-white rounded-lg shadow-sm border p-6">

@@ -15,6 +15,7 @@ import { stockService, type InventoryMovement } from "@/services/stock.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import { useMaterialsStore } from "@/store/materials.store";
 import { useLocationsStore } from "@/store/locations.store";
+import { useProductsStore } from "@/store/products.store";
 import { useAuthStore } from "@/store/auth.store";
 
 export default function InventoryMovementLogsPage() {
@@ -29,26 +30,48 @@ export default function InventoryMovementLogsPage() {
     useState<InventoryMovement | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Get materials and locations from stores
+  // Get materials, locations, and products from stores
   const { materials, fetchMaterials } = useMaterialsStore();
   const { locations, fetchLocations } = useLocationsStore();
-  const { user } = useAuthStore();
+  const { products, fetchProducts } = useProductsStore();
+  const { user, selectedOperator } = useAuthStore();
 
-  // Check if user is operator
+  // Check user roles
   const isOperator = user?.role === "WORKER" || user?.is_operator;
+  const isSuperAdmin = user?.is_superuser || false;
 
   useEffect(() => {
     fetchInventoryMovements();
     fetchMaterials();
     fetchLocations();
-  }, []);
+    fetchProducts();
+  }, [selectedOperator]); // Refetch when selectedOperator changes
 
   const fetchInventoryMovements = async () => {
     try {
       setLoading(true);
       setError(null);
       console.log("Starting to fetch inventory movements...");
-      const response = await stockService.getInventoryMovements();
+
+      // Determine which user ID to filter by based on role
+      let userIdToFilter: string | undefined;
+
+      if (isSuperAdmin) {
+        // Superadmin can see all movements, no filtering
+        userIdToFilter = undefined;
+      } else if (isOperator && selectedOperator) {
+        // Operator sees only movements for the selected operator
+        userIdToFilter = selectedOperator.id;
+      } else if (user) {
+        // Regular user sees only their own movements
+        userIdToFilter = user.id;
+      }
+
+      console.log("Filtering by user ID:", userIdToFilter);
+
+      const response = await stockService.getInventoryMovements({
+        userId: userIdToFilter
+      });
       console.log("Received response:", response);
       setMovements(response.results);
       console.log("Set movements:", response.results);
@@ -104,6 +127,12 @@ export default function InventoryMovementLogsPage() {
     return material ? material.name : materialId;
   };
 
+  const getProductName = (productId: string | null) => {
+    if (!productId) return "Unknown";
+    const product = products.find((p) => p.id === productId);
+    return product ? product.name : productId;
+  };
+
   const getLocationName = (locationId: string) => {
     const location = locations.find((l) => l.id === locationId);
     return location ? location.name : locationId;
@@ -111,12 +140,13 @@ export default function InventoryMovementLogsPage() {
 
   const filteredMovements = movements.filter((movement) => {
     const materialName = getMaterialName(movement.material);
+    const productName = getProductName(movement.product);
     const fromLocationName = getLocationName(movement.from_location);
     const toLocationName = getLocationName(movement.to_location);
 
     const matchesSearch =
       materialName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      movement.product?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       movement.quantity.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fromLocationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       toLocationName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -315,7 +345,7 @@ export default function InventoryMovementLogsPage() {
                       <div className="max-w-[120px] lg:max-w-[200px] truncate">
                         {movement.material
                           ? getMaterialName(movement.material)
-                          : movement.product || "Unknown"}
+                          : getProductName(movement.product)}
                       </div>
                       <div className="lg:hidden mt-1">
                         <span

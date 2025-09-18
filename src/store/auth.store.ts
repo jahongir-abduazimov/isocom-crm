@@ -35,10 +35,15 @@ interface AuthState {
   token: string | null;
   loading: boolean;
   error: string | null;
+  // Global operator state
+  selectedOperator: User | null;
+  showOperatorModal: boolean;
   login: (username: string, password: string) => Promise<void>;
   fetchCurrentUser: () => Promise<void>;
   logout: () => void;
   clearToken: () => void;
+  setSelectedOperator: (operator: User | null) => void;
+  setShowOperatorModal: (show: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -48,6 +53,9 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       loading: false,
       error: null,
+      // Global operator state
+      selectedOperator: null,
+      showOperatorModal: false,
 
       // Login funksiyasi
       login: async (username, password) => {
@@ -131,6 +139,15 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth-storage");
         }
+      },
+
+      // Global operator funksiyalari
+      setSelectedOperator: (operator) => {
+        set({ selectedOperator: operator });
+      },
+
+      setShowOperatorModal: (show) => {
+        set({ showOperatorModal: show });
       },
     }),
     {
