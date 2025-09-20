@@ -18,10 +18,10 @@ export interface Bunker {
 export interface BunkerStatus {
     bunker_name: string;
     work_center: string;
-    current_level_kg: number;
-    capacity_kg: number;
-    available_capacity_kg: number;
-    fill_percentage: number;
+    current_level_kg: number | string;
+    capacity_kg: number | string;
+    available_capacity_kg: number | string;
+    fill_percentage: number | string;
     is_full: boolean;
     recent_fills: {
         material_name: string;
@@ -75,6 +75,38 @@ export interface EndShiftResponse {
     ended_at: string;
     consumption_kg: number;
     bunker_status: BunkerStatus;
+}
+
+export interface FillBunkerEndShiftRequest {
+    materials: {
+        material_id: string;
+        weighed_quantity_kg: number;
+    }[];
+    operator_id: string;
+    step_execution_id: string;
+    notes?: string;
+}
+
+export interface FillBunkerEndShiftResponse {
+    message: string;
+    bunker_capacity: number;
+    total_added_during_shift: number;
+    remaining_material: number;
+    pvd_amount: number;
+    vt_amount: number;
+    operator_name: string;
+    filled_at: string;
+    fill_log_id: string;
+    notes?: string;
+    material_deduction: {
+        step_execution_id: string;
+        order_id: string;
+        pvd_deducted: number;
+        vt_deducted: number;
+        total_deducted: number;
+        pvd_used_material_id: string;
+        vt_used_material_id: string;
+    };
 }
 
 class BunkerService {
@@ -252,6 +284,61 @@ class BunkerService {
             throw error;
         }
     }
+
+    async fillBunkerEndShift(bunkerId: string, request: FillBunkerEndShiftRequest): Promise<FillBunkerEndShiftResponse> {
+        try {
+            const response = await fetch(
+                `${API_CONFIG.BASE_URL}/extruder/bunkers/${bunkerId}/bulk_fill_bunker_end_shift/`,
+                {
+                    method: 'POST',
+                    headers: this.getAuthHeaders(),
+                    body: JSON.stringify(request)
+                }
+            );
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Error filling bunker at end of shift:', error);
+            throw error;
+        }
+    }
+
+    async fetchStepExecutions(workCenterId: string): Promise<any[]> {
+        try {
+            const response = await fetch(
+                `${API_CONFIG.BASE_URL}/step-executions/?work_center=${workCenterId}&status=IN_PROGRESS&expand=order`,
+                {
+                    headers: this.getAuthHeaders()
+                }
+            );
+
+            this.handleResponse(response);
+            const data = await response.json();
+            return data.results || [];
+        } catch (error) {
+            console.error('Error fetching step executions:', error);
+            throw error;
+        }
+    }
+
+    async fetchWorkcenterStock(workcenterId: string): Promise<any> {
+        try {
+            const response = await fetch(
+                `${API_CONFIG.BASE_URL}/worker/used-materials/workcenter_stock/?workcenter_id=${workcenterId}`,
+                {
+                    headers: this.getAuthHeaders()
+                }
+            );
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching workcenter stock:', error);
+            throw error;
+        }
+    }
+
 }
 
 export const bunkerService = new BunkerService();

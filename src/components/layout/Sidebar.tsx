@@ -12,6 +12,7 @@ import {
   Package,
   Users,
   Wrench,
+  Shield,
 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { useAuthStore } from "@/store/auth.store";
@@ -71,6 +72,16 @@ const navItems = [
       { path: "/stock/stock-levels", label: "Stock levels" },
     ],
   },
+  {
+    label: "Scrap",
+    icon: <Shield size={20} />,
+    isCollapsible: true,
+    menuKey: "scrap",
+    children: [
+      { path: "/scrap/reprocessing", label: "Brak qayta ishlashlar" },
+      { path: "/scrap/defects", label: "Braklar" },
+    ],
+  },
 ];
 
 export default function Sidebar() {
@@ -80,6 +91,7 @@ export default function Sidebar() {
     warehouse: false,
     production: false,
     stock: false,
+    scrap: false,
   });
 
   const toggleMenu = (menuKey: string) => {

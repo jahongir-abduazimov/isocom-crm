@@ -60,13 +60,18 @@ import WorkerOrderListPage from "@/pages/worker/OrderList";
 import WorkerOrderDetailPage from "@/pages/worker/OrderDetail";
 import WorkerStockSelectionPage from "@/pages/worker/StockSelection";
 import WorkerConfirmationPage from "@/pages/worker/Confirmation";
+import WorkerProductionOutputsPage from "@/pages/worker/ProductionOutputs";
+import WorkerAddProductionOutputPage from "@/pages/worker/AddProductionOutput";
+import WorkerEditProductionOutputPage from "@/pages/worker/EditProductionOutput";
 
 // Worker Bunker pages
 import BunkersDashboardPage from "@/pages/worker/bunkers";
 import BunkerListPage from "@/pages/worker/bunkers/BunkerList";
-import FillBunkerPage from "@/pages/worker/bunkers/FillBunker";
-import ShiftManagementPage from "@/pages/worker/bunkers/ShiftManagement";
-import BunkerStatusPage from "@/pages/worker/bunkers/BunkerStatus";
+import EndShiftBunkerPage from "@/pages/worker/bunkers/EndShiftBunker";
+
+// Scrap pages
+import DefectsPage from "@/pages/scrap/Defects";
+import ReprocessingPage from "@/pages/scrap/Reprocessing";
 
 // import QCPage from "@/pages/qc/QCPage";
 // import PackagingPage from "@/pages/packaging/PackagingPage";
@@ -94,9 +99,12 @@ export default function App() {
           {/* Worker Bunker Routes */}
           <Route path="/worker/bunkers" element={<BunkersDashboardPage />} />
           <Route path="/worker/bunkers/list" element={<BunkerListPage />} />
-          <Route path="/worker/bunkers/:bunkerId/fill" element={<FillBunkerPage />} />
-          <Route path="/worker/bunkers/:bunkerId/shift" element={<ShiftManagementPage />} />
-          <Route path="/worker/bunkers/:bunkerId/status" element={<BunkerStatusPage />} />
+          <Route path="/worker/bunkers/:bunkerId/end-shift" element={<EndShiftBunkerPage />} />
+
+          {/* Worker Production Output Routes */}
+          <Route path="/worker/production-outputs" element={<WorkerProductionOutputsPage />} />
+          <Route path="/worker/production-outputs/add" element={<WorkerAddProductionOutputPage />} />
+          <Route path="/worker/production-outputs/:id/edit" element={<WorkerEditProductionOutputPage />} />
 
           {/* Stock Routes - Operators can access these */}
           <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />
@@ -151,6 +159,10 @@ export default function App() {
           <Route path="/users" element={<OperatorProtectedRoute><UsersPage /></OperatorProtectedRoute>} />
           <Route path="/users/add" element={<OperatorProtectedRoute><AddUserPage /></OperatorProtectedRoute>} />
           <Route path="/users/:id/edit" element={<OperatorProtectedRoute><EditUserPage /></OperatorProtectedRoute>} />
+
+          {/* Scrap Routes */}
+          <Route path="/scrap/defects" element={<OperatorProtectedRoute><DefectsPage /></OperatorProtectedRoute>} />
+          <Route path="/scrap/reprocessing" element={<OperatorProtectedRoute><ReprocessingPage /></OperatorProtectedRoute>} />
 
           <Route path="/qc" element={<OperatorProtectedRoute><div>qc</div></OperatorProtectedRoute>} />
           <Route path="/packaging" element={<OperatorProtectedRoute><div>packaging</div></OperatorProtectedRoute>} />

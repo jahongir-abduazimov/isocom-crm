@@ -73,13 +73,13 @@ export const API_CONFIG = {
     WORKER_PRODUCTS: "/worker/used-materials/products/",
 
     // Bunker API endpoints
-    BUNKERS: "/extruder-bunkers/",
-    BUNKER_BY_ID: (id: string) => `/extruder-bunkers/${id}/`,
-    BUNKER_STATUS: (id: string) => `/extruder-bunkers/${id}/bunker_status/`,
-    BUNKER_FILL: (id: string) => `/extruder-bunkers/${id}/fill_bunker/`,
-    BUNKER_SHIFT_STATUS: (id: string) => `/extruder-bunkers/${id}/shift_status/`,
-    BUNKER_START_SHIFT: (id: string) => `/extruder-bunkers/${id}/start_shift/`,
-    BUNKER_END_SHIFT: (id: string) => `/extruder-bunkers/${id}/end_shift/`,
+    BUNKERS: "/extruder/bunkers/",
+    BUNKER_BY_ID: (id: string) => `/extruder/bunkers/${id}/`,
+    BUNKER_STATUS: (id: string) => `/extruder/bunkers/${id}`,
+    BUNKER_FILL: (id: string) => `/extruder/bunkers/${id}/fill_bunker/`,
+    BUNKER_SHIFT_STATUS: (id: string) => `/extruder/bunkers/${id}/shift_status/`,
+    BUNKER_START_SHIFT: (id: string) => `/extruder/bunkers/${id}/start_shift/`,
+    BUNKER_END_SHIFT: (id: string) => `/extruder/bunkers/${id}/end_shift/`,
   },
   TIMEOUT: 10000, // 10 seconds
   RETRY_ATTEMPTS: 3,

@@ -27,18 +27,6 @@ const BunkerList: React.FC = () => {
     }
   };
 
-  const getFillPercentage = (current: string, capacity: string) => {
-    const currentNum = parseFloat(current);
-    const capacityNum = parseFloat(capacity);
-    return capacityNum > 0 ? (currentNum / capacityNum) * 100 : 0;
-  };
-
-  const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return "bg-red-500";
-    if (percentage >= 70) return "bg-yellow-500";
-    return "bg-green-500";
-  };
-
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -77,11 +65,6 @@ const BunkerList: React.FC = () => {
       {/* Bunkers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {bunkers.map((bunker) => {
-          const fillPercentage = getFillPercentage(
-            bunker.current_level_kg,
-            bunker.capacity_kg
-          );
-
           return (
             <div
               key={bunker.id}
@@ -102,15 +85,6 @@ const BunkerList: React.FC = () => {
                     </p>
                   </div>
                 </div>
-                <div
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    bunker.is_filled
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {bunker.is_filled ? "To'ldirilgan" : "Bo'sh"}
-                </div>
               </div>
 
               {/* Capacity Info */}
@@ -120,31 +94,7 @@ const BunkerList: React.FC = () => {
                     Hajm
                   </span>
                   <span className="text-sm text-gray-600">
-                    {parseFloat(bunker.current_level_kg).toFixed(1)}/
                     {bunker.capacity_kg}kg
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-300 ${getProgressColor(
-                      fillPercentage
-                    )}`}
-                    style={{ width: `${Math.min(fillPercentage, 100)}%` }}
-                  ></div>
-                </div>
-
-                <div className="flex justify-between items-center mt-1">
-                  <span className="text-xs text-gray-500">
-                    {fillPercentage.toFixed(1)}% to'ldirilgan
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {(
-                      parseFloat(bunker.capacity_kg) -
-                      parseFloat(bunker.current_level_kg)
-                    ).toFixed(1)}
-                    kg bo'sh
                   </span>
                 </div>
               </div>
@@ -172,24 +122,15 @@ const BunkerList: React.FC = () => {
               )}
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 <Button
                   size="sm"
-                  className="flex-1"
+                  className="w-full bg-orange-600 hover:bg-orange-700"
                   onClick={() =>
-                    (window.location.href = `/worker/bunkers/${bunker.id}/fill`)
+                    (window.location.href = `/worker/bunkers/${bunker.id}/end-shift`)
                   }
                 >
-                  To'ldirish
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    (window.location.href = `/worker/bunkers/${bunker.id}/status`)
-                  }
-                >
-                  Holat
+                  Smena Oxiri To'ldirish
                 </Button>
               </div>
             </div>

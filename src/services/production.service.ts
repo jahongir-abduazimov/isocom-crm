@@ -42,7 +42,12 @@ export interface ProductionOutput {
   quantity: string;
   weight: string;
   quality_status: string;
+  operator?: string | null;
+  operator_name?: string;
   notes: string;
+  order_id?: string | null;
+  order_description?: string;
+  order_product_name?: string;
 }
 
 export interface ProductionOutputsApiResponse {
@@ -370,6 +375,12 @@ export class ProductionService {
   // Materials API
   static async getMaterials(): Promise<any> {
     const response = await request.get(API_CONFIG.ENDPOINTS.MATERIALS);
+    return response.data;
+  }
+
+  // Products API
+  static async getProducts(): Promise<any> {
+    const response = await request.get(API_CONFIG.ENDPOINTS.PRODUCTS);
     return response.data;
   }
 }
