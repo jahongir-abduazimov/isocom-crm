@@ -5,8 +5,10 @@ import {
   CheckCircle,
   BarChart3,
   Menu,
-  X,
   Home,
+  Plus,
+  FileText,
+  Warehouse,
 } from "lucide-react";
 import { Button } from "./button";
 
@@ -40,10 +42,22 @@ export default function QuickAccessMenu({
       color: "bg-purple-600 hover:bg-purple-700",
     },
     {
+      icon: <Warehouse className="h-6 w-6" />,
+      label: "Braklar",
+      path: "/worker/reprocessing",
+      color: "bg-orange-600 hover:bg-orange-700",
+    },
+    {
       icon: <BarChart3 className="h-6 w-6" />,
       label: "Baklar ro'yxati",
       path: "/worker/bunkers/list",
       color: "bg-orange-600 hover:bg-orange-700",
+    },
+    {
+      icon: <FileText className="h-6 w-6" />,
+      label: "Inventar logi",
+      path: "/stock/inventory-movement-logs",
+      color: "bg-green-600 hover:bg-green-700",
     },
   ];
 
@@ -56,11 +70,10 @@ export default function QuickAccessMenu({
     <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
       {/* Menu Items */}
       <div
-        className={`absolute bottom-24 right-0 space-y-2 transition-all duration-300 ${
-          isOpen
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none"
-        }`}
+        className={`absolute bottom-14 right-0 space-y-2 transition-all duration-300 ${isOpen
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
       >
         {menuItems.map((item, index) => (
           <div
@@ -93,16 +106,15 @@ export default function QuickAccessMenu({
       <Button
         onClick={() => setIsOpen(!isOpen)}
         size="lg"
-        className={`w-12 h-12 rounded-full shadow-lg transition-all duration-300 ${
-          isOpen
-            ? "bg-red-600 hover:bg-red-700 rotate-45"
-            : "bg-blue-600 hover:bg-blue-700 rotate-0"
-        }`}
+        className={`w-12 h-12 rounded-full shadow-lg transition-all duration-300 ${isOpen
+          ? "bg-red-600 hover:bg-red-700 rotate-45"
+          : "bg-blue-600 hover:bg-blue-700 rotate-0"
+          }`}
       >
         {isOpen ? (
-          <X className="h-5 w-5 text-white" />
+          <Plus className="text-white" />
         ) : (
-          <Menu className="h-5 w-5 text-white" />
+          <Menu className="text-white" />
         )}
       </Button>
 

@@ -69,6 +69,9 @@ import BunkersDashboardPage from "@/pages/worker/bunkers";
 import BunkerListPage from "@/pages/worker/bunkers/BunkerList";
 import EndShiftBunkerPage from "@/pages/worker/bunkers/EndShiftBunker";
 
+// Worker Reprocessing page
+import WorkerReprocessingPage from "@/pages/worker/Reprocessing";
+
 // Scrap pages
 import DefectsPage from "@/pages/scrap/Defects";
 import ReprocessingPage from "@/pages/scrap/Reprocessing";
@@ -105,6 +108,9 @@ export default function App() {
           <Route path="/worker/production-outputs" element={<WorkerProductionOutputsPage />} />
           <Route path="/worker/production-outputs/add" element={<WorkerAddProductionOutputPage />} />
           <Route path="/worker/production-outputs/:id/edit" element={<WorkerEditProductionOutputPage />} />
+
+          {/* Worker Reprocessing Routes */}
+          <Route path="/worker/reprocessing" element={<WorkerReprocessingPage />} />
 
           {/* Stock Routes - Operators can access these */}
           <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />
@@ -161,12 +167,8 @@ export default function App() {
           <Route path="/users/:id/edit" element={<OperatorProtectedRoute><EditUserPage /></OperatorProtectedRoute>} />
 
           {/* Scrap Routes */}
-          <Route path="/scrap/defects" element={<OperatorProtectedRoute><DefectsPage /></OperatorProtectedRoute>} />
-          <Route path="/scrap/reprocessing" element={<OperatorProtectedRoute><ReprocessingPage /></OperatorProtectedRoute>} />
-
-          <Route path="/qc" element={<OperatorProtectedRoute><div>qc</div></OperatorProtectedRoute>} />
-          <Route path="/packaging" element={<OperatorProtectedRoute><div>packaging</div></OperatorProtectedRoute>} />
-          <Route path="/reports" element={<OperatorProtectedRoute><div>reports</div></OperatorProtectedRoute>} />
+          <Route path="/scrap/defects" element={<DefectsPage />} />
+          <Route path="/scrap/reprocessing" element={<ReprocessingPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

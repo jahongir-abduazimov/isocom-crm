@@ -25,6 +25,8 @@ import {
 import { STATUS_MAPPINGS } from "@/config/api.config";
 import { useAuthStore } from "@/store/auth.store";
 
+// Updated interface with new fields: operators, operators_names, work_center_name
+
 export default function WorkerAddProductionOutputPage() {
   const navigate = useNavigate();
   const { selectedOperator } = useAuthStore();
@@ -48,6 +50,12 @@ export default function WorkerAddProductionOutputPage() {
   >([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [orderNames, setOrderNames] = useState<Record<string, string>>({});
+
+  // Selected step execution and order details
+  const [selectedStepExecution, setSelectedStepExecution] = useState<ProductionStepExecution | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [loadingOrder, setLoadingOrder] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -62,6 +70,25 @@ export default function WorkerAddProductionOutputPage() {
 
         setStepExecutions(stepExecutionsResponse.results);
         setProducts(productsResponse.results || []);
+
+        // Fetch order names for all unique orders
+        const uniqueOrderIds = [...new Set(stepExecutionsResponse.results.map(step => step.order))];
+        const orderNamesMap: Record<string, string> = {};
+
+        // Fetch order details for each unique order
+        await Promise.all(
+          uniqueOrderIds.map(async (orderId) => {
+            try {
+              const order = await ProductionService.getOrderById(orderId);
+              orderNamesMap[orderId] = order.description || order.id.substring(0, 8) + "...";
+            } catch (err) {
+              console.error(`Error fetching order ${orderId}:`, err);
+              orderNamesMap[orderId] = orderId.substring(0, 8) + "...";
+            }
+          })
+        );
+
+        setOrderNames(orderNamesMap);
       } catch (err) {
         console.error("Error fetching initial data:", err);
         setError("Ma'lumotlarni yuklashda xato");
@@ -73,11 +100,38 @@ export default function WorkerAddProductionOutputPage() {
     fetchInitialData();
   }, []);
 
+  // Function to fetch order details
+  const fetchOrderDetails = async (orderId: string) => {
+    try {
+      setLoadingOrder(true);
+      const order = await ProductionService.getOrderById(orderId);
+      setSelectedOrder(order);
+    } catch (err) {
+      console.error("Error fetching order details:", err);
+      setSelectedOrder(null);
+    } finally {
+      setLoadingOrder(false);
+    }
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
+
+    // When step execution is selected, find and store the full details
+    if (field === "step_execution") {
+      const stepExecution = stepExecutions.find(step => step.id === value);
+      setSelectedStepExecution(stepExecution || null);
+
+      // Fetch order details if step execution is found
+      if (stepExecution) {
+        fetchOrderDetails(stepExecution.order);
+      } else {
+        setSelectedOrder(null);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -151,27 +205,25 @@ export default function WorkerAddProductionOutputPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/worker/production-outputs")}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft size={16} />
-            Orqaga
-          </Button>
-          <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-              Yangi ishlab chiqarish natijasi
-            </h1>
-            <p className="text-gray-600 mt-1 text-sm lg:text-base">
-              Ishlab chiqarish natijasini qo'shish
-            </p>
-          </div>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/worker/production-outputs")}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={18} />
+          <span className="hidden sm:inline">Orqaga</span>
+        </Button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+            Yangi ishlab chiqarish natijasi
+          </h1>
+          <p className="text-gray-600 text-sm">
+            Ishlab chiqarish natijasini qo'shish
+          </p>
         </div>
       </div>
 
@@ -194,12 +246,12 @@ export default function WorkerAddProductionOutputPage() {
       )} */}
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Step Execution */}
             <div className="space-y-2">
-              <Label htmlFor="step_execution">
+              <Label htmlFor="step_execution" className="text-sm font-medium">
                 Ishlab chiqarish qadami <span className="text-red-500">*</span>
               </Label>
               <Select
@@ -208,13 +260,18 @@ export default function WorkerAddProductionOutputPage() {
                   handleInputChange("step_execution", value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className=" text-base">
                   <SelectValue placeholder="Qadamni tanlang" />
                 </SelectTrigger>
                 <SelectContent>
                   {stepExecutions.map((step) => (
                     <SelectItem key={step.id} value={step.id}>
-                      {step.production_step_name} - {step.status}
+                      <div className="flex flex-col">
+                        <span className="font-medium">{step.production_step_name}</span>
+                        <span className="text-xs text-gray-500">
+                          Buyurtma: {orderNames[step.order] || step.order.substring(0, 8) + "..."}
+                        </span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -223,14 +280,14 @@ export default function WorkerAddProductionOutputPage() {
 
             {/* Product */}
             <div className="space-y-2">
-              <Label htmlFor="product">
+              <Label htmlFor="product" className="text-sm font-medium">
                 Mahsulot <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={formData.product}
                 onValueChange={(value) => handleInputChange("product", value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className=" text-base">
                   <SelectValue placeholder="Mahsulotni tanlang" />
                 </SelectTrigger>
                 <SelectContent>
@@ -245,7 +302,7 @@ export default function WorkerAddProductionOutputPage() {
 
             {/* Quantity */}
             <div className="space-y-2">
-              <Label htmlFor="quantity">
+              <Label htmlFor="quantity" className="text-sm font-medium">
                 Miqdor <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -255,13 +312,14 @@ export default function WorkerAddProductionOutputPage() {
                 placeholder="Miqdor"
                 value={formData.quantity}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
+                className=" text-base"
                 required
               />
             </div>
 
             {/* Unit of Measure */}
             <div className="space-y-2">
-              <Label htmlFor="unit_of_measure">
+              <Label htmlFor="unit_of_measure" className="text-sm font-medium">
                 O'lchov birligi <span className="text-red-500">*</span>
               </Label>
               <Select
@@ -270,7 +328,7 @@ export default function WorkerAddProductionOutputPage() {
                   handleInputChange("unit_of_measure", value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className=" text-base">
                   <SelectValue placeholder="O'lchov birligini tanlang" />
                 </SelectTrigger>
                 <SelectContent>
@@ -287,7 +345,7 @@ export default function WorkerAddProductionOutputPage() {
 
             {/* Weight */}
             <div className="space-y-2">
-              <Label htmlFor="weight">Og'irlik (kg)</Label>
+              <Label htmlFor="weight" className="text-sm font-medium">Og'irlik (kg)</Label>
               <Input
                 id="weight"
                 type="number"
@@ -295,27 +353,112 @@ export default function WorkerAddProductionOutputPage() {
                 placeholder="Og'irlik"
                 value={formData.weight}
                 onChange={(e) => handleInputChange("weight", e.target.value)}
+                className=" text-base"
               />
             </div>
           </div>
 
+          {/* Order Information Display */}
+          {selectedStepExecution && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-blue-900 mb-3">
+                Tanlangan qadam va buyurtma ma'lumotlari
+              </h3>
+
+              {/* Order Information */}
+              {loadingOrder ? (
+                <div className="mb-3 p-3 bg-blue-100 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                    <span className="text-sm text-blue-700">Buyurtma ma'lumotlari yuklanmoqda...</span>
+                  </div>
+                </div>
+              ) : selectedOrder ? (
+                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <h4 className="text-sm font-semibold text-green-900 mb-2">Buyurtma ma'lumotlari</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-xs font-medium text-green-800 mb-1">Buyurtma nomi:</div>
+                      <div className="text-sm text-green-700">
+                        {selectedOrder.description || "Belgilanmagan"}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-green-800 mb-1">Buyurtma ID:</div>
+                      <div className="text-sm text-green-700 font-mono">
+                        {selectedOrder.id.substring(0, 8)}...
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-green-800 mb-1">Mahsulot:</div>
+                      <div className="text-sm text-green-700">
+                        {selectedOrder.produced_product_name || "Belgilanmagan"}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-green-800 mb-1">Miqdor:</div>
+                      <div className="text-sm text-green-700">
+                        {selectedOrder.produced_quantity} {selectedOrder.unit_of_measure}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-green-800 mb-1">Holat:</div>
+                      <div className="text-sm text-green-700">
+                        {STATUS_MAPPINGS.ORDER_STATUS[selectedOrder.status as keyof typeof STATUS_MAPPINGS.ORDER_STATUS] || selectedOrder.status}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Step Execution Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">Qadam nomi:</div>
+                  <div className="text-sm text-blue-700">{selectedStepExecution.production_step_name}</div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">Holat:</div>
+                  <div className="text-sm text-blue-700">
+                    {STATUS_MAPPINGS.STEP_STATUS[selectedStepExecution.status] || selectedStepExecution.status}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">Buyurtma:</div>
+                  <div className="text-sm text-blue-700">
+                    {selectedOrder ? selectedOrder.description || "Belgilanmagan" : "Yuklanmoqda..."}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">Tayinlangan operator:</div>
+                  <div className="text-sm text-blue-700">
+                    {selectedStepExecution.operators_names && selectedStepExecution.operators_names.length > 0 && selectedStepExecution.operators_names[0].trim()
+                      ? selectedStepExecution.operators_names[0]
+                      : "Tayinlanmagan"}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Izohlar</Label>
+            <Label htmlFor="notes" className="text-sm font-medium">Izohlar</Label>
             <Textarea
               id="notes"
               placeholder="Qo'shimcha ma'lumotlar..."
               value={formData.notes}
               onChange={(e) => handleInputChange("notes", e.target.value)}
-              rows={3}
+              rows={2}
+              className="text-base "
             />
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="text-sm font-medium text-red-900 mb-1">
                     Xato
@@ -327,15 +470,16 @@ export default function WorkerAddProductionOutputPage() {
           )}
 
           {/* Submit Button */}
-          <div className="flex justify-end gap-4">
+          <div className="flex flex-col sm:flex-row justify-end gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => navigate("/worker/production-outputs")}
+              className=" text-base"
             >
               Bekor qilish
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className=" text-base">
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -353,9 +497,9 @@ export default function WorkerAddProductionOutputPage() {
       </div>
 
       {/* Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <div className="flex items-start gap-2">
+          <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
           <div>
             <h4 className="text-sm font-medium text-blue-900 mb-1">Ma'lumot</h4>
             <p className="text-sm text-blue-700">

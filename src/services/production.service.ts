@@ -66,7 +66,11 @@ export interface ProductionStepExecution {
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED" | "FAILED";
   assigned_operator: string | null;
   assigned_operator_name: string | null;
+  operators: string[];
+  operators_count: number;
+  operators_names: string[];
   work_center: string | null;
+  work_center_name: string | null;
   start_time: string | null;
   end_time: string | null;
   actual_duration_hours: string | null;

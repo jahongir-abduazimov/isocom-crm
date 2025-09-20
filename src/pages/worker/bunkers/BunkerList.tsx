@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Loader2, AlertCircle, Package } from "lucide-react";
+import { Loader2, AlertCircle, Package, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { bunkerService, type Bunker } from "@/services/bunker.service";
+import { useNavigate } from "react-router-dom";
 
 const BunkerList: React.FC = () => {
   const [bunkers, setBunkers] = useState<Bunker[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBunkers();
@@ -51,11 +53,22 @@ const BunkerList: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/worker")}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft size={16} />
+          Orqaga
+        </Button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Ekstruder Baklar</h1>
           <p className="text-gray-600 mt-2">
             Barcha ekstruder baklarining holati va ma'lumotlari
           </p>
+        </div>
         </div>
         <Button onClick={fetchBunkers} variant="outline">
           Yangilash

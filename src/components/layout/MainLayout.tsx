@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import OperatorTopNav from "@/components/layout/OperatorTopNav";
 import OperatorSelectionModal from "@/components/ui/operator-selection-modal";
 import { useAuthStore } from "@/store/auth.store";
+import QuickAccessMenu from "../ui/quick-access-menu";
 
 export default function MainLayout() {
   const {
@@ -28,7 +29,7 @@ export default function MainLayout() {
     // Operator uchun layout - sidebar yo'q, faqat top navigation
     return (
       <>
-        <div className="max-h-screen w-full bg-gradient-to-br from-gray-200 via-blue-50 to-gray-300">
+        <div className="max-h-screen w-full bg-gradient-to-b from-gray-200 via-blue-50 to-gray-100">
           {/* Operator Top Navigation */}
           <OperatorTopNav />
 
@@ -37,6 +38,7 @@ export default function MainLayout() {
             <Outlet />
           </main>
         </div>
+        <QuickAccessMenu />
 
         {/* Operator Selection Modal */}
         <OperatorSelectionModal

@@ -47,30 +47,28 @@ export default function WorkerDashboardPage() {
     <div className="space-y-6 p-4">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-10">
           Operator paneli
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Material ishlatish jarayonini boshqarish uchun operator paneliga xush
-          kelibsiz
-        </p>
       </div>
 
       {/* Main Action Cards - Compact 3 in a row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Material Usage Card */}
         <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all duration-300">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Package className="h-6 w-6 text-blue-600" />
+          <div className="flex flex-col items-center justify-between h-full">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Package className="h-6 w-6 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">
+                Material ishlatish
+              </h2>
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                Ishlab chiqarish buyurtmalari uchun material va mahsulot
+                ishlatish jarayonini boshqaring
+              </p>
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">
-              Material ishlatish
-            </h2>
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Ishlab chiqarish buyurtmalari uchun material va mahsulot ishlatish
-              jarayonini boshqaring
-            </p>
             <Button
               onClick={handleStartWorkflow}
               size="sm"
@@ -85,16 +83,19 @@ export default function WorkerDashboardPage() {
 
         {/* Production Outputs Card */}
         <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all duration-300">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <CheckCircle className="h-6 w-6 text-purple-600" />
+          <div className="flex flex-col items-center justify-between h-full">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="h-6 w-6 text-purple-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">
+                Ishlab chiqarish natijalari
+              </h2>
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                Ishlab chiqarish natijalarini ko'rish va yangi natijalar
+                qo'shish
+              </p>
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">
-              Ishlab chiqarish natijalari
-            </h2>
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Ishlab chiqarish natijalarini ko'rish va yangi natijalar qo'shish
-            </p>
             <Button
               onClick={() => navigate("/worker/production-outputs")}
               size="sm"
@@ -109,16 +110,19 @@ export default function WorkerDashboardPage() {
 
         {/* Bunker Management Card */}
         <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all duration-300">
-          <div className="text-center">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Package className="h-6 w-6 text-green-600" />
+          <div className="flex flex-col items-center justify-between h-full">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Package className="h-6 w-6 text-green-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">
+                Ekstruder Baklar
+              </h2>
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                Ekstruder baklarini boshqarish, to'ldirish va smena
+                jarayonlarini kuzatish
+              </p>
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-2">
-              Ekstruder Baklar
-            </h2>
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              Ekstruder baklarini boshqarish, to'ldirish va smena jarayonlarini kuzatish
-            </p>
             <Button
               onClick={() => navigate("/worker/bunkers/list")}
               size="sm"

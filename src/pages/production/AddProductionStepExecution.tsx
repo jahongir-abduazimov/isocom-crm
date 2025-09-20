@@ -163,7 +163,15 @@ export default function AddProductionStepExecutionPage() {
         production_step: formData.production_step,
         status: formData.status as any,
         assigned_operator: formData.assigned_operator || null,
+        operators: formData.assigned_operator ? [formData.assigned_operator] : [],
+        operators_count: formData.assigned_operator ? 1 : 0,
+        operators_names: formData.assigned_operator ?
+          [operators.find(op => op.id === formData.assigned_operator)?.full_name?.trim() ||
+            `${operators.find(op => op.id === formData.assigned_operator)?.first_name} ${operators.find(op => op.id === formData.assigned_operator)?.last_name}`.trim() ||
+            operators.find(op => op.id === formData.assigned_operator)?.username || ''] : [],
         work_center: formData.work_center || null,
+        work_center_name: formData.work_center ?
+          workCenters.find(wc => wc.id === formData.work_center)?.name || null : null,
         start_time: formData.start_time || null,
         end_time: formData.end_time || null,
         actual_duration_hours: formData.actual_duration_hours || null,

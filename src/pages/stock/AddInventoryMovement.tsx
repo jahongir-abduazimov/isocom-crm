@@ -284,6 +284,13 @@ export default function AddInventoryMovementPage() {
         product: value,
         material: "", // Clear material when product is selected
       }));
+    } else if (field === "from_location") {
+      setFormData((prev) => ({
+        ...prev,
+        from_location: value,
+        // Clear to_location if it's the same as the new from_location
+        to_location: prev.to_location === value ? "" : prev.to_location,
+      }));
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -620,11 +627,13 @@ export default function AddInventoryMovementPage() {
                     No locations available
                   </option>
                 ) : (
-                  locations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                      {location.name} ({location.location_type})
-                    </option>
-                  ))
+                  locations
+                    .filter((location) => location.id !== formData.from_location)
+                    .map((location) => (
+                      <option key={location.id} value={location.id}>
+                        {location.name} ({location.location_type})
+                      </option>
+                    ))
                 )}
               </select>
               {errors.to_location && (

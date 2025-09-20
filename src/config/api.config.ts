@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://172.30.150.162:8001/api",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://192.168.0.108:8001/api",
   ENDPOINTS: {
     // Orders
     ORDERS: "/orders/",

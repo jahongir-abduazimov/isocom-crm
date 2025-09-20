@@ -80,11 +80,11 @@ const EndShiftBunker: React.FC = () => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [bunkerStatus, setBunkerStatus] = useState<
     | (BunkerStatus & {
-        current_level_kg: number;
-        available_capacity_kg: number;
-        capacity_kg: number;
-        fill_percentage: number;
-      })
+      current_level_kg: number;
+      available_capacity_kg: number;
+      capacity_kg: number;
+      fill_percentage: number;
+    })
     | null
   >(null);
   const [submitting, setSubmitting] = useState(false);
@@ -273,8 +273,7 @@ const EndShiftBunker: React.FC = () => {
 
       if (material && quantity > material.quantity) {
         setError(
-          `Mavjud miqdor: ${material.quantity} ${
-            material.material__unit_of_measure || "PIECE"
+          `Mavjud miqdor: ${material.quantity} ${material.material__unit_of_measure || "PIECE"
           }. Kiritilgan miqdor: ${quantity}`
         );
         return;
@@ -326,8 +325,7 @@ const EndShiftBunker: React.FC = () => {
         setInputValues((prev) => ({ ...prev, [materialId]: "" }));
       } else if (material && quantity > material.quantity) {
         setError(
-          `Mavjud miqdor: ${material.quantity} ${
-            material.material__unit_of_measure || "PIECE"
+          `Mavjud miqdor: ${material.quantity} ${material.material__unit_of_measure || "PIECE"
           }. Kiritilgan miqdor: ${quantity}`
         );
       }
@@ -356,9 +354,8 @@ const EndShiftBunker: React.FC = () => {
       const quantity = parseFloat(inputValue) || 0;
       const material = materials.find((m) => m.material__id === materialId);
       if (material && quantity > material.quantity) {
-        return `Mavjud: ${material.quantity} ${
-          material.material__unit_of_measure || "PIECE"
-        }`;
+        return `Mavjud: ${material.quantity} ${material.material__unit_of_measure || "PIECE"
+          }`;
       }
       return null;
     },
@@ -586,11 +583,10 @@ const EndShiftBunker: React.FC = () => {
                                   newQuantity
                                 );
                               }}
-                              className={`flex-1 ${
-                                quantity > material.quantity
+                              className={`flex-1 ${quantity > material.quantity
                                   ? "border-red-500 focus:border-red-500"
                                   : ""
-                              }`}
+                                }`}
                               placeholder="0.0"
                             />
                           </div>
@@ -610,15 +606,14 @@ const EndShiftBunker: React.FC = () => {
                               min="0"
                               max={material.quantity}
                               placeholder="Og'irlik (kg)"
-                              className={`flex-1 ${
-                                inputValues[material.material__id] &&
-                                !isInputValid(
-                                  material.material__id,
-                                  inputValues[material.material__id]
-                                )
+                              className={`flex-1 ${inputValues[material.material__id] &&
+                                  !isInputValid(
+                                    material.material__id,
+                                    inputValues[material.material__id]
+                                  )
                                   ? "border-red-500 focus:border-red-500"
                                   : ""
-                              }`}
+                                }`}
                               value={inputValues[material.material__id] || ""}
                               onChange={(e) =>
                                 handleMaterialInputChange(
