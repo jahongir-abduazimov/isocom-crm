@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button } from "./button";
 
 interface ModalProps {
   open: boolean;
@@ -29,18 +30,18 @@ export default function ConfirmModal({
         <p className="mb-4 text-gray-700">{description}</p>
         {children}
         <div className="flex gap-2 justify-end mt-4">
-          <button
-            className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
+          <Button
+            variant="outline"
             onClick={onCancel}
           >
             {cancelText}
-          </button>
-          <button
-            className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+          </Button>
+          <Button
+            variant="destructive"
             onClick={onConfirm}
           >
             {confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

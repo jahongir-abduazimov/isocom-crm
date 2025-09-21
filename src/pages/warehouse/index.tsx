@@ -69,7 +69,7 @@ export default function WarehousesPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Warehouses
+            Omborxonalar
           </h1>
         </div>
         <Button
@@ -77,7 +77,7 @@ export default function WarehousesPage() {
           onClick={() => navigate("/warehouse/warehouses/add")}
         >
           <Plus size={20} />
-          New Warehouse
+          Yangi omborxona
         </Button>
       </div>
 
@@ -88,7 +88,7 @@ export default function WarehousesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Warehouses
+                  Jami omborxonalar
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {warehouses.length}
@@ -103,7 +103,7 @@ export default function WarehousesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Active Warehouses
+                  Faol omborxonalar
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {warehouses.filter((w) => w.is_active).length}
@@ -118,7 +118,7 @@ export default function WarehousesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Inactive Warehouses
+                  Nofaol omborxonalar
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-600">
                   {warehouses.filter((w) => !w.is_active).length}
@@ -133,7 +133,7 @@ export default function WarehousesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  With Description
+                  Tavsif bilan
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {
@@ -162,7 +162,7 @@ export default function WarehousesPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search warehouses..."
+                  placeholder="Omborxonalarni qidirish..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -172,12 +172,12 @@ export default function WarehousesPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Status" />
+                  <SelectValue placeholder="Barcha holatlar" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="all">Barcha holatlar</SelectItem>
+                  <SelectItem value="active">Faol</SelectItem>
+                  <SelectItem value="inactive">Nofaol</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -193,19 +193,19 @@ export default function WarehousesPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
+                    Nomi
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
+                    Tavsif
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
+                    Yaratilgan
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Holat
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Amallar
                   </th>
                 </tr>
               </thead>
@@ -218,16 +218,16 @@ export default function WarehousesPage() {
                       </div>
                       <div className="lg:hidden mt-1">
                         <span className="text-xs text-gray-500">
-                          {warehouse.is_active ? "Active" : "Inactive"}
+                          {warehouse.is_active ? "Faol" : "Nofaol"}
                         </span>
                       </div>
                     </td>
                     <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div
                         className="truncate"
-                        title={warehouse.description || "No description"}
+                        title={warehouse.description || "Tavsif yo'q"}
                       >
-                        {warehouse.description || "No description"}
+                        {warehouse.description || "Tavsif yo'q"}
                       </div>
                     </td>
                     <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -235,13 +235,12 @@ export default function WarehousesPage() {
                     </td>
                     <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          warehouse.is_active
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${warehouse.is_active
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
-                        }`}
+                          }`}
                       >
-                        {warehouse.is_active ? "Active" : "Inactive"}
+                        {warehouse.is_active ? "Faol" : "Nofaol"}
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -282,7 +281,7 @@ export default function WarehousesPage() {
       {loading && (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-gray-500 text-lg mt-4">Loading warehouses...</p>
+          <p className="text-gray-500 text-lg mt-4">Omborxonalar yuklanmoqda...</p>
         </div>
       )}
 
@@ -290,7 +289,7 @@ export default function WarehousesPage() {
         <div className="text-center py-12">
           <p className="text-red-500 text-lg">Error: {error}</p>
           <Button onClick={fetchWarehouses} className="mt-4" variant="outline">
-            Retry
+            Qayta urinish
           </Button>
         </div>
       )}
@@ -298,7 +297,7 @@ export default function WarehousesPage() {
       {!loading && !error && filteredWarehouses.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No warehouses found matching your criteria.
+            Qidiruv mezonlaringizga mos omborxonalar topilmadi.
           </p>
         </div>
       )}
@@ -306,10 +305,10 @@ export default function WarehousesPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={showDeleteModal}
-        title="Delete Warehouse"
-        description={`Are you sure you want to delete this warehouse? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title="Omborxonani o'chirish"
+        description={`Ushbu omborxonani o'chirishni tasdiqlaysizmi? Bu amalni bekor qilib bo'lmaydi.`}
+        confirmText={deleting ? "O'chirilmoqda..." : "O'chirish"}
+        cancelText="Bekor qilish"
         onConfirm={handleDelete}
         onCancel={() => {
           setShowDeleteModal(false);

@@ -173,7 +173,7 @@ const EndShiftBunker: React.FC = () => {
     }
 
     if (!formData.step_execution_id) {
-      setError("Step execution tanlang!");
+      setError("Qadam bajarishni tanlang!");
       return;
     }
 
@@ -273,7 +273,7 @@ const EndShiftBunker: React.FC = () => {
 
       if (material && quantity > material.quantity) {
         setError(
-          `Mavjud miqdor: ${material.quantity} ${material.material__unit_of_measure || "PIECE"
+          `Mavjud miqdor: ${material.quantity} ${material.material__unit_of_measure || "DONA"
           }. Kiritilgan miqdor: ${quantity}`
         );
         return;
@@ -325,7 +325,7 @@ const EndShiftBunker: React.FC = () => {
         setInputValues((prev) => ({ ...prev, [materialId]: "" }));
       } else if (material && quantity > material.quantity) {
         setError(
-          `Mavjud miqdor: ${material.quantity} ${material.material__unit_of_measure || "PIECE"
+          `Mavjud miqdor: ${material.quantity} ${material.material__unit_of_measure || "DONA"
           }. Kiritilgan miqdor: ${quantity}`
         );
       }
@@ -354,7 +354,7 @@ const EndShiftBunker: React.FC = () => {
       const quantity = parseFloat(inputValue) || 0;
       const material = materials.find((m) => m.material__id === materialId);
       if (material && quantity > material.quantity) {
-        return `Mavjud: ${material.quantity} ${material.material__unit_of_measure || "PIECE"
+        return `Mavjud: ${material.quantity} ${material.material__unit_of_measure || "DONA"
           }`;
       }
       return null;
@@ -476,7 +476,7 @@ const EndShiftBunker: React.FC = () => {
               htmlFor="step_execution_id"
               className="text-sm font-medium text-gray-700"
             >
-              Step Execution *
+              Qadam Bajarish *
             </Label>
             <Select
               value={formData.step_execution_id}
@@ -486,7 +486,7 @@ const EndShiftBunker: React.FC = () => {
               required
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Step execution tanlang" />
+                <SelectValue placeholder="Qadam bajarishni tanlang" />
               </SelectTrigger>
               <SelectContent>
                 {stepExecutions.length > 0 ? (
@@ -500,7 +500,7 @@ const EndShiftBunker: React.FC = () => {
                   ))
                 ) : (
                   <SelectItem value="" disabled>
-                    Hech qanday step execution topilmadi
+                    Hech qanday qadam bajarish topilmadi
                   </SelectItem>
                 )}
               </SelectContent>
@@ -523,7 +523,7 @@ const EndShiftBunker: React.FC = () => {
             ) : materials.length === 0 ? (
               <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
                 <Package className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                <p>Bu workcenter da materiallar mavjud emas</p>
+                <p>Bu ish markazida materiallar mavjud emas</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -545,7 +545,7 @@ const EndShiftBunker: React.FC = () => {
                           </h4>
                           <p className="text-sm text-gray-600">
                             Mavjud: {material.quantity}{" "}
-                            {material.material__unit_of_measure || "PIECE"}
+                            {material.material__unit_of_measure || "DONA"}
                           </p>
                         </div>
                         {isSelected && (
@@ -584,8 +584,8 @@ const EndShiftBunker: React.FC = () => {
                                 );
                               }}
                               className={`flex-1 ${quantity > material.quantity
-                                  ? "border-red-500 focus:border-red-500"
-                                  : ""
+                                ? "border-red-500 focus:border-red-500"
+                                : ""
                                 }`}
                               placeholder="0.0"
                             />
@@ -593,7 +593,7 @@ const EndShiftBunker: React.FC = () => {
                           {quantity > material.quantity && (
                             <p className="text-sm text-red-600">
                               Mavjud: {material.quantity}{" "}
-                              {material.material__unit_of_measure || "PIECE"}
+                              {material.material__unit_of_measure || "DONA"}
                             </p>
                           )}
                         </div>
@@ -607,12 +607,12 @@ const EndShiftBunker: React.FC = () => {
                               max={material.quantity}
                               placeholder="Og'irlik (kg)"
                               className={`flex-1 ${inputValues[material.material__id] &&
-                                  !isInputValid(
-                                    material.material__id,
-                                    inputValues[material.material__id]
-                                  )
-                                  ? "border-red-500 focus:border-red-500"
-                                  : ""
+                                !isInputValid(
+                                  material.material__id,
+                                  inputValues[material.material__id]
+                                )
+                                ? "border-red-500 focus:border-red-500"
+                                : ""
                                 }`}
                               value={inputValues[material.material__id] || ""}
                               onChange={(e) =>
@@ -770,7 +770,7 @@ const EndShiftBunker: React.FC = () => {
                 !selectedOperator?.id ||
                 formData.materials.length === 0
               }
-              className="flex-1 bg-orange-600 hover:bg-orange-700"
+              className="flex-1 bg-primary"
             >
               {submitting ? (
                 <>

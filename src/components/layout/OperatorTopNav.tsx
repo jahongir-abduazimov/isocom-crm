@@ -33,8 +33,8 @@ export default function OperatorTopNav() {
             }
           >
             <FileText size={14} className="sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">Inventory logs</span>
-            <span className="sm:hidden">Logs</span>
+            <span className="hidden sm:inline">Inventar loglari</span>
+            <span className="sm:hidden">Loglar</span>
           </NavLink>
           <NavLink
             to="/worker/reprocessing"

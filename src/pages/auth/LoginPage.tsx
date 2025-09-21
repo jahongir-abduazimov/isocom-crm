@@ -7,17 +7,17 @@ import { useAuthStore } from "@/store/auth.store";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, token, loading, error } = useAuthStore();
+  const { login, token, loading, error, roleDetermining } = useAuthStore();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // Agar token mavjud bo‘lsa, dashboardga yo‘naltiramiz
+  // Agar token mavjud bo'lsa, dashboardga yo'naltiramiz
   useEffect(() => {
-    if (token) {
+    if (token && !roleDetermining) {
       navigate("/");
     }
-  }, [token, navigate]);
+  }, [token, roleDetermining, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,10 +81,10 @@ export default function LoginPage() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || roleDetermining}
               className="w-full bg-gradient-to-r from-primary/80 to-primary hover:from-purple-600 hover:to-pink-600 text-white py-3 rounded-xl font-bold text-lg shadow-md transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? "Kirish..." : "Kirish"}
+              {loading ? "Kirish..." : roleDetermining ? "Rol aniqlanmoqda..." : "Kirish"}
             </button>
           </form>
         </div>

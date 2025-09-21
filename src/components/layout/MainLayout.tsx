@@ -29,12 +29,12 @@ export default function MainLayout() {
     // Operator uchun layout - sidebar yo'q, faqat top navigation
     return (
       <>
-        <div className="max-h-screen w-full bg-gradient-to-b from-gray-200 via-blue-50 to-gray-100">
+        <div className="max-h-screen w-full">
           {/* Operator Top Navigation */}
           <OperatorTopNav />
 
           {/* Asosiy kontent - operator uchun to'liq kenglik, tablet uchun responsive */}
-          <main className="flex-1 overflow-y-auto bg-white/90 p-3 sm:p-5 rounded-xl my-2 sm:my-3 mx-1 sm:mx-2 shadow-lg max-h-[calc(100vh-84px)]">
+          <main className="flex-1 overflow-y-auto bg-white/90 p-3 sm:p-5 rounded-xl my-2 sm:my-3 mx-1 sm:mx-2 shadow-lg max-h-[calc(100vh-96px)] min-h-[calc(100vh-96px)]">
             <Outlet />
           </main>
         </div>

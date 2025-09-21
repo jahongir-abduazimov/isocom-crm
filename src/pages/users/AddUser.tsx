@@ -324,9 +324,8 @@ export default function AddUserPage() {
                     handleInputChange("password", e.target.value)
                   }
                   placeholder="Kuchli parol kiriting (8+ belgi, raqam, harflar)"
-                  className={`pl-10 pr-10 ${
-                    errors.password ? "border-red-500" : ""
-                  }`}
+                  className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""
+                    }`}
                 />
                 <button
                   type="button"
@@ -341,15 +340,14 @@ export default function AddUserPage() {
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-600">Parol kuchi:</span>
                     <span
-                      className={`text-xs font-medium ${
-                        getPasswordStrength(formData.password).strength <= 2
+                      className={`text-xs font-medium ${getPasswordStrength(formData.password).strength <= 2
                           ? "text-red-600"
                           : getPasswordStrength(formData.password).strength <= 3
-                          ? "text-yellow-600"
-                          : getPasswordStrength(formData.password).strength <= 4
-                          ? "text-blue-600"
-                          : "text-green-600"
-                      }`}
+                            ? "text-yellow-600"
+                            : getPasswordStrength(formData.password).strength <= 4
+                              ? "text-blue-600"
+                              : "text-green-600"
+                        }`}
                     >
                       {getPasswordStrength(formData.password).label}
                     </span>
@@ -358,12 +356,11 @@ export default function AddUserPage() {
                     {[1, 2, 3, 4, 5].map((level) => (
                       <div
                         key={level}
-                        className={`h-1 flex-1 rounded ${
-                          level <=
-                          getPasswordStrength(formData.password).strength
+                        className={`h-1 flex-1 rounded ${level <=
+                            getPasswordStrength(formData.password).strength
                             ? getPasswordStrength(formData.password).color
                             : "bg-gray-200"
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -392,9 +389,8 @@ export default function AddUserPage() {
                     handleInputChange("password_confirm", e.target.value)
                   }
                   placeholder="Parolni qayta kiriting"
-                  className={`pl-10 pr-10 ${
-                    errors.password_confirm ? "border-red-500" : ""
-                  }`}
+                  className={`pl-10 pr-10 ${errors.password_confirm ? "border-red-500" : ""
+                    }`}
                 />
                 <button
                   type="button"

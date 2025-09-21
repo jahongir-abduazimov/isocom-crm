@@ -107,7 +107,7 @@ class UsersService {
       console.log("API Response data:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Foydalanuvchilarni olishda xatolik:", error);
       throw error;
     }
   }
@@ -119,7 +119,7 @@ class UsersService {
       const response = await request.get<User>(url);
       return response.data;
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Foydalanuvchini olishda xatolik:", error);
       throw error;
     }
   }
@@ -131,7 +131,7 @@ class UsersService {
       const response = await request.post<User>(url, data);
       return response.data;
     } catch (error) {
-      console.error("Error creating user:", error);
+      console.error("Foydalanuvchi yaratishda xatolik:", error);
       throw error;
     }
   }
@@ -143,7 +143,7 @@ class UsersService {
       const response = await request.put<User>(url, data);
       return response.data;
     } catch (error) {
-      console.error("Error updating user:", error);
+      console.error("Foydalanuvchini yangilashda xatolik:", error);
       throw error;
     }
   }
@@ -154,7 +154,7 @@ class UsersService {
       const url = API_CONFIG.ENDPOINTS.USER_BY_ID(id);
       await request.delete(url);
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Foydalanuvchini o'chirishda xatolik:", error);
       throw error;
     }
   }
@@ -165,7 +165,7 @@ class UsersService {
       const url = `${API_CONFIG.ENDPOINTS.USER_BY_ID(id)}change-password/`;
       await request.post(url, { password: newPassword });
     } catch (error) {
-      console.error("Error changing password:", error);
+      console.error("Parolni o'zgartirishda xatolik:", error);
       throw error;
     }
   }
@@ -177,7 +177,7 @@ class UsersService {
       const response = await request.get<{ groups: string[] }>(url);
       return response.data.groups;
     } catch (error) {
-      console.error("Error fetching user groups:", error);
+      console.error("Foydalanuvchi guruhlarini olishda xatolik:", error);
       throw error;
     }
   }
@@ -189,7 +189,7 @@ class UsersService {
       const response = await request.get<{ permissions: string[] }>(url);
       return response.data.permissions;
     } catch (error) {
-      console.error("Error fetching user permissions:", error);
+      console.error("Foydalanuvchi ruxsatlarini olishda xatolik:", error);
       throw error;
     }
   }
@@ -203,7 +203,7 @@ class UsersService {
       const response = await request.put<User[]>(url, { updates });
       return response.data;
     } catch (error) {
-      console.error("Error bulk updating users:", error);
+      console.error("Foydalanuvchilarni to'plam yangilashda xatolik:", error);
       throw error;
     }
   }
@@ -215,7 +215,7 @@ class UsersService {
       const response = await request.get(url, { responseType: "blob" });
       return response.data;
     } catch (error) {
-      console.error("Error exporting users:", error);
+      console.error("Foydalanuvchilarni eksport qilishda xatolik:", error);
       throw error;
     }
   }

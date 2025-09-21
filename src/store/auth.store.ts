@@ -34,6 +34,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   loading: boolean;
+  roleDetermining: boolean; // Role aniqlash jarayonida loading
   error: string | null;
   // Global operator state
   selectedOperator: User | null;
@@ -52,6 +53,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       loading: false,
+      roleDetermining: false,
       error: null,
       // Global operator state
       selectedOperator: null,
@@ -70,7 +72,7 @@ export const useAuthStore = create<AuthState>()(
           );
 
           const { access } = res.data;
-          set({ token: access, loading: false });
+          set({ token: access, loading: false, roleDetermining: true });
 
           // Login muvaffaqiyatli bo'lgandan keyin foydalanuvchi ma'lumotlarini olish
           // Token'ni header'ga qo'shish uchun axios instance yaratamiz
@@ -83,10 +85,11 @@ export const useAuthStore = create<AuthState>()(
 
           try {
             const userRes = await authAxios.get<User>("/users/me/");
-            set({ user: userRes.data });
+            set({ user: userRes.data, roleDetermining: false });
           } catch (userErr) {
             console.warn("Foydalanuvchi ma'lumotlarini olishda xatolik:", userErr);
             // Foydalanuvchi ma'lumotlarini olishda xatolik bo'lsa ham login muvaffaqiyatli
+            set({ roleDetermining: false });
           }
         } catch (err) {
           const error = err as AxiosError<{ message?: string }>;
@@ -104,7 +107,7 @@ export const useAuthStore = create<AuthState>()(
         const { token } = useAuthStore.getState();
         if (!token) return;
 
-        set({ loading: true, error: null });
+        set({ loading: true, roleDetermining: true, error: null });
         try {
           const authAxios = axios.create({
             baseURL: API_CONFIG.BASE_URL,
@@ -114,19 +117,20 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const userRes = await authAxios.get<User>("/users/me/");
-          set({ user: userRes.data, loading: false });
+          set({ user: userRes.data, loading: false, roleDetermining: false });
         } catch (err) {
           const error = err as AxiosError<{ message?: string }>;
           set({
             error: error.response?.data?.message || "Foydalanuvchi ma'lumotlarini olishda xatolik",
             loading: false,
+            roleDetermining: false,
           });
         }
       },
 
       // Logout funksiyasi
       logout: () => {
-        set({ user: null, token: null, error: null });
+        set({ user: null, token: null, error: null, roleDetermining: false });
         // LocalStorage'dan ham o'chirish
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth-storage");

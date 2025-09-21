@@ -73,6 +73,21 @@ export default function ConfirmationPage() {
     navigate("/worker/orders");
   };
 
+  const formatStatus = (status: string) => {
+    switch (status.toUpperCase()) {
+      case "PENDING":
+        return "Kutilmoqda";
+      case "IN_PROGRESS":
+        return "Jarayonda";
+      case "COMPLETED":
+        return "Tugallangan";
+      case "CANCELLED":
+        return "Bekor qilingan";
+      default:
+        return status;
+    }
+  };
+
   if (
     !selectedOperator ||
     !selectedOrder ||
@@ -145,20 +160,8 @@ export default function ConfirmationPage() {
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Email</p>
-            <p className="font-medium text-gray-900">
-              {selectedOperator.email}
-            </p>
-          </div>
-          <div>
             <p className="text-sm text-gray-600">Rol</p>
             <p className="font-medium text-gray-900">{selectedOperator.role}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Rol darajasi</p>
-            <p className="font-medium text-gray-900">
-              {selectedOperator.role_level || "Yo'q"}
-            </p>
           </div>
         </div>
       </div>
@@ -192,7 +195,7 @@ export default function ConfirmationPage() {
           </div>
           <div>
             <p className="text-sm text-gray-600">Holat</p>
-            <p className="font-medium text-gray-900">{selectedOrder.status}</p>
+            <p className="font-medium text-gray-900">{formatStatus(selectedOrder.status)}</p>
           </div>
         </div>
       </div>
@@ -217,9 +220,9 @@ export default function ConfirmationPage() {
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Workcenter</p>
+            <p className="text-sm text-gray-600">Ish markazi</p>
             <p className="font-medium text-gray-900">
-              {selectedStep.work_center_name || "Yo'q"}
+              {selectedStep.work_center_name || "Mavjud emas"}
             </p>
           </div>
           <div>
@@ -227,7 +230,7 @@ export default function ConfirmationPage() {
             <p className="font-medium text-gray-900">
               {selectedStep.duration_hours
                 ? `${selectedStep.duration_hours} soat`
-                : "N/A"}
+                : "Mavjud emas"}
             </p>
           </div>
         </div>
@@ -256,13 +259,13 @@ export default function ConfirmationPage() {
                   <p className="font-medium text-gray-900">{item.name}</p>
                   <p className="text-sm text-gray-600">
                     {item.type === "material" ? "Material" : "Mahsulot"} •
-                    Mavjud: {item.available_quantity} {item.unit_of_measure || "PIECE"}
+                    Mavjud: {item.available_quantity} {item.unit_of_measure || "DONA"}
                   </p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="font-medium text-gray-900">
-                  {item.quantity} {item.unit_of_measure || "PIECE"}
+                  {item.quantity} {item.unit_of_measure || "DONA"}
                 </p>
                 <p className="text-sm text-gray-600">
                   {item.type === "material" ? "Material" : "Mahsulot"}

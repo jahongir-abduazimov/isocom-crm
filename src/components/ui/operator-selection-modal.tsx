@@ -6,9 +6,11 @@ import {
   Search,
   Loader2,
   AlertCircle,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ConfirmModal from "@/components/ui/confirm-modal";
 import { useAuthStore } from "@/store/auth.store";
 import { useWorkerStore } from "@/store/worker.store";
 
@@ -25,8 +27,9 @@ export default function OperatorSelectionModal({
   const [selectedOperatorId, setSelectedOperatorId] = useState<string | null>(
     null
   );
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const { selectedOperator, setSelectedOperator } = useAuthStore();
+  const { selectedOperator, setSelectedOperator, logout } = useAuthStore();
   const { operators, operatorsLoading, operatorsError, fetchOperators } =
     useWorkerStore();
 
@@ -106,25 +109,51 @@ export default function OperatorSelectionModal({
     }
   };
 
+  const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    logout();
+    setShowLogoutConfirm(false);
+    onClose();
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirm(false);
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between py-4 px-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <Users className="h-6 w-6 text-blue-600" />
             <h2 className="text-xl font-semibold text-gray-900">
               Operator tanlash
             </h2>
           </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 text-red-600 border-red-600 hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4" />
+            Tizimdan chiqish
+          </Button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto h-[calc(90vh-160px)]">
-          <p className="text-gray-600 mb-6">
+        <div className="p-6 overflow-y-auto h-[calc(90vh-130px)]">
+          <p className="text-gray-600 mb-1 text-center">
             Ishni boshlashdan oldin operatorlar ro'yxatidan o'zingizni tanlang.
+          </p>
+          <p className="text-gray-600 mb-6 text-center font-medium">
+            <span className="font-medium text-red-500">Ogohlantiramiz: </span>O'zingizni tanlamasangiz sizga 50 000 so'm jarima qo'llaniladi.
           </p>
 
           {/* Search Input */}
@@ -132,7 +161,7 @@ export default function OperatorSelectionModal({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
-              placeholder="Operator qidirish (ism, email, rol)..."
+              placeholder="Operator qidirish..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -257,7 +286,7 @@ export default function OperatorSelectionModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between py-4 px-6 border-t border-gray-200 bg-gray-50">
           <div className="text-sm text-gray-600">
             {selectedOperatorId ? (
               <span className="text-green-600 font-medium">
@@ -279,6 +308,17 @@ export default function OperatorSelectionModal({
           </div>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmModal
+        open={showLogoutConfirm}
+        title="Tizimdan chiqish"
+        description="Tizimdan chiqishni xohlaysizmi?"
+        confirmText="Chiqish"
+        cancelText="Bekor qilish"
+        onConfirm={handleLogoutConfirm}
+        onCancel={handleLogoutCancel}
+      />
     </div>
   );
 }

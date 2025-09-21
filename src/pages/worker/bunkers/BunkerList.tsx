@@ -70,18 +70,18 @@ const BunkerList: React.FC = () => {
           </p>
         </div>
         </div>
-        <Button onClick={fetchBunkers} variant="outline">
+        {/* <Button onClick={fetchBunkers} variant="outline">
           Yangilash
-        </Button>
+        </Button> */}
       </div>
 
       {/* Bunkers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {bunkers.map((bunker) => {
           return (
             <div
               key={bunker.id}
-              className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+              className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow"
             >
               {/* Bunker Header */}
               <div className="flex items-start justify-between mb-4">
@@ -138,7 +138,7 @@ const BunkerList: React.FC = () => {
               <div className="space-y-2">
                 <Button
                   size="sm"
-                  className="w-full bg-orange-600 hover:bg-orange-700"
+                  className="w-full bg-primary"
                   onClick={() =>
                     (window.location.href = `/worker/bunkers/${bunker.id}/end-shift`)
                   }

@@ -80,7 +80,7 @@ class WorkerService {
                 const authData = JSON.parse(authStorage);
                 token = authData.state?.token;
             } catch (error) {
-                console.error('Error parsing auth storage:', error);
+                console.error('Auth storage ni tahlil qilishda xatolik:', error);
             }
         }
 
@@ -100,9 +100,9 @@ class WorkerService {
                 // Token eskirgan yoki noto'g'ri
                 localStorage.removeItem('auth-storage');
                 window.location.href = '/login';
-                throw new Error('Authentication failed. Please login again.');
+                throw new Error('Autentifikatsiya muvaffaqiyatsiz. Iltimos, qaytadan kirish.');
             }
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP xatoligi! holat: ${response.status}`);
         }
         return response;
     }
@@ -116,7 +116,7 @@ class WorkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching orders:', error);
+            console.error('Buyurtmalarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -131,7 +131,7 @@ class WorkerService {
             const data: ProductionStepsResponse = await response.json();
             return data.results;
         } catch (error) {
-            console.error('Error fetching production steps:', error);
+            console.error('Ishlab chiqarish qadamlari olishda xatolik:', error);
             throw error;
         }
     }
@@ -145,7 +145,7 @@ class WorkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching workcenter stock:', error);
+            console.error('Stanok zaxirasini olishda xatolik:', error);
             throw error;
         }
     }
@@ -161,7 +161,7 @@ class WorkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error creating used materials:', error);
+            console.error('Ishlatilgan materiallarni yaratishda xatolik:', error);
             throw error;
         }
     }
@@ -175,7 +175,7 @@ class WorkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching materials:', error);
+            console.error('Materiallarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -189,7 +189,7 @@ class WorkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Maxsulotlarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -206,7 +206,7 @@ class WorkerService {
             const workerRoles = ['WORKER', 'SMENA_BOSHLIGI', 'KATTA_MUTAXASSIS', 'KICHIK_MUTAXASSIS', 'STAJER'];
             return data.results?.filter((user: any) => workerRoles.includes(user.role)) || [];
         } catch (error) {
-            console.error('Error fetching operators:', error);
+            console.error('Operatorlarni olishda xatolik:', error);
             throw error;
         }
     }

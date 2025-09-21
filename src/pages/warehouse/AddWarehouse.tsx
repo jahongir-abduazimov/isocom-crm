@@ -26,7 +26,7 @@ export default function AddWarehouse() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Warehouse name is required";
+      newErrors.name = "Omborxona nomi majburiy";
     }
 
     setErrors(newErrors);

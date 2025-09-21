@@ -79,7 +79,7 @@ export default function InventoryMovementLogsPage() {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Failed to fetch inventory movements";
+          : "Inventar harakatlarini olishda xato";
       setError(errorMessage);
       console.error("Error fetching inventory movements:", err);
     } finally {
@@ -104,12 +104,12 @@ export default function InventoryMovementLogsPage() {
         prevMovements.filter((movement) => movement.id !== movementToDelete.id)
       );
 
-      notifySuccess("Inventory movement deleted successfully");
+      notifySuccess("Inventar harakati muvaffaqiyatli o'chirildi");
       setDeleteModalOpen(false);
       setMovementToDelete(null);
     } catch (err) {
       console.error("Error deleting inventory movement:", err);
-      notifyError("Failed to delete inventory movement");
+      notifyError("Inventar harakatini o'chirishda xato");
     } finally {
       setDeleting(false);
     }
@@ -122,13 +122,13 @@ export default function InventoryMovementLogsPage() {
 
   // Helper functions to get names from IDs
   const getMaterialName = (materialId: string | null) => {
-    if (!materialId) return "Unknown";
+    if (!materialId) return "Noma'lum";
     const material = materials.find((m) => m.id === materialId);
     return material ? material.name : materialId;
   };
 
   const getProductName = (productId: string | null) => {
-    if (!productId) return "Unknown";
+    if (!productId) return "Noma'lum";
     const product = products.find((p) => p.id === productId);
     return product ? product.name : productId;
   };
@@ -172,7 +172,7 @@ export default function InventoryMovementLogsPage() {
     if (movement.material !== null) {
       return "Material";
     } else if (movement.product !== null) {
-      return "Product";
+      return "Mahsulot";
     }
     return "Unknown";
   };
@@ -192,7 +192,7 @@ export default function InventoryMovementLogsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Inventory Movement Logs
+            Inventar Harakatlari Jurnali
           </h1>
         </div>
         <Button
@@ -200,7 +200,7 @@ export default function InventoryMovementLogsPage() {
           onClick={() => navigate("/stock/inventory-movement-logs/add")}
         >
           <Plus size={20} />
-          New Movement
+          Yangi Harakat
         </Button>
       </div>
 
@@ -211,7 +211,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Movements
+                  Jami Harakatlar
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {movements.length}
@@ -226,7 +226,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Material Movements
+                  Material Harakatlari
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-blue-600">
                   {movements.filter((m) => m.material !== null).length}
@@ -241,7 +241,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Product Movements
+                  Mahsulot Harakatlari
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {movements.filter((m) => m.product !== null).length}
@@ -256,7 +256,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Quantity
+                  Jami Miqdor
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {movements
@@ -285,7 +285,7 @@ export default function InventoryMovementLogsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search movements..."
+                  placeholder="Harakatlarni qidirish..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -295,12 +295,12 @@ export default function InventoryMovementLogsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder="Barcha Turlar" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="all">Barcha Turlar</SelectItem>
                   <SelectItem value="material">Material</SelectItem>
-                  <SelectItem value="product">Product</SelectItem>
+                  <SelectItem value="product">Mahsulot</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -316,25 +316,25 @@ export default function InventoryMovementLogsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Item
+                    Element
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
+                    Tur
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
+                    Miqdor
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    From Location
+                    Qayerdan
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    To Location
+                    Qayerga
                   </th>
                   {/* <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th> */}
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Amallar
                   </th>
                 </tr>
               </thead>
@@ -388,7 +388,7 @@ export default function InventoryMovementLogsPage() {
                           {getLocationName(movement.to_location)}
                         </span>
                         <span className="text-xs text-gray-500 xl:hidden">
-                          From: {getLocationName(movement.from_location)}
+                          Qayerdan: {getLocationName(movement.from_location)}
                         </span>
                       </div>
                     </td>
@@ -428,23 +428,23 @@ export default function InventoryMovementLogsPage() {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg mt-4">
-            Loading inventory movements...
+            Inventar harakatlari yuklanmoqda...
           </p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">Xato: {error}</p>
           <p className="text-gray-500 text-sm mt-2">
-            Check console for more details
+            Batafsil ma'lumot uchun konsolni tekshiring
           </p>
           <Button
             onClick={fetchInventoryMovements}
             className="mt-4"
             variant="outline"
           >
-            Retry
+            Qayta urinish
           </Button>
         </div>
       )}
@@ -452,7 +452,7 @@ export default function InventoryMovementLogsPage() {
       {!loading && !error && filteredMovements.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No inventory movements found matching your criteria.
+            Qidiruv mezonlaringizga mos inventar harakatlari topilmadi.
           </p>
         </div>
       )}
@@ -460,10 +460,10 @@ export default function InventoryMovementLogsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Inventory Movement"
-        description={`Are you sure you want to delete this movement? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title="Inventar Harakatini O'chirish"
+        description={`Bu harakatni o'chirishni xohlaysizmi? Bu amalni bekor qilish mumkin emas.`}
+        confirmText={deleting ? "O'chirilmoqda..." : "O'chirish"}
+        cancelText="Bekor qilish"
         onConfirm={confirmDeleteMovement}
         onCancel={cancelDelete}
       />

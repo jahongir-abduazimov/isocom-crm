@@ -7,7 +7,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import QuickAccessMenu from "@/components/ui/quick-access-menu";
 
 export default function BunkersDashboard() {
   const navigate = useNavigate();
@@ -167,7 +166,6 @@ export default function BunkersDashboard() {
       </div>
 
       {/* Quick Access Menu */}
-      <QuickAccessMenu />
     </div>
   );
 }

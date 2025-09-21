@@ -18,7 +18,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { useAuthStore } from "@/store/auth.store";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: <BarChart3 size={20} /> },
+  { path: "/", label: "Boshqaruv paneli", icon: <BarChart3 size={20} /> },
   {
     label: "Maxsulotlar",
     icon: <Box size={20} />,
@@ -34,46 +34,46 @@ const navItems = [
   { path: "/users", label: "Foydalanuvchilar", icon: <Users size={20} /> },
   { path: "/worker", label: "Operator paneli", icon: <Wrench size={20} /> },
   {
-    label: "Warehouse",
+    label: "Omborxona",
     icon: <Warehouse size={20} />,
     isCollapsible: true,
     menuKey: "warehouse",
     children: [
-      { path: "/warehouse/locations", label: "Locations" },
-      { path: "/warehouse/warehouses", label: "Warehouses" },
+      { path: "/warehouse/locations", label: "Joylashuvlar" },
+      { path: "/warehouse/warehouses", label: "Omborxonalar" },
     ],
   },
   {
-    label: "Production",
+    label: "Ishlab chiqarish",
     icon: <Factory size={20} />,
     isCollapsible: true,
     menuKey: "production",
     children: [
-      { path: "/production/orders", label: "Orders" },
-      { path: "/production/outputs", label: "Production outputs" },
+      { path: "/production/orders", label: "Buyurtmalar" },
+      { path: "/production/outputs", label: "Ishlab chiqarish natijalari" },
       {
         path: "/production/step-executions",
-        label: "Step executions",
+        label: "Qadam bajarishlar",
       },
-      { path: "/production/steps", label: "Production steps" },
-      { path: "/production/used-materials", label: "Used materials" },
+      { path: "/production/steps", label: "Ishlab chiqarish qadamlari" },
+      { path: "/production/used-materials", label: "Ishlatilgan materiallar" },
     ],
   },
   {
-    label: "Stock",
+    label: "Zaxira",
     icon: <Package size={20} />,
     isCollapsible: true,
     menuKey: "stock",
     children: [
       {
         path: "/stock/inventory-movement-logs",
-        label: "Inventory movement logs",
+        label: "Inventar harakatlari",
       },
-      { path: "/stock/stock-levels", label: "Stock levels" },
+      { path: "/stock/stock-levels", label: "Zaxira darajalari" },
     ],
   },
   {
-    label: "Scrap",
+    label: "Brak",
     icon: <Shield size={20} />,
     isCollapsible: true,
     menuKey: "scrap",

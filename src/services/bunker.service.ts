@@ -120,7 +120,7 @@ class BunkerService {
                 const authData = JSON.parse(authStorage);
                 token = authData.state?.token;
             } catch (error) {
-                console.error('Error parsing auth storage:', error);
+                console.error('Auth storage ni tahlil qilishda xatolik:', error);
             }
         }
 
@@ -140,9 +140,9 @@ class BunkerService {
                 // Token eskirgan yoki noto'g'ri
                 localStorage.removeItem('auth-storage');
                 window.location.href = '/login';
-                throw new Error('Authentication failed. Please login again.');
+                throw new Error('Autentifikatsiya muvaffaqiyatsiz. Iltimos, qaytadan kirish.');
             }
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP xatoligi! holat: ${response.status}`);
         }
         return response;
     }
@@ -157,7 +157,7 @@ class BunkerService {
             const data = await response.json();
             return data.results || [];
         } catch (error) {
-            console.error('Error fetching bunkers:', error);
+            console.error('Bunkerlarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -174,7 +174,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching bunker status:', error);
+            console.error('Bunker holatini olishda xatolik:', error);
             throw error;
         }
     }
@@ -193,7 +193,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error filling bunker:', error);
+            console.error("Bunkerni to'ldirishda xatolik: ", error);
             throw error;
         }
     }
@@ -210,7 +210,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching shift status:', error);
+            console.error('Smena holatini olishda xatolik:', error);
             throw error;
         }
     }
@@ -229,7 +229,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error starting shift:', error);
+            console.error('Smenani boshlashda xatolik:', error);
             throw error;
         }
     }
@@ -248,7 +248,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error ending shift:', error);
+            console.error('Smenani tugatishda xatolik:', error);
             throw error;
         }
     }
@@ -263,7 +263,7 @@ class BunkerService {
             const data = await response.json();
             return data.results || [];
         } catch (error) {
-            console.error('Error fetching materials:', error);
+            console.error('Materiallarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -280,7 +280,7 @@ class BunkerService {
             const workerRoles = ['WORKER', 'SMENA_BOSHLIGI', 'KATTA_MUTAXASSIS', 'KICHIK_MUTAXASSIS', 'STAJER'];
             return data.results?.filter((user: any) => workerRoles.includes(user.role)) || [];
         } catch (error) {
-            console.error('Error fetching operators:', error);
+            console.error('Operatorlarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -299,7 +299,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error filling bunker at end of shift:', error);
+            console.error("Smena oxirida bunkerni to'ldirishda xatolik: ", error);
             throw error;
         }
     }
@@ -317,7 +317,7 @@ class BunkerService {
             const data = await response.json();
             return data.results || [];
         } catch (error) {
-            console.error('Error fetching step executions:', error);
+            console.error('Qadam bajarishlarni olishda xatolik:', error);
             throw error;
         }
     }
@@ -334,7 +334,7 @@ class BunkerService {
             this.handleResponse(response);
             return await response.json();
         } catch (error) {
-            console.error('Error fetching workcenter stock:', error);
+            console.error('Stanok zaxirasini olishda xatolik:', error);
             throw error;
         }
     }

@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StepIndicator from "@/components/ui/step-indicator";
 import { useWorkerStore } from "@/store/worker.store";
+import { translateStepType } from "@/lib/utils";
 
 export default function WorkerOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -304,7 +305,7 @@ export default function WorkerOrderDetailPage() {
                     <div className="flex items-center gap-6 text-sm text-gray-600">
                       <div>
                         <span className="font-medium">Qadam turi:</span>{" "}
-                        {step.step_type}
+                        {translateStepType(step.step_type)}
                       </div>
                       <div>
                         <span className="font-medium">Workcenter:</span>{" "}

@@ -16,15 +16,15 @@ import { Switch } from "@/components/ui/switch";
 import { ProductionService } from "@/services/production.service";
 
 const STEP_TYPES = [
-  { value: "EXTRUSION", label: "Extrusion" },
-  { value: "DEGASSING", label: "Degassing" },
-  { value: "LAMINATION", label: "Lamination" },
-  { value: "BRONZING", label: "Bronzing" },
-  { value: "DUPLICATION", label: "Duplication" },
-  { value: "PACKAGING", label: "Packaging" },
-  { value: "QUALITY_CONTROL", label: "Quality Control" },
-  { value: "WAREHOUSE_TRANSFER", label: "Warehouse Transfer" },
-  { value: "CUSTOMER_DELIVERY", label: "Customer Delivery" },
+  { value: "EXTRUSION", label: "Ekstruziya" },
+  { value: "DEGASSING", label: "Gaz chiqarish" },
+  { value: "LAMINATION", label: "Laminatsiya" },
+  { value: "BRONZING", label: "Bronzalash" },
+  { value: "DUPLICATION", label: "Duplikatsiya" },
+  { value: "PACKAGING", label: "Qadoqlash" },
+  { value: "QUALITY_CONTROL", label: "Sifat nazorati" },
+  { value: "WAREHOUSE_TRANSFER", label: "Ombor ko'chirish" },
+  { value: "CUSTOMER_DELIVERY", label: "Mijozga yetkazish" },
 ];
 
 export default function EditProductionStepPage() {

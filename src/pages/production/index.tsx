@@ -121,7 +121,7 @@ export default function OrdersPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Production Orders
+            Ishlab chiqarish buyurtmalari
           </h1>
         </div>
         <Button
@@ -129,7 +129,7 @@ export default function OrdersPage() {
           onClick={() => navigate("/production/orders/add")}
         >
           <Plus size={20} />
-          New Order
+          Yangi buyurtma
         </Button>
       </div>
 
@@ -143,7 +143,7 @@ export default function OrdersPage() {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                placeholder="Search orders..."
+                placeholder="Buyurtmalarni qidirish..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -153,14 +153,14 @@ export default function OrdersPage() {
           <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger className="min-w-[140px]">
-                <SelectValue placeholder="All Status" />
+                <SelectValue placeholder="Barcha holatlar" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="all">Barcha holatlar</SelectItem>
+                <SelectItem value="pending">Kutilmoqda</SelectItem>
+                <SelectItem value="in_progress">Jarayonda</SelectItem>
+                <SelectItem value="completed">Yakunlangan</SelectItem>
+                <SelectItem value="cancelled">Bekor qilingan</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -171,7 +171,7 @@ export default function OrdersPage() {
       {loading && (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <span className="ml-2 text-gray-600">Loading orders...</span>
+          <span className="ml-2 text-gray-600">Buyurtmalar yuklanmoqda...</span>
         </div>
       )}
 
@@ -181,7 +181,7 @@ export default function OrdersPage() {
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Error loading orders
+                Buyurtmalarni yuklashda xatolik
               </h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
@@ -208,7 +208,7 @@ export default function OrdersPage() {
                       {order.produced_product_name || "N/A"}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      Order #{order.id.slice(0, 8)}...
+                      Buyurtma #{order.id.slice(0, 8)}...
                     </p>
                   </div>
                   <span
@@ -228,7 +228,7 @@ export default function OrdersPage() {
                 <div className="flex items-center gap-3">
                   <Package className="h-4 w-4 text-gray-400" />
                   <div className="flex-1">
-                    <span className="text-sm text-gray-600">Quantity</span>
+                    <span className="text-sm text-gray-600">Miqdor</span>
                     <p className="text-sm font-medium text-gray-900">
                       {order.produced_quantity} {formatUnitOfMeasure(order.unit_of_measure)}
                     </p>
@@ -241,7 +241,7 @@ export default function OrdersPage() {
                     <TrendingUp className="h-4 w-4 text-gray-400" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Progress</span>
+                        <span className="text-sm text-gray-600">Jarayon</span>
                         <span className="text-sm font-medium text-gray-900">
                           {order.completion_percentage}%
                         </span>
@@ -261,7 +261,7 @@ export default function OrdersPage() {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <div className="flex-1">
-                      <span className="text-sm text-gray-600">Start Date</span>
+                      <span className="text-sm text-gray-600">Boshlanish sanasi</span>
                       <p className="text-sm text-gray-900">
                         {formatDate(order.start_date)}
                       </p>
@@ -315,7 +315,7 @@ export default function OrdersPage() {
                       navigate(`/production/orders/${order.id}`);
                     }}
                   >
-                    View Details →
+                    Tafsilotlarni ko'rish →
                   </Button>
                 </div>
               </div>
@@ -327,7 +327,7 @@ export default function OrdersPage() {
       {!loading && !error && filteredOrders.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No orders found matching your criteria.
+            Qidiruv mezonlaringizga mos buyurtmalar topilmadi.
           </p>
         </div>
       )}
@@ -335,10 +335,10 @@ export default function OrdersPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Production Order"
-        description="Are you sure you want to delete this production order? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title="Ishlab chiqarish buyurtmasini o'chirish"
+        description="Ushbu ishlab chiqarish buyurtmasini o'chirishni tasdiqlaysizmi? Bu amalni bekor qilib bo'lmaydi."
+        confirmText="O'chirish"
+        cancelText="Bekor qilish"
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />

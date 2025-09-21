@@ -16,6 +16,7 @@ import {
   type ProductionStep,
 } from "@/services/production.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { translateStepType } from "@/lib/utils";
 
 export default function ProductionStepsPage() {
   const navigate = useNavigate();
@@ -201,13 +202,13 @@ export default function ProductionStepsPage() {
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {steps.length > 0
                     ? Math.round(
-                        steps.reduce((acc, step) => {
-                          const duration = step.duration_hours
-                            ? parseFloat(step.duration_hours)
-                            : 0;
-                          return acc + duration;
-                        }, 0) / steps.length
-                      )
+                      steps.reduce((acc, step) => {
+                        const duration = step.duration_hours
+                          ? parseFloat(step.duration_hours)
+                          : 0;
+                        return acc + duration;
+                      }, 0) / steps.length
+                    )
                     : 0}
                   h
                 </p>
@@ -323,7 +324,7 @@ export default function ProductionStepsPage() {
                             step.step_type
                           )}`}
                         >
-                          {step.step_type.replace("_", " ")}
+                          {translateStepType(step.step_type)}
                         </span>
                       </div>
                     </td>
@@ -333,7 +334,7 @@ export default function ProductionStepsPage() {
                           step.step_type
                         )}`}
                       >
-                        {step.step_type.replace("_", " ")}
+                        {translateStepType(step.step_type)}
                       </span>
                     </td>
                     <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
@@ -356,11 +357,10 @@ export default function ProductionStepsPage() {
                     </td>
                     <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          step.is_required
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${step.is_required
                             ? "bg-green-100 text-green-800"
                             : "bg-gray-100 text-gray-800"
-                        }`}
+                          }`}
                       >
                         {step.is_required ? "Required" : "Optional"}
                       </span>
