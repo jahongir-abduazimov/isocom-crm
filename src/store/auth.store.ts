@@ -130,7 +130,14 @@ export const useAuthStore = create<AuthState>()(
 
       // Logout funksiyasi
       logout: () => {
-        set({ user: null, token: null, error: null, roleDetermining: false });
+        set({
+          user: null,
+          token: null,
+          error: null,
+          roleDetermining: false,
+          selectedOperator: null,
+          showOperatorModal: false
+        });
         // LocalStorage'dan ham o'chirish
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth-storage");
@@ -139,7 +146,11 @@ export const useAuthStore = create<AuthState>()(
 
       // Token'ni o'chirish funksiyasi (401 xatoligi uchun)
       clearToken: () => {
-        set({ token: null });
+        set({
+          token: null,
+          selectedOperator: null,
+          showOperatorModal: false
+        });
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth-storage");
         }

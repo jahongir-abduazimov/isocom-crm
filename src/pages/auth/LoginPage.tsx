@@ -82,7 +82,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || roleDetermining}
-              className="w-full bg-gradient-to-r from-primary/80 to-primary hover:from-purple-600 hover:to-pink-600 text-white py-3 rounded-xl font-bold text-lg shadow-md transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-primary/80 to-primary cursor-pointer text-white py-3 rounded-xl font-bold text-lg shadow-md transition duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? "Kirish..." : roleDetermining ? "Rol aniqlanmoqda..." : "Kirish"}
             </button>
