@@ -9,11 +9,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWorkerStore } from "@/store/worker.store";
+import { useTranslation } from "react-i18next";
 // import QuickAccessMenu from "@/components/ui/quick-access-menu";
 
 export default function WorkerDashboardPage() {
   const navigate = useNavigate();
   const { fetchOrders, ordersLoading, ordersError } = useWorkerStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchOrders();
@@ -27,7 +29,7 @@ export default function WorkerDashboardPage() {
     return (
       <div className="flex justify-center items-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Ma'lumotlar yuklanmoqda...</span>
+        <span className="ml-2 text-gray-600">{t('operator.loadingData')}</span>
       </div>
     );
   }
@@ -36,9 +38,9 @@ export default function WorkerDashboardPage() {
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold mb-4">Xato</h1>
+        <h1 className="text-2xl font-bold mb-4">{t('operator.error')}</h1>
         <p className="text-gray-600 mb-6">{ordersError}</p>
-        <Button onClick={() => fetchOrders()}>Qayta urinish</Button>
+        <Button onClick={() => fetchOrders()}>{t('operator.retry')}</Button>
       </div>
     );
   }
@@ -48,7 +50,7 @@ export default function WorkerDashboardPage() {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-10">
-          Operator paneli
+          {t('operator.panel')}
         </h1>
       </div>
 
@@ -62,11 +64,10 @@ export default function WorkerDashboardPage() {
                 <Package className="h-6 w-6 text-blue-600" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 mb-2">
-                Material ishlatish
+                {t('operator.materialUsage')}
               </h2>
               <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                Ishlab chiqarish buyurtmalari uchun material va mahsulot
-                ishlatish jarayonini boshqaring
+                {t('operator.materialUsageDesc')}
               </p>
             </div>
             <Button
@@ -75,7 +76,7 @@ export default function WorkerDashboardPage() {
               variant="outline"
               className="w-full h-10 text-sm font-semibold border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center gap-1 rounded-lg"
             >
-              Jarayonni boshlash
+              {t('operator.startProcess')}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
@@ -89,11 +90,10 @@ export default function WorkerDashboardPage() {
                 <CheckCircle className="h-6 w-6 text-purple-600" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 mb-2">
-                Ishlab chiqarish natijalari
+                {t('operator.productionOutputs')}
               </h2>
               <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                Ishlab chiqarish natijalarini ko'rish va yangi natijalar
-                qo'shish
+                {t('operator.productionOutputsDesc')}
               </p>
             </div>
             <Button
@@ -102,7 +102,7 @@ export default function WorkerDashboardPage() {
               variant="outline"
               className="w-full h-10 text-sm font-semibold border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white flex items-center justify-center gap-1 rounded-lg"
             >
-              Natijalarni ko'rish
+              {t('operator.viewOutputs')}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
@@ -116,11 +116,10 @@ export default function WorkerDashboardPage() {
                 <Package className="h-6 w-6 text-green-600" />
               </div>
               <h2 className="text-lg font-bold text-gray-900 mb-2">
-                Ekstruder Baklar
+                {t('operator.extruderBunkers')}
               </h2>
               <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                Ekstruder baklarini boshqarish, to'ldirish va smena
-                jarayonlarini kuzatish
+                {t('operator.extruderBunkersDesc')}
               </p>
             </div>
             <Button
@@ -129,7 +128,7 @@ export default function WorkerDashboardPage() {
               variant="outline"
               className="w-full h-10 text-sm font-semibold border border-green-600 text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center gap-1 rounded-lg"
             >
-              Baklar boshqaruvi
+              {t('operator.bunkerManagement')}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

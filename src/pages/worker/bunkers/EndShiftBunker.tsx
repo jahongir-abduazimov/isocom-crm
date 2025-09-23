@@ -26,6 +26,7 @@ import {
   type FillBunkerEndShiftResponse,
   type BunkerStatus,
 } from "@/services/bunker.service";
+import { ProductionService } from "@/services/production.service";
 import { useAuthStore } from "@/store/auth.store";
 
 export interface StepExecution {
@@ -60,6 +61,7 @@ interface MaterialEntry {
 }
 
 interface EndShiftFormData {
+  order_id: string;
   step_execution_id: string;
   materials: MaterialEntry[];
   notes: string;
@@ -71,11 +73,14 @@ const EndShiftBunker: React.FC = () => {
   const { selectedOperator } = useAuthStore();
 
   const [formData, setFormData] = useState<EndShiftFormData>({
+    order_id: "",
     step_execution_id: "",
     materials: [],
     notes: "",
   });
 
+  const [orders, setOrders] = useState<any[]>([]);
+  console.log(orders)
   const [stepExecutions, setStepExecutions] = useState<StepExecution[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [bunkerStatus, setBunkerStatus] = useState<
@@ -94,6 +99,7 @@ const EndShiftBunker: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [materialsLoading, setMaterialsLoading] = useState(false);
+  const [ordersLoading, setOrdersLoading] = useState(false);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
@@ -133,12 +139,25 @@ const EndShiftBunker: React.FC = () => {
 
       setBunkerStatus(processedData);
 
-      // Load step executions for this work center
-      if (data.work_center) {
-        const stepData = await bunkerService.fetchStepExecutions(
-          data.work_center
-        );
+      // Load orders
+      setOrdersLoading(true);
+      try {
+        const ordersResponse = await ProductionService.getOrders();
+        setOrders(ordersResponse.results || []);
+      } catch (error) {
+        console.error("Error loading orders:", error);
+        setOrders([]);
+      } finally {
+        setOrdersLoading(false);
+      }
+
+      // Load all step executions (same as AddProductionOutput)
+      try {
+        const stepData = await bunkerService.fetchAllStepExecutions();
         setStepExecutions(stepData);
+      } catch (error) {
+        console.error("Error loading step executions:", error);
+        setStepExecutions([]);
       }
 
       // Load materials from workcenter stock
@@ -169,6 +188,11 @@ const EndShiftBunker: React.FC = () => {
 
     if (!selectedOperator?.id) {
       setError("Operator tanlanmagan! Iltimos, operator tanlang.");
+      return;
+    }
+
+    if (!formData.order_id) {
+      setError("Buyurtmani tanlang!");
       return;
     }
 
@@ -223,6 +247,7 @@ const EndShiftBunker: React.FC = () => {
 
       // Reset form
       setFormData({
+        order_id: "",
         step_execution_id: "",
         materials: [],
         notes: "",
@@ -243,6 +268,15 @@ const EndShiftBunker: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
+    }));
+    setError(null);
+  };
+
+  const handleOrderChange = (orderId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      order_id: orderId,
+      step_execution_id: "", // Reset step execution when order changes
     }));
     setError(null);
   };
@@ -362,6 +396,14 @@ const EndShiftBunker: React.FC = () => {
     [materials]
   );
 
+  // Filter step executions based on selected order
+  const filteredStepExecutions = useMemo(() => {
+    if (!formData.order_id) {
+      return [];
+    }
+    return stepExecutions.filter(step => step.order === formData.order_id);
+  }, [stepExecutions, formData.order_id]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -470,6 +512,42 @@ const EndShiftBunker: React.FC = () => {
             </div>
           )}
 
+          {/* Order Selection */}
+          <div className="space-y-2">
+            <Label
+              htmlFor="order_id"
+              className="text-sm font-medium text-gray-700"
+            >
+              Buyurtma *
+            </Label>
+            <Select
+              value={formData.order_id}
+              onValueChange={handleOrderChange}
+              required
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Buyurtmani tanlang" />
+              </SelectTrigger>
+              <SelectContent>
+                {ordersLoading ? (
+                  <SelectItem value="loading" disabled>
+                    Buyurtmalar yuklanmoqda...
+                  </SelectItem>
+                ) : orders.length > 0 ? (
+                  orders.map((order) => (
+                    <SelectItem key={order.id} value={order.id}>
+                      {order.produced_product_name} - {order.produced_quantity} {order.unit_of_measure}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="no-orders" disabled>
+                    Hech qanday buyurtma topilmadi
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Step Execution Selection */}
           <div className="space-y-2">
             <Label
@@ -484,23 +562,25 @@ const EndShiftBunker: React.FC = () => {
                 handleInputChange("step_execution_id", value)
               }
               required
+              disabled={!formData.order_id}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Qadam bajarishni tanlang" />
+                <SelectValue placeholder={formData.order_id ? "Qadam bajarishni tanlang" : "Avval buyurtmani tanlang"} />
               </SelectTrigger>
               <SelectContent>
-                {stepExecutions.length > 0 ? (
-                  stepExecutions.map((step) => (
+                {filteredStepExecutions.length > 0 ? (
+                  filteredStepExecutions.map((step) => (
                     <SelectItem key={step.id} value={step.id}>
-                      {step.order_description ||
-                        step.order_product_name ||
-                        step.order}{" "}
-                      - {step.production_step_name}
+                      {step.production_step_name}
                     </SelectItem>
                   ))
+                ) : formData.order_id ? (
+                  <SelectItem value="no-steps" disabled>
+                    Bu buyurtma uchun qadam bajarish topilmadi
+                  </SelectItem>
                 ) : (
-                  <SelectItem value="" disabled>
-                    Hech qanday qadam bajarish topilmadi
+                  <SelectItem value="select-order-first" disabled>
+                    Avval buyurtmani tanlang
                   </SelectItem>
                 )}
               </SelectContent>
@@ -768,6 +848,8 @@ const EndShiftBunker: React.FC = () => {
               disabled={
                 submitting ||
                 !selectedOperator?.id ||
+                !formData.order_id ||
+                !formData.step_execution_id ||
                 formData.materials.length === 0
               }
               className="flex-1 bg-primary"

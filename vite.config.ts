@@ -133,4 +133,9 @@ export default defineConfig({
       "@": path.resolve("./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      external: [],
+    },
+  },
 })

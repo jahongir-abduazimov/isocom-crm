@@ -16,31 +16,32 @@ import {
   Bar,
   Legend,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
-const stats = [
+const getStats = (t: any) => [
   {
-    title: "Ishlab chiqarilgan",
+    title: t('dashboard.produced'),
     value: "12,540",
     change: "+12%",
     icon: <Package size={28} />,
     color: "bg-blue-500",
   },
   {
-    title: "QC’dan o‘tgan",
+    title: t('dashboard.passedQC'),
     value: "11,720",
     change: "+9%",
     icon: <CheckCircle size={28} />,
     color: "bg-green-500",
   },
   {
-    title: "Qaytarilgan",
+    title: t('dashboard.returned'),
     value: "820",
     change: "-3%",
     icon: <BarChart3 size={28} />,
     color: "bg-red-500",
   },
   {
-    title: "Ombordagi zahira",
+    title: t('dashboard.warehouseStock'),
     value: "8,310",
     change: "+4%",
     icon: <Box size={28} />,
@@ -67,6 +68,9 @@ const qcData = [
 ];
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+  const stats = getStats(t);
+
   return (
     <div className="min-h-screen">
       <div className="max-w-6xl mx-auto">
@@ -75,10 +79,10 @@ export default function DashboardPage() {
           <BarChart3 size={30} className="text-blue-500" />
           <div>
             <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-              Dashboard
+              {t('dashboard.title')}
             </h1>
             <p className="text-gray-500 text-base">
-              Ishlab chiqarish va QC statistikasi
+              {t('dashboard.subtitle')}
             </p>
           </div>
         </div>
@@ -100,8 +104,8 @@ export default function DashboardPage() {
                   </p>
                   <span
                     className={`inline-block px-2 py-1 rounded text-xs font-semibold ${item.change.startsWith("+")
-                        ? "bg-green-100 text-green-600"
-                        : "bg-red-100 text-red-600"
+                      ? "bg-green-100 text-green-600"
+                      : "bg-red-100 text-red-600"
                       }`}
                   >
                     {item.change} o‘tgan oyga nisbatan

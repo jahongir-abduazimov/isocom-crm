@@ -36,6 +36,7 @@ export default function WorkerAddProductionOutputPage() {
 
   // Form data
   const [formData, setFormData] = useState({
+    order_id: "",
     step_execution: "",
     product: "",
     unit_of_measure: "",
@@ -45,15 +46,16 @@ export default function WorkerAddProductionOutputPage() {
   });
 
   // Available options
+  const [orders, setOrders] = useState<any[]>([]);
   const [stepExecutions, setStepExecutions] = useState<
     ProductionStepExecution[]
   >([]);
   const [products, setProducts] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [orderNames, setOrderNames] = useState<Record<string, string>>({});
 
   // Selected step execution and order details
-  const [selectedStepExecution, setSelectedStepExecution] = useState<ProductionStepExecution | null>(null);
+  const [selectedStepExecution, setSelectedStepExecution] =
+    useState<ProductionStepExecution | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [loadingOrder, setLoadingOrder] = useState(false);
 
@@ -62,33 +64,17 @@ export default function WorkerAddProductionOutputPage() {
     const fetchInitialData = async () => {
       try {
         setLoadingData(true);
-        // Fetch step executions and products
-        const [stepExecutionsResponse, productsResponse] = await Promise.all([
-          ProductionService.getAllStepExecutions(),
-          ProductionService.getProducts(),
-        ]);
+        // Fetch orders, step executions and products
+        const [ordersResponse, stepExecutionsResponse, productsResponse] =
+          await Promise.all([
+            ProductionService.getOrders(),
+            ProductionService.getAllStepExecutions(),
+            ProductionService.getProducts(),
+          ]);
 
+        setOrders(ordersResponse.results || []);
         setStepExecutions(stepExecutionsResponse.results);
         setProducts(productsResponse.results || []);
-
-        // Fetch order names for all unique orders
-        const uniqueOrderIds = [...new Set(stepExecutionsResponse.results.map(step => step.order))];
-        const orderNamesMap: Record<string, string> = {};
-
-        // Fetch order details for each unique order
-        await Promise.all(
-          uniqueOrderIds.map(async (orderId) => {
-            try {
-              const order = await ProductionService.getOrderById(orderId);
-              orderNamesMap[orderId] = order.description || order.id.substring(0, 8) + "...";
-            } catch (err) {
-              console.error(`Error fetching order ${orderId}:`, err);
-              orderNamesMap[orderId] = orderId.substring(0, 8) + "...";
-            }
-          })
-        );
-
-        setOrderNames(orderNamesMap);
       } catch (err) {
         console.error("Error fetching initial data:", err);
         setError("Ma'lumotlarni yuklashda xato");
@@ -122,7 +108,7 @@ export default function WorkerAddProductionOutputPage() {
 
     // When step execution is selected, find and store the full details
     if (field === "step_execution") {
-      const stepExecution = stepExecutions.find(step => step.id === value);
+      const stepExecution = stepExecutions.find((step) => step.id === value);
       setSelectedStepExecution(stepExecution || null);
 
       // Fetch order details if step execution is found
@@ -134,10 +120,27 @@ export default function WorkerAddProductionOutputPage() {
     }
   };
 
+  const handleOrderChange = (orderId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      order_id: orderId,
+      step_execution: "", // Reset step execution when order changes
+    }));
+    setSelectedStepExecution(null);
+    setSelectedOrder(null);
+    setError(null);
+  };
+
+  // Filter step executions based on selected order
+  const filteredStepExecutions = stepExecutions.filter((step) =>
+    formData.order_id ? step.order === formData.order_id : false
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
+      !formData.order_id ||
       !formData.step_execution ||
       !formData.product ||
       !formData.quantity ||
@@ -249,6 +252,35 @@ export default function WorkerAddProductionOutputPage() {
       <div className="bg-white rounded-lg shadow-sm border p-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Order Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="order_id" className="text-sm font-medium">
+                Buyurtma <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={formData.order_id}
+                onValueChange={handleOrderChange}
+              >
+                <SelectTrigger className=" text-base">
+                  <SelectValue placeholder="Buyurtmani tanlang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {orders.length > 0 ? (
+                    orders.map((order) => (
+                      <SelectItem key={order.id} value={order.id}>
+                        {order.produced_product_name} -{" "}
+                        {order.produced_quantity} {order.unit_of_measure}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-orders" disabled>
+                      Hech qanday buyurtma topilmadi
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Step Execution */}
             <div className="space-y-2">
               <Label htmlFor="step_execution" className="text-sm font-medium">
@@ -259,21 +291,33 @@ export default function WorkerAddProductionOutputPage() {
                 onValueChange={(value) =>
                   handleInputChange("step_execution", value)
                 }
+                disabled={!formData.order_id}
               >
                 <SelectTrigger className=" text-base">
-                  <SelectValue placeholder="Qadamni tanlang" />
+                  <SelectValue
+                    placeholder={
+                      formData.order_id
+                        ? "Qadamni tanlang"
+                        : "Avval buyurtmani tanlang"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {stepExecutions.map((step) => (
-                    <SelectItem key={step.id} value={step.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{step.production_step_name}</span>
-                        <span className="text-xs text-gray-500">
-                          Buyurtma: {orderNames[step.order] || step.order.substring(0, 8) + "..."}
-                        </span>
-                      </div>
+                  {filteredStepExecutions.length > 0 ? (
+                    filteredStepExecutions.map((step) => (
+                      <SelectItem key={step.id} value={step.id}>
+                        {step.production_step_name}
+                      </SelectItem>
+                    ))
+                  ) : formData.order_id ? (
+                    <SelectItem value="no-steps" disabled>
+                      Bu buyurtma uchun qadam bajarish topilmadi
                     </SelectItem>
-                  ))}
+                  ) : (
+                    <SelectItem value="select-order-first" disabled>
+                      Avval buyurtmani tanlang
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -345,7 +389,9 @@ export default function WorkerAddProductionOutputPage() {
 
             {/* Weight */}
             <div className="space-y-2">
-              <Label htmlFor="weight" className="text-sm font-medium">Og'irlik (kg)</Label>
+              <Label htmlFor="weight" className="text-sm font-medium">
+                Og'irlik (kg)
+              </Label>
               <Input
                 id="weight"
                 type="number"
@@ -370,41 +416,58 @@ export default function WorkerAddProductionOutputPage() {
                 <div className="mb-3 p-3 bg-blue-100 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                    <span className="text-sm text-blue-700">Buyurtma ma'lumotlari yuklanmoqda...</span>
+                    <span className="text-sm text-blue-700">
+                      Buyurtma ma'lumotlari yuklanmoqda...
+                    </span>
                   </div>
                 </div>
               ) : selectedOrder ? (
                 <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <h4 className="text-sm font-semibold text-green-900 mb-2">Buyurtma ma'lumotlari</h4>
+                  <h4 className="text-sm font-semibold text-green-900 mb-2">
+                    Buyurtma ma'lumotlari
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">Buyurtma nomi:</div>
+                      <div className="text-xs font-medium text-green-800 mb-1">
+                        Buyurtma nomi:
+                      </div>
                       <div className="text-sm text-green-700">
                         {selectedOrder.description || "Belgilanmagan"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">Buyurtma ID:</div>
+                      <div className="text-xs font-medium text-green-800 mb-1">
+                        Buyurtma ID:
+                      </div>
                       <div className="text-sm text-green-700 font-mono">
                         {selectedOrder.id.substring(0, 8)}...
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">Mahsulot:</div>
+                      <div className="text-xs font-medium text-green-800 mb-1">
+                        Mahsulot:
+                      </div>
                       <div className="text-sm text-green-700">
                         {selectedOrder.produced_product_name || "Belgilanmagan"}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">Miqdor:</div>
+                      <div className="text-xs font-medium text-green-800 mb-1">
+                        Miqdor:
+                      </div>
                       <div className="text-sm text-green-700">
-                        {selectedOrder.produced_quantity} {selectedOrder.unit_of_measure}
+                        {selectedOrder.produced_quantity}{" "}
+                        {selectedOrder.unit_of_measure}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">Holat:</div>
+                      <div className="text-xs font-medium text-green-800 mb-1">
+                        Holat:
+                      </div>
                       <div className="text-sm text-green-700">
-                        {STATUS_MAPPINGS.ORDER_STATUS[selectedOrder.status as keyof typeof STATUS_MAPPINGS.ORDER_STATUS] || selectedOrder.status}
+                        {STATUS_MAPPINGS.ORDER_STATUS[
+                          selectedOrder.status as keyof typeof STATUS_MAPPINGS.ORDER_STATUS
+                        ] || selectedOrder.status}
                       </div>
                     </div>
                   </div>
@@ -414,25 +477,41 @@ export default function WorkerAddProductionOutputPage() {
               {/* Step Execution Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">Qadam nomi:</div>
-                  <div className="text-sm text-blue-700">{selectedStepExecution.production_step_name}</div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">Holat:</div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">
+                    Qadam nomi:
+                  </div>
                   <div className="text-sm text-blue-700">
-                    {STATUS_MAPPINGS.STEP_STATUS[selectedStepExecution.status] || selectedStepExecution.status}
+                    {selectedStepExecution.production_step_name}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">Buyurtma:</div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">
+                    Holat:
+                  </div>
                   <div className="text-sm text-blue-700">
-                    {selectedOrder ? selectedOrder.description || "Belgilanmagan" : "Yuklanmoqda..."}
+                    {STATUS_MAPPINGS.STEP_STATUS[
+                      selectedStepExecution.status
+                    ] || selectedStepExecution.status}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">Tayinlangan operator:</div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">
+                    Buyurtma:
+                  </div>
                   <div className="text-sm text-blue-700">
-                    {selectedStepExecution.operators_names && selectedStepExecution.operators_names.length > 0 && selectedStepExecution.operators_names[0].trim()
+                    {selectedOrder
+                      ? selectedOrder.description || "Belgilanmagan"
+                      : "Yuklanmoqda..."}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">
+                    Tayinlangan operator:
+                  </div>
+                  <div className="text-sm text-blue-700">
+                    {selectedStepExecution.operators_names &&
+                      selectedStepExecution.operators_names.length > 0 &&
+                      selectedStepExecution.operators_names[0].trim()
                       ? selectedStepExecution.operators_names[0]
                       : "Tayinlanmagan"}
                   </div>
@@ -443,7 +522,9 @@ export default function WorkerAddProductionOutputPage() {
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium">Izohlar</Label>
+            <Label htmlFor="notes" className="text-sm font-medium">
+              Izohlar
+            </Label>
             <Textarea
               id="notes"
               placeholder="Qo'shimcha ma'lumotlar..."
@@ -479,7 +560,13 @@ export default function WorkerAddProductionOutputPage() {
             >
               Bekor qilish
             </Button>
-            <Button type="submit" disabled={loading} className=" text-base">
+            <Button
+              type="submit"
+              disabled={
+                loading || !formData.order_id || !formData.step_execution
+              }
+              className=" text-base"
+            >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />

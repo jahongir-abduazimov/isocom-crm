@@ -44,7 +44,7 @@ export default function QuickAccessMenu({
     {
       icon: <Warehouse className="h-6 w-6" />,
       label: "Braklar",
-      path: "/worker/reprocessing",
+      path: "/reprocessing",
       color: "bg-orange-600 hover:bg-orange-700",
     },
     {

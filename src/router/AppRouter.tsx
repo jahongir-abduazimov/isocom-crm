@@ -110,7 +110,7 @@ export default function App() {
           <Route path="/worker/production-outputs/:id/edit" element={<WorkerEditProductionOutputPage />} />
 
           {/* Worker Reprocessing Routes */}
-          <Route path="/worker/reprocessing" element={<WorkerReprocessingPage />} />
+          <Route path="/reprocessing" element={<WorkerReprocessingPage />} />
 
           {/* Stock Routes - Operators can access these */}
           <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />
