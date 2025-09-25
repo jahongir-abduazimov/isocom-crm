@@ -6,6 +6,7 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
+  QrCode,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWorkerStore } from "@/store/worker.store";
@@ -22,7 +23,7 @@ export default function WorkerDashboardPage() {
   }, [fetchOrders]);
 
   const handleStartWorkflow = () => {
-    navigate("/worker/orders");
+    navigate("/worker/workcenter-selection");
   };
 
   if (ordersLoading) {
@@ -54,8 +55,8 @@ export default function WorkerDashboardPage() {
         </h1>
       </div>
 
-      {/* Main Action Cards - Compact 3 in a row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Main Action Cards - Compact 4 in a row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Material Usage Card */}
         <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all duration-300">
           <div className="flex flex-col items-center justify-between h-full">
@@ -129,6 +130,32 @@ export default function WorkerDashboardPage() {
               className="w-full h-10 text-sm font-semibold border border-green-600 text-green-600 hover:bg-green-600 hover:text-white flex items-center justify-center gap-1 rounded-lg"
             >
               {t('operator.bunkerManagement')}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* QR Codes Card */}
+        <div className="bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-all duration-300">
+          <div className="flex flex-col items-center justify-between h-full">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <QrCode className="h-6 w-6 text-orange-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 mb-2">
+                {t('operator.qrCodes')}
+              </h2>
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                {t('qr.generate')} va {t('qr.scan')}
+              </p>
+            </div>
+            <Button
+              onClick={() => navigate("/worker/qr-codes")}
+              size="sm"
+              variant="outline"
+              className="w-full h-10 text-sm font-semibold border border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white flex items-center justify-center gap-1 rounded-lg"
+            >
+              {t('qr.title')}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

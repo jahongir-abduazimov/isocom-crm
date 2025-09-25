@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { WarehouseService } from "@/services/warehouse.service";
 import { useWarehousesStore } from "@/store/warehouses.store";
 import { notifySuccess } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EditWarehouse() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function EditWarehouse() {
     is_active: true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadWarehouse = async () => {
@@ -46,7 +48,7 @@ export default function EditWarehouse() {
           });
         }
       } catch (error: any) {
-        setError(error?.response?.data?.detail || "Failed to load warehouse");
+        setError(error?.response?.data?.detail || t("warehouse.warehouses.warehouseNotUpdated"));
         console.error("Error loading warehouse:", error);
       } finally {
         setInitialLoading(false);
@@ -60,7 +62,7 @@ export default function EditWarehouse() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Warehouse name is required";
+      newErrors.name = t("warehouse.warehouses.validation.nameRequired");
     }
 
     setErrors(newErrors);
@@ -105,10 +107,10 @@ export default function EditWarehouse() {
         submitData
       );
       updateWarehouse(id, updatedWarehouse);
-      notifySuccess("Warehouse updated successfully");
+      notifySuccess(t("warehouse.warehouses.warehouseUpdated"));
       navigate("/warehouse/warehouses");
     } catch (error: any) {
-      setError(error?.response?.data?.detail || "Failed to update warehouse");
+      setError(error?.response?.data?.detail || t("warehouse.warehouses.warehouseNotUpdated"));
       console.error("Error updating warehouse:", error);
     } finally {
       setLoading(false);
@@ -138,14 +140,14 @@ export default function EditWarehouse() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Back
+          {t("warehouse.warehouses.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Edit Warehouse
+            {t("warehouse.warehouses.editWarehouse")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Update warehouse information
+            {t("warehouse.warehouses.editWarehouseDesc")}
           </p>
         </div>
       </div>
@@ -164,13 +166,13 @@ export default function EditWarehouse() {
             {/* Warehouse Name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Warehouse Name *
+                {t("warehouse.warehouses.warehouseName")} *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Enter warehouse name"
+                placeholder={t("warehouse.warehouses.warehouseNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -180,7 +182,7 @@ export default function EditWarehouse() {
 
             {/* Is Active */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Status</Label>
+              <Label className="text-sm font-medium">{t("warehouse.warehouses.status")}</Label>
               <div className="flex items-center space-x-3 pt-2">
                 <Switch
                   id="is_active"
@@ -190,7 +192,7 @@ export default function EditWarehouse() {
                   }
                 />
                 <Label htmlFor="is_active" className="text-sm font-medium">
-                  Active
+                  {t("warehouse.warehouses.activeStatus")}
                 </Label>
               </div>
             </div>
@@ -199,13 +201,13 @@ export default function EditWarehouse() {
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Description
+              {t("warehouse.warehouses.description")}
             </Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Enter warehouse description"
+              placeholder={t("warehouse.warehouses.descriptionPlaceholder")}
               rows={3}
             />
           </div>
@@ -222,7 +224,7 @@ export default function EditWarehouse() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Updating..." : "Update Warehouse"}
+              {loading ? t("warehouse.warehouses.updating") : t("warehouse.warehouses.updateWarehouse")}
             </Button>
             <Button
               type="button"
@@ -231,7 +233,7 @@ export default function EditWarehouse() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("warehouse.warehouses.cancel")}
             </Button>
           </div>
         </form>

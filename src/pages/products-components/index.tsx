@@ -7,6 +7,7 @@ import { Edit, Plus, Search, Trash2, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useProductComponentsStore } from "@/store/product-components.store";
 import { useProductsStore } from "@/store/products.store";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const ProductsComponentsPage = () => {
   const {
@@ -17,6 +18,7 @@ const ProductsComponentsPage = () => {
     deleteProductComponent,
   } = useProductComponentsStore();
   const { products, fetchProducts } = useProductsStore();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -71,7 +73,7 @@ const ProductsComponentsPage = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Maxsulot komponentlari
+            {t("productComponents.title")}
           </h1>
         </div>
         <Button
@@ -79,7 +81,7 @@ const ProductsComponentsPage = () => {
           onClick={() => setAddModalOpen(true)}
         >
           <Plus size={20} />
-          Yangi Komponent
+          {t("productComponents.newComponent")}
         </Button>
       </div>
 
@@ -93,7 +95,7 @@ const ProductsComponentsPage = () => {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                placeholder="Komponentlarni qidirish..."
+                placeholder={t("productComponents.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -108,7 +110,7 @@ const ProductsComponentsPage = () => {
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           <span className="ml-2 text-gray-600">
-            Komponentlar yuklanmoqda...
+            {t("productComponents.loadingComponents")}
           </span>
         </div>
       )}
@@ -119,7 +121,7 @@ const ProductsComponentsPage = () => {
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Komponentlarni yuklashda xatolik
+                {t("productComponents.loadingError")}
               </h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
@@ -132,10 +134,10 @@ const ProductsComponentsPage = () => {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={modalOpen}
-        title="Komponentni o'chirish"
-        description="Ushbu komponentni o'chirishni tasdiqlaysizmi?"
-        confirmText="O'chirish"
-        cancelText="Bekor qilish"
+        title={t("productComponents.deleteComponent")}
+        description={t("productComponents.deleteConfirm")}
+        confirmText={t("productComponents.deleteButton")}
+        cancelText={t("productComponents.cancelButton")}
         onConfirm={handleDelete}
         onCancel={() => {
           setModalOpen(false);
@@ -167,19 +169,19 @@ const ProductsComponentsPage = () => {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tayyor maxsulot
+                    {t("productComponents.finishedProduct")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Yarim tayyor maxsulot
+                    {t("productComponents.semiFinishedProduct")}
                   </th>
                   <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Yaratilgan vaqt
+                    {t("productComponents.createdAt")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Yangilangan vaqt
+                    {t("productComponents.updatedAt")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amallar
+                    {t("productComponents.actions")}
                   </th>
                 </tr>
               </thead>
@@ -214,7 +216,7 @@ const ProductsComponentsPage = () => {
                           }}
                         >
                           <Edit size={14} className="mr-1" />
-                          Tahrirlash
+                          {t("productComponents.editButton")}
                         </Button>
                         <Button
                           variant="outline"
@@ -226,7 +228,7 @@ const ProductsComponentsPage = () => {
                           }}
                         >
                           <Trash2 size={14} className="mr-1" />
-                          O'chirish
+                          {t("productComponents.deleteButtonAction")}
                         </Button>
                       </div>
                     </td>
@@ -241,7 +243,7 @@ const ProductsComponentsPage = () => {
       {!loading && !error && filteredProductComponents?.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            Qidiruv mezonlaringizga mos komponentlar topilmadi.
+            {t("productComponents.noComponentsFound")}
           </p>
         </div>
       )}
@@ -258,7 +260,7 @@ const ProductsComponentsPage = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-sm text-gray-500">ID</p>
+                      <p className="text-sm text-gray-500">{t("productComponents.id")}</p>
                       <p className="font-mono text-xs text-gray-600">
                         {component.id.substring(0, 8)}...
                       </p>
@@ -274,7 +276,7 @@ const ProductsComponentsPage = () => {
                         }}
                       >
                         <Edit size={14} className="mr-1" />
-                        Tahrirlash
+                        {t("productComponents.editButton")}
                       </Button>
                       <Button
                         variant="outline"
@@ -286,32 +288,32 @@ const ProductsComponentsPage = () => {
                         }}
                       >
                         <Trash2 size={14} className="mr-1" />
-                        O'chirish
+                        {t("productComponents.deleteButtonAction")}
                       </Button>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Tayyor maxsulot</p>
+                    <p className="text-sm text-gray-500">{t("productComponents.finishedProduct")}</p>
                     <p className="font-medium text-gray-900">
                       {getProductName(component.finished_product)}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">
-                      Yarim tayyor maxsulot
+                      {t("productComponents.semiFinishedProduct")}
                     </p>
                     <p className="font-medium text-gray-900">
                       {getProductName(component.semi_finished_product)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Yaratilgan vaqt</p>
+                    <p className="text-sm text-gray-500">{t("productComponents.createdAt")}</p>
                     <p className="text-gray-600">
                       {formatDate(component.created_at)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Yangilangan vaqt</p>
+                    <p className="text-sm text-gray-500">{t("productComponents.updatedAt")}</p>
                     <p className="text-gray-600">
                       {formatDate(component.updated_at)}
                     </p>
@@ -321,7 +323,7 @@ const ProductsComponentsPage = () => {
             ))
           ) : (
             <div className="text-center text-gray-500 py-6">
-              Qidiruv mezonlaringizga mos komponentlar topilmadi.
+              {t("productComponents.noComponentsFound")}
             </div>
           )}
         </div>

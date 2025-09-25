@@ -15,6 +15,7 @@ import {
 import { ProductionService, type User } from "@/services/production.service";
 import { useProductionStore } from "@/store/production.store";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const STATUS_OPTIONS = [
   { value: "PENDING", label: "Pending" },
@@ -26,6 +27,7 @@ const STATUS_OPTIONS = [
 
 export default function AddProductionStepExecutionPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { orders, fetchOrders } = useProductionStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,15 +103,15 @@ export default function AddProductionStepExecutionPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.order) {
-      newErrors.order = "Order is required";
+      newErrors.order = t("production.addStepExecution.orderRequired");
     }
 
     if (!formData.production_step) {
-      newErrors.production_step = "Production step is required";
+      newErrors.production_step = t("production.addStepExecution.productionStepRequired");
     }
 
     if (!formData.status) {
-      newErrors.status = "Status is required";
+      newErrors.status = t("production.addStepExecution.statusRequired");
     }
 
     if (
@@ -117,7 +119,7 @@ export default function AddProductionStepExecutionPage() {
       (isNaN(Number(formData.actual_duration_hours)) ||
         Number(formData.actual_duration_hours) < 0)
     ) {
-      newErrors.actual_duration_hours = "Duration must be a positive number";
+      newErrors.actual_duration_hours = t("production.addStepExecution.durationPositive");
     }
 
     if (
@@ -125,7 +127,7 @@ export default function AddProductionStepExecutionPage() {
       (isNaN(Number(formData.quantity_processed)) ||
         Number(formData.quantity_processed) < 0)
     ) {
-      newErrors.quantity_processed = "Quantity must be a positive number";
+      newErrors.quantity_processed = t("production.addStepExecution.quantityPositive");
     }
 
     setErrors(newErrors);
@@ -182,13 +184,13 @@ export default function AddProductionStepExecutionPage() {
 
       await ProductionService.createStepExecution(submitData);
 
-      notifySuccess("Production step execution created successfully");
+      notifySuccess(t("production.addStepExecution.executionCreated"));
       navigate("/production/step-executions");
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Failed to create production step execution";
+          : t("production.addStepExecution.createError");
       setError(errorMessage);
       notifyError(errorMessage);
       console.error("Error creating production step execution:", err);
@@ -216,10 +218,10 @@ export default function AddProductionStepExecutionPage() {
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Add Production Step Execution
+            {t("production.addStepExecution.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Create a new production step execution
+            {t("production.addStepExecution.subtitle")}
           </p>
         </div>
       </div>
@@ -238,14 +240,14 @@ export default function AddProductionStepExecutionPage() {
             {/* Order Selection */}
             <div className="space-y-2">
               <Label htmlFor="order" className="text-sm font-medium">
-                Order *
+                {t("production.addStepExecution.order")} *
               </Label>
               <Select
                 value={formData.order}
                 onValueChange={(value) => handleInputChange("order", value)}
               >
                 <SelectTrigger className={errors.order ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select order" />
+                  <SelectValue placeholder={t("production.addStepExecution.selectOrder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {orders.map((order) => (
@@ -264,7 +266,7 @@ export default function AddProductionStepExecutionPage() {
             {/* Production Step Selection */}
             <div className="space-y-2">
               <Label htmlFor="production_step" className="text-sm font-medium">
-                Production Step *
+                {t("production.addStepExecution.productionStep")} *
               </Label>
               <Select
                 value={formData.production_step}
@@ -275,7 +277,7 @@ export default function AddProductionStepExecutionPage() {
                 <SelectTrigger
                   className={errors.production_step ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select production step" />
+                  <SelectValue placeholder={t("production.addStepExecution.selectProductionStep")} />
                 </SelectTrigger>
                 <SelectContent>
                   {productionSteps.map((step) => (
@@ -293,7 +295,7 @@ export default function AddProductionStepExecutionPage() {
             {/* Status */}
             <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-medium">
-                Status *
+                {t("production.addStepExecution.status")} *
               </Label>
               <Select
                 value={formData.status}
@@ -302,7 +304,7 @@ export default function AddProductionStepExecutionPage() {
                 <SelectTrigger
                   className={errors.status ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("production.addStepExecution.selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
                   {STATUS_OPTIONS.map((status) => (
@@ -323,7 +325,7 @@ export default function AddProductionStepExecutionPage() {
                 htmlFor="assigned_operator"
                 className="text-sm font-medium"
               >
-                Assigned Operator
+                {t("production.addStepExecution.assignedOperator")}
               </Label>
               <Select
                 value={formData.assigned_operator}
@@ -332,7 +334,7 @@ export default function AddProductionStepExecutionPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select operator" />
+                  <SelectValue placeholder={t("production.addStepExecution.selectOperator")} />
                 </SelectTrigger>
                 <SelectContent>
                   {operators.map((operator) => (
@@ -347,7 +349,7 @@ export default function AddProductionStepExecutionPage() {
             {/* Work Center */}
             <div className="space-y-2">
               <Label htmlFor="work_center" className="text-sm font-medium">
-                Work Center
+                {t("production.addStepExecution.workCenter")}
               </Label>
               <Select
                 value={formData.work_center}
@@ -356,7 +358,7 @@ export default function AddProductionStepExecutionPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select work center" />
+                  <SelectValue placeholder={t("production.addStepExecution.selectWorkCenter")} />
                 </SelectTrigger>
                 <SelectContent>
                   {workCenters.map((center) => (
@@ -371,7 +373,7 @@ export default function AddProductionStepExecutionPage() {
             {/* Start Time */}
             <div className="space-y-2">
               <Label htmlFor="start_time" className="text-sm font-medium">
-                Start Time
+                {t("production.addStepExecution.startTime")}
               </Label>
               <Input
                 id="start_time"
@@ -386,7 +388,7 @@ export default function AddProductionStepExecutionPage() {
             {/* End Time */}
             <div className="space-y-2">
               <Label htmlFor="end_time" className="text-sm font-medium">
-                End Time
+                {t("production.addStepExecution.endTime")}
               </Label>
               <Input
                 id="end_time"
@@ -402,7 +404,7 @@ export default function AddProductionStepExecutionPage() {
                 htmlFor="actual_duration_hours"
                 className="text-sm font-medium"
               >
-                Actual Duration (Hours)
+                {t("production.addStepExecution.actualDuration")}
               </Label>
               <Input
                 id="actual_duration_hours"
@@ -413,7 +415,7 @@ export default function AddProductionStepExecutionPage() {
                 onChange={(e) =>
                   handleInputChange("actual_duration_hours", e.target.value)
                 }
-                placeholder="Enter duration in hours"
+                placeholder={t("production.addStepExecution.enterDuration")}
                 className={errors.actual_duration_hours ? "border-red-500" : ""}
               />
               {errors.actual_duration_hours && (
@@ -429,7 +431,7 @@ export default function AddProductionStepExecutionPage() {
                 htmlFor="quantity_processed"
                 className="text-sm font-medium"
               >
-                Quantity Processed
+                {t("production.addStepExecution.quantityProcessed")}
               </Label>
               <Input
                 id="quantity_processed"
@@ -440,7 +442,7 @@ export default function AddProductionStepExecutionPage() {
                 onChange={(e) =>
                   handleInputChange("quantity_processed", e.target.value)
                 }
-                placeholder="Enter quantity processed"
+                placeholder={t("production.addStepExecution.enterQuantity")}
                 className={errors.quantity_processed ? "border-red-500" : ""}
               />
               {errors.quantity_processed && (
@@ -454,13 +456,13 @@ export default function AddProductionStepExecutionPage() {
           {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes" className="text-sm font-medium">
-              Notes
+              {t("production.addStepExecution.notes")}
             </Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => handleInputChange("notes", e.target.value)}
-              placeholder="Enter execution notes"
+              placeholder={t("production.addStepExecution.enterNotes")}
               rows={3}
             />
           </div>
@@ -468,7 +470,7 @@ export default function AddProductionStepExecutionPage() {
           {/* Quality Notes */}
           <div className="space-y-2">
             <Label htmlFor="quality_notes" className="text-sm font-medium">
-              Quality Notes
+              {t("production.addStepExecution.qualityNotes")}
             </Label>
             <Textarea
               id="quality_notes"
@@ -476,7 +478,7 @@ export default function AddProductionStepExecutionPage() {
               onChange={(e) =>
                 handleInputChange("quality_notes", e.target.value)
               }
-              placeholder="Enter quality notes"
+              placeholder={t("production.addStepExecution.enterQualityNotes")}
               rows={3}
             />
           </div>
@@ -493,7 +495,7 @@ export default function AddProductionStepExecutionPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Creating..." : "Create Execution"}
+              {loading ? t("production.addStepExecution.creating") : t("production.addStepExecution.createExecution")}
             </Button>
             <Button
               type="button"
@@ -502,7 +504,7 @@ export default function AddProductionStepExecutionPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

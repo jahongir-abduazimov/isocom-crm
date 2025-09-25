@@ -16,6 +16,7 @@ import { useWorkcentersStore } from "@/store/workcenters.store";
 import { LocationsService } from "@/services/locations.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import ConfirmModal from "@/components/ui/confirm-modal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function LocationsPage() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function LocationsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [locationToDelete, setLocationToDelete] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchLocations();
@@ -42,11 +44,11 @@ export default function LocationsPage() {
       setDeleting(true);
       await LocationsService.deleteLocation(locationToDelete);
       removeLocation(locationToDelete);
-      notifySuccess("Location deleted successfully");
+      notifySuccess(t("warehouse.locationDeleted"));
       setShowDeleteModal(false);
       setLocationToDelete(null);
     } catch (error: any) {
-      notifyError(error?.response?.data?.detail || "Failed to delete location");
+      notifyError(error?.response?.data?.detail || t("warehouse.locationNotDeleted"));
     } finally {
       setDeleting(false);
     }
@@ -78,6 +80,19 @@ export default function LocationsPage() {
     }
   };
 
+  const getLocationTypeLabel = (type: string) => {
+    switch (type) {
+      case "WAREHOUSE":
+        return t("warehouse.warehouse");
+      case "WORKCENTER":
+        return t("warehouse.workCenter");
+      case "WORKSHOP":
+        return t("warehouse.workshop");
+      default:
+        return type;
+    }
+  };
+
   const getWarehouseName = (warehouseId: string | null) => {
     if (!warehouseId) return "-";
     const warehouse = warehouses.find((w) => w.id === warehouseId);
@@ -95,7 +110,7 @@ export default function LocationsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Locations
+            {t("warehouse.locations")}
           </h1>
         </div>
         <Button
@@ -103,7 +118,7 @@ export default function LocationsPage() {
           onClick={() => navigate("/warehouse/locations/add")}
         >
           <Plus size={20} />
-          New Location
+          {t("warehouse.newLocation")}
         </Button>
       </div>
 
@@ -114,7 +129,7 @@ export default function LocationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Locations
+                  {t("warehouse.totalLocations")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {locations.length}
@@ -129,7 +144,7 @@ export default function LocationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Active Locations
+                  {t("warehouse.activeLocations")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {locations.filter((l) => l.is_active).length}
@@ -143,7 +158,7 @@ export default function LocationsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Warehouses</p>
+                <p className="text-sm font-medium text-gray-600">{t("warehouse.warehouses")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-blue-600">
                   {
                     locations.filter((l) => l.location_type === "WAREHOUSE")
@@ -160,7 +175,7 @@ export default function LocationsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Work Centers
+                  {t("warehouse.workCenters")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {
@@ -188,7 +203,7 @@ export default function LocationsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search locations..."
+                  placeholder={t("warehouse.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -198,23 +213,23 @@ export default function LocationsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Status" />
+                  <SelectValue placeholder={t("warehouse.allStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="all">{t("warehouse.allStatus")}</SelectItem>
+                  <SelectItem value="active">{t("warehouse.active")}</SelectItem>
+                  <SelectItem value="inactive">{t("warehouse.inactive")}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder={t("warehouse.allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="WAREHOUSE">Warehouse</SelectItem>
-                  <SelectItem value="WORKCENTER">Work Center</SelectItem>
-                  <SelectItem value="WORKSHOP">Workshop</SelectItem>
+                  <SelectItem value="all">{t("warehouse.allTypes")}</SelectItem>
+                  <SelectItem value="WAREHOUSE">{t("warehouse.warehouse")}</SelectItem>
+                  <SelectItem value="WORKCENTER">{t("warehouse.workCenter")}</SelectItem>
+                  <SelectItem value="WORKSHOP">{t("warehouse.workshop")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -230,25 +245,25 @@ export default function LocationsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
+                    {t("warehouse.name")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
+                    {t("warehouse.type")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Warehouse
+                    {t("warehouse.warehouse")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Work Center
+                    {t("warehouse.workCenter")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
+                    {t("warehouse.created")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t("warehouse.status")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t("warehouse.actions")}
                   </th>
                 </tr>
               </thead>
@@ -265,10 +280,10 @@ export default function LocationsPage() {
                             location.location_type
                           )}`}
                         >
-                          {location.location_type}
+                          {getLocationTypeLabel(location.location_type)}
                         </span>
                         <span className="ml-2 text-xs text-gray-500">
-                          {location.is_active ? "Active" : "Inactive"}
+                          {location.is_active ? t("warehouse.active") : t("warehouse.inactive")}
                         </span>
                       </div>
                     </td>
@@ -301,7 +316,7 @@ export default function LocationsPage() {
                           : "bg-red-100 text-red-800"
                           }`}
                       >
-                        {location.is_active ? "Active" : "Inactive"}
+                        {location.is_active ? t("warehouse.active") : t("warehouse.inactive")}
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -340,15 +355,15 @@ export default function LocationsPage() {
       {loading && (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-gray-500 text-lg mt-4">Loading locations...</p>
+          <p className="text-gray-500 text-lg mt-4">{t("warehouse.loadingLocations")}</p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">{t("warehouse.error")}: {error}</p>
           <Button onClick={fetchLocations} className="mt-4" variant="outline">
-            Retry
+            {t("warehouse.retry")}
           </Button>
         </div>
       )}
@@ -356,7 +371,7 @@ export default function LocationsPage() {
       {!loading && !error && filteredLocations.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No locations found matching your criteria.
+            {t("warehouse.noLocationsFound")}
           </p>
         </div>
       )}
@@ -364,10 +379,10 @@ export default function LocationsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={showDeleteModal}
-        title="Delete Location"
-        description={`Are you sure you want to delete this location? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title={t("warehouse.deleteLocation")}
+        description={t("warehouse.deleteConfirm")}
+        confirmText={deleting ? t("warehouse.deleting") : t("warehouse.deleteButtonAction")}
+        cancelText={t("warehouse.cancelButton")}
         onConfirm={handleDelete}
         onCancel={() => {
           setShowDeleteModal(false);

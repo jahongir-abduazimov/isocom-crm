@@ -5,6 +5,7 @@ import { Edit, Plus, Search, Trash2, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMaterialsStore } from "@/store/materials.store";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const MaterialsPage = () => {
   // Use Zustand store
@@ -13,6 +14,7 @@ const MaterialsPage = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const filteredMaterials = materials.filter((m) =>
     m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,7 +40,7 @@ const MaterialsPage = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Materiallar
+            {t("materials.title")}
           </h1>
         </div>
         <Button
@@ -46,7 +48,7 @@ const MaterialsPage = () => {
           onClick={() => navigate("/materials/add")}
         >
           <Plus size={20} />
-          Yangi Material
+          {t("materials.newMaterial")}
         </Button>
       </div>
 
@@ -60,7 +62,7 @@ const MaterialsPage = () => {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                placeholder="Materiallarni qidirish..."
+                placeholder={t("materials.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -74,7 +76,7 @@ const MaterialsPage = () => {
       {loading && (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <span className="ml-2 text-gray-600">Materiallar yuklanmoqda...</span>
+          <span className="ml-2 text-gray-600">{t("materials.loadingMaterials")}</span>
         </div>
       )}
 
@@ -84,7 +86,7 @@ const MaterialsPage = () => {
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Materiallarni yuklashda xatolik
+                {t("materials.loadingError")}
               </h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
@@ -97,10 +99,10 @@ const MaterialsPage = () => {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={modalOpen}
-        title="Materialni o'chirish"
-        description="Ushbu materialni o'chirishni tasdiqlaysizmi?"
-        confirmText="O'chirish"
-        cancelText="Bekor qilish"
+        title={t("materials.deleteMaterial")}
+        description={t("materials.deleteConfirm")}
+        confirmText={t("materials.deleteButton")}
+        cancelText={t("materials.cancelButton")}
         onConfirm={handleDelete}
         onCancel={() => { setModalOpen(false); setDeleteId(null); }}
       />
@@ -113,25 +115,25 @@ const MaterialsPage = () => {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Material nomi
+                    {t("materials.materialName")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Kod
+                    {t("materials.code")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Turi
+                    {t("materials.type")}
                   </th>
                   <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Birlik
+                    {t("materials.unit")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Narx
+                    {t("materials.price")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Holat
+                    {t("materials.status")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amallar
+                    {t("materials.actions")}
                   </th>
                 </tr>
               </thead>
@@ -162,7 +164,7 @@ const MaterialsPage = () => {
                           : "bg-red-100 text-red-800"
                           }`}
                       >
-                        {material.is_active ? "Faol" : "Nofaol"}
+                        {material.is_active ? t("materials.active") : t("materials.inactive")}
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -174,7 +176,7 @@ const MaterialsPage = () => {
                           onClick={() => navigate(`/materials/${material.id}/edit`)}
                         >
                           <Edit size={14} className="mr-1" />
-                          Tahrirlash
+                          {t("materials.editButton")}
                         </Button>
                         <Button
                           variant="outline"
@@ -183,7 +185,7 @@ const MaterialsPage = () => {
                           onClick={() => { setDeleteId(material.id); setModalOpen(true); }}
                         >
                           <Trash2 size={14} className="mr-1" />
-                          O'chirish
+                          {t("materials.deleteButtonAction")}
                         </Button>
                       </div>
                     </td>
@@ -198,7 +200,7 @@ const MaterialsPage = () => {
       {!loading && !error && filteredMaterials.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            Qidiruv mezonlaringizga mos materiallar topilmadi.
+            {t("materials.noMaterialsFound")}
           </p>
         </div>
       )}

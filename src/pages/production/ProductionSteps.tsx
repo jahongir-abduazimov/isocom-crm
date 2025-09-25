@@ -17,9 +17,11 @@ import {
 } from "@/services/production.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import { translateStepType } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ProductionStepsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterStepType, setFilterStepType] = useState("all");
@@ -65,12 +67,12 @@ export default function ProductionStepsPage() {
         prevSteps.filter((step) => step.id !== stepToDelete.id)
       );
 
-      notifySuccess("Production step deleted successfully");
+      notifySuccess(t("production.steps.deleteStep"));
       setDeleteModalOpen(false);
       setStepToDelete(null);
     } catch (err) {
       console.error("Error deleting production step:", err);
-      notifyError("Failed to delete production step");
+      notifyError(t("production.steps.deleteStep"));
     } finally {
       setDeleting(false);
     }
@@ -122,7 +124,7 @@ export default function ProductionStepsPage() {
   };
 
   const formatDuration = (durationHours: string | null) => {
-    if (!durationHours) return "Not specified";
+    if (!durationHours) return t("production.steps.notSpecified");
     const hours = parseFloat(durationHours);
     if (hours < 1) {
       return `${Math.round(hours * 60)} min`;
@@ -135,7 +137,7 @@ export default function ProductionStepsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Production Steps
+            {t("production.steps.title")}
           </h1>
         </div>
         <Button
@@ -143,7 +145,7 @@ export default function ProductionStepsPage() {
           onClick={() => navigate("/production/steps/add")}
         >
           <Plus size={20} />
-          New Step
+          {t("production.steps.newStep")}
         </Button>
       </div>
 
@@ -153,7 +155,7 @@ export default function ProductionStepsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Steps</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.steps.totalSteps")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {steps.length}
                 </p>
@@ -167,7 +169,7 @@ export default function ProductionStepsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Required Steps
+                  {t("production.steps.requiredSteps")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {steps.filter((s) => s.is_required).length}
@@ -182,7 +184,7 @@ export default function ProductionStepsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Optional Steps
+                  {t("production.steps.optionalSteps")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-600">
                   {steps.filter((s) => !s.is_required).length}
@@ -197,7 +199,7 @@ export default function ProductionStepsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Avg Duration
+                  {t("production.steps.avgDuration")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {steps.length > 0
@@ -232,7 +234,7 @@ export default function ProductionStepsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search steps..."
+                  placeholder={t("production.steps.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -242,34 +244,34 @@ export default function ProductionStepsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Steps" />
+                  <SelectValue placeholder={t("production.steps.allSteps")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Steps</SelectItem>
-                  <SelectItem value="required">Required</SelectItem>
-                  <SelectItem value="optional">Optional</SelectItem>
+                  <SelectItem value="all">{t("production.steps.allSteps")}</SelectItem>
+                  <SelectItem value="required">{t("production.steps.required")}</SelectItem>
+                  <SelectItem value="optional">{t("production.steps.optional")}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterStepType} onValueChange={setFilterStepType}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder={t("production.steps.allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="EXTRUSION">Extrusion</SelectItem>
-                  <SelectItem value="DEGASSING">Degassing</SelectItem>
-                  <SelectItem value="LAMINATION">Lamination</SelectItem>
-                  <SelectItem value="BRONZING">Bronzing</SelectItem>
-                  <SelectItem value="DUPLICATION">Duplication</SelectItem>
-                  <SelectItem value="PACKAGING">Packaging</SelectItem>
+                  <SelectItem value="all">{t("production.steps.allTypes")}</SelectItem>
+                  <SelectItem value="EXTRUSION">{t("production.steps.extrusion")}</SelectItem>
+                  <SelectItem value="DEGASSING">{t("production.steps.degassing")}</SelectItem>
+                  <SelectItem value="LAMINATION">{t("production.steps.lamination")}</SelectItem>
+                  <SelectItem value="BRONZING">{t("production.steps.bronzing")}</SelectItem>
+                  <SelectItem value="DUPLICATION">{t("production.steps.duplication")}</SelectItem>
+                  <SelectItem value="PACKAGING">{t("production.steps.packaging")}</SelectItem>
                   <SelectItem value="QUALITY_CONTROL">
-                    Quality Control
+                    {t("production.steps.qualityControl")}
                   </SelectItem>
                   <SelectItem value="WAREHOUSE_TRANSFER">
-                    Warehouse Transfer
+                    {t("production.steps.warehouseTransfer")}
                   </SelectItem>
                   <SelectItem value="CUSTOMER_DELIVERY">
-                    Customer Delivery
+                    {t("production.steps.customerDelivery")}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -289,22 +291,22 @@ export default function ProductionStepsPage() {
                     Order
                   </th> */}
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Step Name
+                    {t("production.steps.stepName")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Step Type
+                    {t("production.steps.stepType")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
+                    {t("production.steps.description")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Duration
+                    {t("production.steps.duration")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Required
+                    {t("production.steps.required")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t("production.steps.actions")}
                   </th>
                 </tr>
               </thead>
@@ -342,7 +344,7 @@ export default function ProductionStepsPage() {
                         className="truncate"
                         title={step.description || "No description"}
                       >
-                        {step.description || "No description"}
+                        {step.description || t("production.steps.noDescription")}
                       </div>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -351,18 +353,18 @@ export default function ProductionStepsPage() {
                           {formatDuration(step.duration_hours)}
                         </span>
                         <span className="text-xs text-gray-500 md:hidden">
-                          {step.is_required ? "Required" : "Optional"}
+                          {step.is_required ? t("production.steps.required") : t("production.steps.optional")}
                         </span>
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${step.is_required
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-800"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
                           }`}
                       >
-                        {step.is_required ? "Required" : "Optional"}
+                        {step.is_required ? t("production.steps.required") : t("production.steps.optional")}
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -399,20 +401,20 @@ export default function ProductionStepsPage() {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg mt-4">
-            Loading production steps...
+            {t("production.steps.loadingSteps")}
           </p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">{t("production.steps.loadingError")}: {error}</p>
           <Button
             onClick={fetchProductionSteps}
             className="mt-4"
             variant="outline"
           >
-            Retry
+            {t("production.steps.retry")}
           </Button>
         </div>
       )}
@@ -420,7 +422,7 @@ export default function ProductionStepsPage() {
       {!loading && !error && filteredSteps.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No production steps found matching your criteria.
+            {t("production.steps.noStepsFound")}
           </p>
         </div>
       )}
@@ -428,10 +430,10 @@ export default function ProductionStepsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Production Step"
-        description={`Are you sure you want to delete "${stepToDelete?.name}"? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title={t("production.steps.deleteStep")}
+        description={t("production.steps.deleteConfirm")}
+        confirmText={deleting ? t("production.steps.deleteButton") + "..." : t("production.steps.deleteButton")}
+        cancelText={t("production.steps.cancelButton")}
         onConfirm={confirmDeleteStep}
         onCancel={cancelDelete}
       />

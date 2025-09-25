@@ -6,10 +6,10 @@ interface StepIndicatorProps {
 }
 
 const steps = [
-    { number: 1, label: "Buyurtma", key: "order" },
-    { number: 2, label: "Qadam", key: "step" },
-    { number: 3, label: "Material", key: "material" },
-    { number: 4, label: "Tasdiqlash", key: "confirmation" },
+    { number: 1, label: "Workcenter", key: "workcenter" },
+    { number: 2, label: "Buyurtma", key: "order" },
+    { number: 3, label: "Qadam", key: "step" },
+    { number: 4, label: "Material", key: "material" },
 ];
 
 export default function StepIndicator({ currentStep, className = "" }: StepIndicatorProps) {

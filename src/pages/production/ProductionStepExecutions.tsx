@@ -27,9 +27,11 @@ import {
 } from "@/services/production.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import { STATUS_MAPPINGS } from "@/config/api.config";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ProductionStepExecutionsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [executions, setExecutions] = useState<ProductionStepExecution[]>([]);
@@ -77,12 +79,12 @@ export default function ProductionStepExecutionsPage() {
         )
       );
 
-      notifySuccess("Step execution deleted successfully");
+      notifySuccess(t("production.stepExecutions.deleteExecution"));
       setDeleteModalOpen(false);
       setExecutionToDelete(null);
     } catch (err) {
       console.error("Error deleting step execution:", err);
-      notifyError("Failed to delete step execution");
+      notifyError(t("production.stepExecutions.deleteExecution"));
     } finally {
       setDeleting(false);
     }
@@ -145,12 +147,12 @@ export default function ProductionStepExecutionsPage() {
   };
 
   const formatDateTime = (dateTime: string | null) => {
-    if (!dateTime) return "Not started";
+    if (!dateTime) return t("production.stepExecutions.notStarted");
     return new Date(dateTime).toLocaleString();
   };
 
   const formatDuration = (durationHours: string | null) => {
-    if (!durationHours) return "Not specified";
+    if (!durationHours) return t("production.stepExecutions.notSpecified");
     const hours = parseFloat(durationHours);
     if (hours < 1) {
       return `${Math.round(hours * 60)} min`;
@@ -171,7 +173,7 @@ export default function ProductionStepExecutionsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Production Step Executions
+            {t("production.stepExecutions.title")}
           </h1>
         </div>
         <Button
@@ -179,7 +181,7 @@ export default function ProductionStepExecutionsPage() {
           onClick={() => navigate("/production/step-executions/add")}
         >
           <Plus size={20} />
-          New Execution
+          {t("production.stepExecutions.newExecution")}
         </Button>
       </div>
 
@@ -190,7 +192,7 @@ export default function ProductionStepExecutionsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Executions
+                  {t("production.stepExecutions.totalExecutions")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {executions.length}
@@ -204,7 +206,7 @@ export default function ProductionStepExecutionsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.stepExecutions.completed")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {executions.filter((e) => e.status === "COMPLETED").length}
                 </p>
@@ -220,7 +222,7 @@ export default function ProductionStepExecutionsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">In Progress</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.stepExecutions.inProgress")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-blue-600">
                   {executions.filter((e) => e.status === "IN_PROGRESS").length}
                 </p>
@@ -233,7 +235,7 @@ export default function ProductionStepExecutionsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.stepExecutions.pending")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-yellow-600">
                   {executions.filter((e) => e.status === "PENDING").length}
                 </p>
@@ -260,7 +262,7 @@ export default function ProductionStepExecutionsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search executions..."
+                  placeholder={t("production.stepExecutions.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -270,15 +272,15 @@ export default function ProductionStepExecutionsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Status" />
+                  <SelectValue placeholder={t("production.stepExecutions.allStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="PENDING">Pending</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="FAILED">Failed</SelectItem>
-                  <SelectItem value="SKIPPED">Skipped</SelectItem>
+                  <SelectItem value="all">{t("production.stepExecutions.allStatus")}</SelectItem>
+                  <SelectItem value="PENDING">{t("production.stepExecutions.pending")}</SelectItem>
+                  <SelectItem value="IN_PROGRESS">{t("production.stepExecutions.inProgress")}</SelectItem>
+                  <SelectItem value="COMPLETED">{t("production.stepExecutions.completed")}</SelectItem>
+                  <SelectItem value="FAILED">{t("production.stepExecutions.failed")}</SelectItem>
+                  <SelectItem value="SKIPPED">{t("production.stepExecutions.skipped")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -294,28 +296,28 @@ export default function ProductionStepExecutionsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Step Name
+                    {t("production.stepExecutions.stepName")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order ID
+                    {t("production.stepExecutions.orderId")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Operator
+                    {t("production.stepExecutions.operator")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Start Time
+                    {t("production.stepExecutions.startTime")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    End Time
+                    {t("production.stepExecutions.endTime")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Duration
+                    {t("production.stepExecutions.duration")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t("production.stepExecutions.status")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t("production.stepExecutions.actions")}
                   </th>
                 </tr>
               </thead>
@@ -339,7 +341,7 @@ export default function ProductionStepExecutionsPage() {
                     </td>
                     <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="truncate">
-                        {execution.assigned_operator_name || "Unassigned"}
+                        {execution.assigned_operator_name || t("production.stepExecutions.unassigned")}
                       </div>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -406,20 +408,20 @@ export default function ProductionStepExecutionsPage() {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg mt-4">
-            Loading step executions...
+            {t("production.stepExecutions.loadingExecutions")}
           </p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">{t("production.stepExecutions.loadingError")}: {error}</p>
           <Button
             onClick={fetchStepExecutions}
             className="mt-4"
             variant="outline"
           >
-            Retry
+            {t("production.stepExecutions.retry")}
           </Button>
         </div>
       )}
@@ -427,7 +429,7 @@ export default function ProductionStepExecutionsPage() {
       {!loading && !error && filteredExecutions.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No step executions found matching your criteria.
+            {t("production.stepExecutions.noExecutionsFound")}
           </p>
         </div>
       )}
@@ -435,10 +437,10 @@ export default function ProductionStepExecutionsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Step Execution"
-        description={`Are you sure you want to delete the step execution for "${executionToDelete?.production_step_name}"? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title={t("production.stepExecutions.deleteExecution")}
+        description={t("production.stepExecutions.deleteConfirm")}
+        confirmText={deleting ? t("production.stepExecutions.deleteButton") + "..." : t("production.stepExecutions.deleteButton")}
+        cancelText={t("production.stepExecutions.cancelButton")}
         onConfirm={confirmDeleteExecution}
         onCancel={cancelDelete}
       />

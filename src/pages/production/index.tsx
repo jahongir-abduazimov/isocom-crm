@@ -13,6 +13,7 @@ import { useProductionStore } from "@/store/production.store";
 import { STATUS_MAPPINGS } from "@/config/api.config";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "@/components/ui/confirm-modal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +21,7 @@ export default function OrdersPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { orders, loading, error, fetchOrders, deleteOrder } = useProductionStore();
 
@@ -121,7 +123,7 @@ export default function OrdersPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Ishlab chiqarish buyurtmalari
+            {t("production.orders.title")}
           </h1>
         </div>
         <Button
@@ -129,7 +131,7 @@ export default function OrdersPage() {
           onClick={() => navigate("/production/orders/add")}
         >
           <Plus size={20} />
-          Yangi buyurtma
+          {t("production.orders.newOrder")}
         </Button>
       </div>
 
@@ -143,7 +145,7 @@ export default function OrdersPage() {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                placeholder="Buyurtmalarni qidirish..."
+                placeholder={t("production.orders.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -153,14 +155,14 @@ export default function OrdersPage() {
           <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger className="min-w-[140px]">
-                <SelectValue placeholder="Barcha holatlar" />
+                <SelectValue placeholder={t("production.orders.allStatuses")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Barcha holatlar</SelectItem>
-                <SelectItem value="pending">Kutilmoqda</SelectItem>
-                <SelectItem value="in_progress">Jarayonda</SelectItem>
-                <SelectItem value="completed">Yakunlangan</SelectItem>
-                <SelectItem value="cancelled">Bekor qilingan</SelectItem>
+                <SelectItem value="all">{t("production.orders.allStatuses")}</SelectItem>
+                <SelectItem value="pending">{t("production.orders.pending")}</SelectItem>
+                <SelectItem value="in_progress">{t("production.orders.inProgress")}</SelectItem>
+                <SelectItem value="completed">{t("production.orders.completed")}</SelectItem>
+                <SelectItem value="cancelled">{t("production.orders.cancelled")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -171,7 +173,7 @@ export default function OrdersPage() {
       {loading && (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <span className="ml-2 text-gray-600">Buyurtmalar yuklanmoqda...</span>
+          <span className="ml-2 text-gray-600">{t("production.orders.loadingOrders")}</span>
         </div>
       )}
 
@@ -181,7 +183,7 @@ export default function OrdersPage() {
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Buyurtmalarni yuklashda xatolik
+                {t("production.orders.loadingError")}
               </h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
@@ -208,7 +210,7 @@ export default function OrdersPage() {
                       {order.produced_product_name || "N/A"}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      Buyurtma #{order.id.slice(0, 8)}...
+                      {t("production.orders.orderNumber", { orderId: order.id.slice(0, 8) + "..." })}
                     </p>
                   </div>
                   <span
@@ -228,7 +230,7 @@ export default function OrdersPage() {
                 <div className="flex items-center gap-3">
                   <Package className="h-4 w-4 text-gray-400" />
                   <div className="flex-1">
-                    <span className="text-sm text-gray-600">Miqdor</span>
+                    <span className="text-sm text-gray-600">{t("production.orders.quantity")}</span>
                     <p className="text-sm font-medium text-gray-900">
                       {order.produced_quantity} {formatUnitOfMeasure(order.unit_of_measure)}
                     </p>
@@ -241,7 +243,7 @@ export default function OrdersPage() {
                     <TrendingUp className="h-4 w-4 text-gray-400" />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Jarayon</span>
+                        <span className="text-sm text-gray-600">{t("production.orders.progress")}</span>
                         <span className="text-sm font-medium text-gray-900">
                           {order.completion_percentage}%
                         </span>
@@ -261,7 +263,7 @@ export default function OrdersPage() {
                   <div className="flex items-center gap-3">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <div className="flex-1">
-                      <span className="text-sm text-gray-600">Boshlanish sanasi</span>
+                      <span className="text-sm text-gray-600">{t("production.orders.startDate")}</span>
                       <p className="text-sm text-gray-900">
                         {formatDate(order.start_date)}
                       </p>
@@ -315,7 +317,7 @@ export default function OrdersPage() {
                       navigate(`/production/orders/${order.id}`);
                     }}
                   >
-                    Tafsilotlarni ko'rish →
+                    {t("production.orders.viewDetails")}
                   </Button>
                 </div>
               </div>
@@ -327,7 +329,7 @@ export default function OrdersPage() {
       {!loading && !error && filteredOrders.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            Qidiruv mezonlaringizga mos buyurtmalar topilmadi.
+            {t("production.orders.noOrdersFound")}
           </p>
         </div>
       )}
@@ -335,10 +337,10 @@ export default function OrdersPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Ishlab chiqarish buyurtmasini o'chirish"
-        description="Ushbu ishlab chiqarish buyurtmasini o'chirishni tasdiqlaysizmi? Bu amalni bekor qilib bo'lmaydi."
-        confirmText="O'chirish"
-        cancelText="Bekor qilish"
+        title={t("production.orders.deleteOrder")}
+        description={t("production.orders.deleteConfirm")}
+        confirmText={t("production.orders.deleteButton")}
+        cancelText={t("production.orders.cancelButton")}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />

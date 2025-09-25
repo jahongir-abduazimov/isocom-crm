@@ -1,10 +1,46 @@
 import { API_CONFIG } from '@/config/api.config';
 
+// New Workflow Interfaces
+export interface Workcenter {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+}
+
 export interface WorkerOrder {
     id: string;
-    produced_product__name: string;
+    produced_product_name: string;
+    produced_product__name?: string;
     produced_quantity: number;
+    unit_of_measure: string;
     status: string;
+    description: string;
+    step_execution_id: string;
+    step_name: string;
+    step_status: string;
+    created_at: string;
+}
+
+export interface OrdersByWorkcenterTypeResponse {
+    workcenter_type: string;
+    orders: WorkerOrder[];
+    total_orders: number;
+}
+
+export interface ProductionStepsByWorkcenterTypeResponse {
+    workcenter_type: string;
+    production_steps: ProductionStep[];
+}
+
+export interface StepExecutionResponse {
+    step_execution_id: string;
+    order_id: string;
+    production_step_id: string;
+    production_step_name: string;
+    status: string;
+    created: boolean;
+    workcenter_type: string;
 }
 
 export interface ProductionStep {
@@ -60,6 +96,15 @@ export interface BulkCreateRequest {
     items: BulkCreateItem[];
 }
 
+// New Workflow Bulk Create Request
+export interface BulkCreateByWorkcenterTypeRequest {
+    order_id: string;
+    production_step_id: string;
+    operator_id: string;
+    workcenter_type: string;
+    items: BulkCreateItem[];
+}
+
 export interface BulkCreateResponse {
     message: string;
     order_id: string;
@@ -67,6 +112,20 @@ export interface BulkCreateResponse {
     step_execution_id: string;
     created_items_count: number;
     assigned_operator: string;
+}
+
+// New Workflow Bulk Create Response
+export interface BulkCreateByWorkcenterTypeResponse {
+    message: string;
+    order_id: string;
+    order_status: string;
+    step_execution_id: string;
+    step_execution_created: boolean;
+    production_step_name: string;
+    workcenter_type: string;
+    created_items_count: number;
+    assigned_operator: string;
+    assigned_operator_id: string;
 }
 
 class WorkerService {
@@ -107,6 +166,95 @@ class WorkerService {
         return response;
     }
 
+    // New Workflow Methods
+    async fetchWorkcenters(): Promise<Workcenter[]> {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_WORKCENTERS}`, {
+                headers: this.getAuthHeaders()
+            });
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Workcenterlarni olishda xatolik:', error);
+            throw error;
+        }
+    }
+
+    async fetchOrdersByWorkcenterType(workcenterType: string): Promise<OrdersByWorkcenterTypeResponse> {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_ORDERS_BY_WORKCENTER_TYPE(workcenterType)}`, {
+                headers: this.getAuthHeaders()
+            });
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Workcenter type bo\'yicha buyurtmalarni olishda xatolik:', error);
+            throw error;
+        }
+    }
+
+    async fetchProductionStepsByWorkcenterType(workcenterType: string): Promise<ProductionStepsByWorkcenterTypeResponse> {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_PRODUCTION_STEPS_BY_WORKCENTER_TYPE(workcenterType)}`, {
+                headers: this.getAuthHeaders()
+            });
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Workcenter type bo\'yicha production steplarni olishda xatolik:', error);
+            throw error;
+        }
+    }
+
+    async getOrCreateStepExecution(orderId: string, workcenterType: string): Promise<StepExecutionResponse> {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_GET_OR_CREATE_STEP_EXECUTION(orderId, workcenterType)}`, {
+                headers: this.getAuthHeaders()
+            });
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Step execution olish/yaratishda xatolik:', error);
+            throw error;
+        }
+    }
+
+    async bulkCreateByWorkcenterType(request: BulkCreateByWorkcenterTypeRequest): Promise<BulkCreateByWorkcenterTypeResponse> {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_BULK_CREATE_BY_WORKCENTER_TYPE}`, {
+                method: 'POST',
+                headers: this.getAuthHeaders(),
+                body: JSON.stringify(request)
+            });
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Workcenter type bo\'yicha bulk create da xatolik:', error);
+            throw error;
+        }
+    }
+
+    // New method to fetch all orders without workcenter type filter
+    async fetchAllOrders(): Promise<WorkerOrder[]> {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_ALL_ORDERS}`, {
+                headers: this.getAuthHeaders()
+            });
+
+            this.handleResponse(response);
+            return await response.json();
+        } catch (error) {
+            console.error('Barcha buyurtmalarni olishda xatolik:', error);
+            throw error;
+        }
+    }
+
+    // Legacy Methods (for backward compatibility)
     async fetchOrders(): Promise<WorkerOrder[]> {
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.WORKER_ORDERS}`, {

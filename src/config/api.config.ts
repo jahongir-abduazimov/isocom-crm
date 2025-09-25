@@ -64,10 +64,18 @@ export const API_CONFIG = {
     LOCATIONS: "/locations/",
     LOCATION_BY_ID: (id: string) => `/locations/${id}/`,
 
-    // Worker API endpoints
-    WORKER_ORDERS: "/worker/used-materials/orders/",
-    WORKER_ORDER_STEPS: () => `/production-steps/`,
+    // Worker API endpoints - New Workflow
+    WORKER_WORKCENTERS: "/worker/used-materials/workcenters/",
+    WORKER_ORDERS_BY_WORKCENTER_TYPE: (workcenterType: string) => `/worker/used-materials/orders_by_workcenter_type/?workcenter_type=${workcenterType}`,
+    WORKER_PRODUCTION_STEPS_BY_WORKCENTER_TYPE: (workcenterType: string) => `/worker/used-materials/production_steps_by_workcenter_type/?workcenter_type=${workcenterType}`,
+    WORKER_GET_OR_CREATE_STEP_EXECUTION: (orderId: string, workcenterType: string) => `/worker/used-materials/get_or_create_step_execution/?order_id=${orderId}&workcenter_type=${workcenterType}`,
+    WORKER_BULK_CREATE_BY_WORKCENTER_TYPE: "/worker/used-materials/bulk_create_by_workcenter_type/",
     WORKER_WORKCENTER_STOCK: (workcenterId: string) => `/worker/used-materials/workcenter_stock/?workcenter_id=${workcenterId}`,
+
+    // Legacy Worker API endpoints (for backward compatibility)
+    WORKER_ORDERS: "/worker/used-materials/orders/",
+    WORKER_ALL_ORDERS: "/worker/used-materials/orders/",
+    WORKER_ORDER_STEPS: () => `/production-steps/`,
     WORKER_BULK_CREATE: "/worker/used-materials/bulk_create/",
     WORKER_MATERIALS: "/worker/used-materials/materials/",
     WORKER_PRODUCTS: "/worker/used-materials/products/",

@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Wrench, FileText, Users, Shield } from "lucide-react";
+import { Wrench, FileText, Users, Shield, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { useTranslation } from "react-i18next";
@@ -51,6 +51,19 @@ export default function OperatorTopNav() {
             <Shield size={14} className="sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">{t('operator.scrap')}</span>
             <span className="sm:hidden">{t('operator.scrap')}</span>
+          </NavLink>
+          <NavLink
+            to="/worker/qr-codes"
+            className={({ isActive }) =>
+              `flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium ${isActive
+                ? "bg-primary text-white shadow font-semibold"
+                : "hover:bg-primary/10 hover:text-primary"
+              }`
+            }
+          >
+            <QrCode size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">{t('operator.qrCodes')}</span>
+            <span className="sm:hidden">{t('operator.qrCodesShort')}</span>
           </NavLink>
         </nav>
       </div>

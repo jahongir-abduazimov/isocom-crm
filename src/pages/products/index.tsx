@@ -5,6 +5,7 @@ import { Edit, Plus, Search, Trash2, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useProductsStore } from "@/store/products.store";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const ProductsPage = () => {
   const { products, loading, error, fetchProducts, deleteProduct } =
@@ -13,6 +14,7 @@ const ProductsPage = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const filteredProducts = products?.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -38,7 +40,7 @@ const ProductsPage = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Maxsulotlar
+            {t("products.title")}
           </h1>
         </div>
         <Button
@@ -46,7 +48,7 @@ const ProductsPage = () => {
           onClick={() => navigate("/products/add")}
         >
           <Plus size={20} />
-          Yangi Maxsulot
+          {t("products.newProduct")}
         </Button>
       </div>
 
@@ -60,7 +62,7 @@ const ProductsPage = () => {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               />
               <Input
-                placeholder="Maxsulotlarni qidirish..."
+                placeholder={t("products.searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -74,7 +76,7 @@ const ProductsPage = () => {
       {loading && (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-          <span className="ml-2 text-gray-600">Maxsulotlar yuklanmoqda...</span>
+          <span className="ml-2 text-gray-600">{t("products.loadingProducts")}</span>
         </div>
       )}
 
@@ -84,7 +86,7 @@ const ProductsPage = () => {
           <div className="flex">
             <div className="ml-3">
               <h3 className="text-sm font-medium text-red-800">
-                Maxsulotlarni yuklashda xatolik
+                {t("products.loadingError")}
               </h3>
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
@@ -97,10 +99,10 @@ const ProductsPage = () => {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={modalOpen}
-        title="Maxsulotni o'chirish"
-        description="Ushbu maxsulotni o'chirishni tasdiqlaysizmi?"
-        confirmText="O'chirish"
-        cancelText="Bekor qilish"
+        title={t("products.deleteProduct")}
+        description={t("products.deleteConfirm")}
+        confirmText={t("products.deleteButton")}
+        cancelText={t("products.cancelButton")}
         onConfirm={handleDelete}
         onCancel={() => {
           setModalOpen(false);
@@ -116,25 +118,25 @@ const ProductsPage = () => {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Maxsulot nomi
+                    {t("products.productName")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Slug
+                    {t("products.slug")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Kod
+                    {t("products.code")}
                   </th>
                   <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Turi
+                    {t("products.type")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Narx
+                    {t("products.price")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Holat
+                    {t("products.status")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amallar
+                    {t("products.actions")}
                   </th>
                 </tr>
               </thead>
@@ -165,7 +167,7 @@ const ProductsPage = () => {
                           : "bg-red-100 text-red-800"
                           }`}
                       >
-                        {product.is_active ? "Faol" : "Nofaol"}
+                        {product.is_active ? t("products.active") : t("products.inactive")}
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -177,7 +179,7 @@ const ProductsPage = () => {
                           onClick={() => navigate(`/products/${product.id}/edit`)}
                         >
                           <Edit size={14} className="mr-1" />
-                          Tahrirlash
+                          {t("products.editButton")}
                         </Button>
                         <Button
                           variant="outline"
@@ -189,7 +191,7 @@ const ProductsPage = () => {
                           }}
                         >
                           <Trash2 size={14} className="mr-1" />
-                          O'chirish
+                          {t("products.deleteButtonAction")}
                         </Button>
                       </div>
                     </td>
@@ -204,7 +206,7 @@ const ProductsPage = () => {
       {!loading && !error && filteredProducts?.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            Qidiruv mezonlaringizga mos maxsulotlar topilmadi.
+            {t("products.noProductsFound")}
           </p>
         </div>
       )}

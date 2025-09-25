@@ -18,6 +18,7 @@ import { ArrowLeft } from "lucide-react";
 import { useProductionStore } from "@/store/production.store";
 import { useProductsStore } from "@/store/products.store";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Form validation schema
 const formSchema = z.object({
@@ -36,6 +37,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function AddOrderPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { createOrder, loading, error } = useProductionStore();
   const { products, fetchProducts } = useProductsStore();
 
@@ -86,10 +88,10 @@ export default function AddOrderPage() {
       };
 
       await createOrder(orderData);
-      notifySuccess("Buyurtma muvaffaqiyatli yaratildi!");
+      notifySuccess(t("production.addOrder.orderCreated"));
       navigate("/production/orders");
     } catch (e) {
-      notifyError("Buyurtma yaratishda xatolik yuz berdi");
+      notifyError(t("production.addOrder.createError"));
     }
   };
 
@@ -108,10 +110,10 @@ export default function AddOrderPage() {
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Create New Order
+            {t("production.addOrder.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Create a new production order
+            {t("production.addOrder.subtitle")}
           </p>
         </div>
       </div>
@@ -130,11 +132,11 @@ export default function AddOrderPage() {
             {/* Produced Product Selection */}
             <div className="space-y-2">
               <Label htmlFor="produced_product" className="text-sm font-medium">
-                Product *
+                {t("production.addOrder.product")} *
               </Label>
               <Select onValueChange={(val) => setValue("produced_product", val)}>
                 <SelectTrigger className={errors.produced_product ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select product" />
+                  <SelectValue placeholder={t("production.addOrder.selectProduct")} />
                 </SelectTrigger>
                 <SelectContent>
                   {products
@@ -154,22 +156,22 @@ export default function AddOrderPage() {
             {/* Unit of Measure */}
             <div className="space-y-2">
               <Label htmlFor="unit_of_measure" className="text-sm font-medium">
-                Unit of Measure *
+                {t("production.addOrder.unitOfMeasure")} *
               </Label>
               <Select
                 onValueChange={(val) => setValue("unit_of_measure", val)}
                 defaultValue="KG"
               >
                 <SelectTrigger className={errors.unit_of_measure ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select unit" />
+                  <SelectValue placeholder={t("production.addOrder.selectUnit")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="KG">Kilogram</SelectItem>
-                  <SelectItem value="METER">Meter</SelectItem>
-                  <SelectItem value="METER_SQUARE">Square Meter</SelectItem>
-                  <SelectItem value="METER_CUBIC">Cubic Meter</SelectItem>
-                  <SelectItem value="PIECE">Piece</SelectItem>
-                  <SelectItem value="LITER">Liter</SelectItem>
+                  <SelectItem value="KG">{t("production.addOrder.kilogram")}</SelectItem>
+                  <SelectItem value="METER">{t("production.addOrder.meter")}</SelectItem>
+                  <SelectItem value="METER_SQUARE">{t("production.addOrder.squareMeter")}</SelectItem>
+                  <SelectItem value="METER_CUBIC">{t("production.addOrder.cubicMeter")}</SelectItem>
+                  <SelectItem value="PIECE">{t("production.addOrder.piece")}</SelectItem>
+                  <SelectItem value="LITER">{t("production.addOrder.liter")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.unit_of_measure && (
@@ -180,11 +182,11 @@ export default function AddOrderPage() {
             {/* Produced Quantity */}
             <div className="space-y-2">
               <Label htmlFor="produced_quantity" className="text-sm font-medium">
-                Quantity *
+                {t("production.addOrder.quantity")} *
               </Label>
               <Input
                 id="produced_quantity"
-                placeholder="Enter quantity"
+                placeholder={t("production.addOrder.enterQuantity")}
                 className={errors.produced_quantity ? "border-red-500" : ""}
                 {...register("produced_quantity")}
               />
@@ -196,20 +198,20 @@ export default function AddOrderPage() {
             {/* Status */}
             <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-medium">
-                Status *
+                {t("production.addOrder.status")} *
               </Label>
               <Select
                 onValueChange={(val) => setValue("status", val)}
                 defaultValue="PENDING"
               >
                 <SelectTrigger className={errors.status ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("production.addOrder.selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PENDING">Pending</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="PENDING">{t("production.orders.pending")}</SelectItem>
+                  <SelectItem value="IN_PROGRESS">{t("production.orders.inProgress")}</SelectItem>
+                  <SelectItem value="COMPLETED">{t("production.orders.completed")}</SelectItem>
+                  <SelectItem value="CANCELLED">{t("production.orders.cancelled")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.status && (
@@ -220,7 +222,7 @@ export default function AddOrderPage() {
             {/* Start Date */}
             <div className="space-y-2">
               <Label htmlFor="start_date" className="text-sm font-medium">
-                Start Date *
+                {t("production.addOrder.startDate")} *
               </Label>
               <Input
                 id="start_date"
@@ -236,7 +238,7 @@ export default function AddOrderPage() {
             {/* Completion Date */}
             <div className="space-y-2">
               <Label htmlFor="completion_date" className="text-sm font-medium">
-                Completion Date
+                {t("production.addOrder.completionDate")}
               </Label>
               <Input
                 id="completion_date"
@@ -253,11 +255,11 @@ export default function AddOrderPage() {
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Description *
+              {t("production.addOrder.description")} *
             </Label>
             <Textarea
               id="description"
-              placeholder="Enter order description"
+              placeholder={t("production.addOrder.enterDescription")}
               rows={3}
               className={errors.description ? "border-red-500" : ""}
               {...register("description")}
@@ -274,7 +276,7 @@ export default function AddOrderPage() {
               disabled={loading}
               className="flex items-center gap-2 w-full sm:w-auto"
             >
-              {loading ? "Creating..." : "Create Order"}
+              {loading ? t("production.addOrder.creating") : t("production.addOrder.createOrder")}
             </Button>
             <Button
               type="button"
@@ -283,7 +285,7 @@ export default function AddOrderPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

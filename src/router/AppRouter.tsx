@@ -64,6 +64,12 @@ import WorkerProductionOutputsPage from "@/pages/worker/ProductionOutputs";
 import WorkerAddProductionOutputPage from "@/pages/worker/AddProductionOutput";
 import WorkerEditProductionOutputPage from "@/pages/worker/EditProductionOutput";
 
+// New Workflow pages
+import WorkcenterSelectionPage from "@/pages/worker/WorkcenterSelection";
+import OrderSelectionByWorkcenterTypePage from "@/pages/worker/OrderSelectionByWorkcenterType";
+import ProductionStepSelectionByWorkcenterTypePage from "@/pages/worker/ProductionStepSelectionByWorkcenterType";
+import MaterialUsageNewWorkflowPage from "@/pages/worker/MaterialUsageNewWorkflow";
+
 // Worker Bunker pages
 import BunkersDashboardPage from "@/pages/worker/bunkers";
 import BunkerListPage from "@/pages/worker/bunkers/BunkerList";
@@ -71,6 +77,10 @@ import EndShiftBunkerPage from "@/pages/worker/bunkers/EndShiftBunker";
 
 // Worker Reprocessing page
 import WorkerReprocessingPage from "@/pages/worker/Reprocessing";
+
+
+// Worker QR Codes page
+import QRCodesPage from "@/pages/worker/QRCodes";
 
 // Scrap pages
 import DefectsPage from "@/pages/scrap/Defects";
@@ -94,6 +104,14 @@ export default function App() {
         }>
           {/* Operator Routes - No additional protection needed */}
           <Route path="/worker" element={<WorkerDashboardPage />} />
+
+          {/* New Workflow Routes */}
+          <Route path="/worker/workcenter-selection" element={<WorkcenterSelectionPage />} />
+          <Route path="/worker/workcenter-type/:workcenterType" element={<OrderSelectionByWorkcenterTypePage />} />
+          <Route path="/worker/workcenter-type/:workcenterType/order/:orderId" element={<ProductionStepSelectionByWorkcenterTypePage />} />
+          <Route path="/worker/workcenter-type/:workcenterType/order/:orderId/step/:stepId" element={<MaterialUsageNewWorkflowPage />} />
+
+          {/* Legacy Workflow Routes */}
           <Route path="/worker/orders" element={<WorkerOrderListPage />} />
           <Route path="/worker/orders/:id" element={<WorkerOrderDetailPage />} />
           <Route path="/worker/orders/:id/steps/:stepId" element={<WorkerStockSelectionPage />} />
@@ -111,6 +129,9 @@ export default function App() {
 
           {/* Worker Reprocessing Routes */}
           <Route path="/reprocessing" element={<WorkerReprocessingPage />} />
+
+          {/* Worker QR Codes Routes */}
+          <Route path="/worker/qr-codes" element={<QRCodesPage />} />
 
           {/* Stock Routes - Operators can access these */}
           <Route path="/stock/inventory-movement-logs" element={<InventoryMovementLogs />} />

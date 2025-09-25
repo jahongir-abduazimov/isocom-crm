@@ -22,6 +22,7 @@ import {
     type ProductionOutput,
 } from "@/services/production.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Form validation schema
 const formSchema = z.object({
@@ -38,6 +39,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function EditProductionOutputPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const { products, fetchProducts } = useProductsStore();
     const { orders, fetchOrders } = useProductionStore();
@@ -111,10 +113,10 @@ export default function EditProductionOutputPage() {
             };
 
             await ProductionService.updateProductionOutput(id, outputData);
-            notifySuccess("Ishlab chiqarish natijasi muvaffaqiyatli yangilandi!");
+            notifySuccess(t("production.editOutput.outputUpdated"));
             navigate("/production/outputs");
         } catch (err: any) {
-            notifyError("Ishlab chiqarish natijasini yangilashda xatolik yuz berdi");
+            notifyError(t("production.editOutput.updateError"));
         }
     };
 
@@ -123,7 +125,7 @@ export default function EditProductionOutputPage() {
             <div className="max-w-2xl mx-auto">
                 <div className="flex justify-center items-center py-12">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    <span className="ml-2 text-gray-600">Yuklanmoqda...</span>
+                    <span className="ml-2 text-gray-600">{t("production.editOutput.loadingOutput")}</span>
                 </div>
             </div>
         );
@@ -134,14 +136,14 @@ export default function EditProductionOutputPage() {
             <div className="max-w-2xl mx-auto">
                 <div className="text-center py-12">
                     <p className="text-red-500 text-lg">
-                        Ishlab chiqarish natijasi topilmadi
+                        {t("production.editOutput.outputNotFound")}
                     </p>
                     <Button
                         variant="outline"
                         onClick={() => navigate("/production/outputs")}
                         className="mt-4"
                     >
-                        Ortga qaytish
+                        {t("production.editOutput.backToOutputs")}
                     </Button>
                 </div>
             </div>
@@ -163,10 +165,10 @@ export default function EditProductionOutputPage() {
                 </Button>
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                        Edit Production Output
+                        {t("production.editOutput.title")}
                     </h1>
                     <p className="text-gray-600 mt-1 text-sm lg:text-base">
-                        Update production output details
+                        {t("production.editOutput.subtitle")}
                     </p>
                 </div>
             </div>
@@ -178,14 +180,14 @@ export default function EditProductionOutputPage() {
                         {/* Step Execution Selection */}
                         <div className="space-y-2">
                             <Label htmlFor="step_execution" className="text-sm font-medium">
-                                Step Execution *
+                                {t("production.addOutput.stepExecution")} *
                             </Label>
                             <Select
                                 onValueChange={(val) => setValue("step_execution", val)}
                                 defaultValue={output.step_execution}
                             >
                                 <SelectTrigger className={errors.step_execution ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select step execution" />
+                                    <SelectValue placeholder={t("production.addOutput.selectStepExecution")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {orders.map((order) =>
@@ -206,14 +208,14 @@ export default function EditProductionOutputPage() {
                         {/* Product Selection */}
                         <div className="space-y-2">
                             <Label htmlFor="product" className="text-sm font-medium">
-                                Product *
+                                {t("production.addOutput.product")} *
                             </Label>
                             <Select
                                 onValueChange={(val) => setValue("product", val)}
                                 defaultValue={output.product}
                             >
                                 <SelectTrigger className={errors.product ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select product" />
+                                    <SelectValue placeholder={t("production.addOutput.selectProduct")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {products.map((product) => (
@@ -231,22 +233,22 @@ export default function EditProductionOutputPage() {
                         {/* Unit of Measure */}
                         <div className="space-y-2">
                             <Label htmlFor="unit_of_measure" className="text-sm font-medium">
-                                Unit of Measure *
+                                {t("production.addOutput.unitOfMeasure")} *
                             </Label>
                             <Select
                                 onValueChange={(val) => setValue("unit_of_measure", val)}
                                 defaultValue={output.unit_of_measure}
                             >
                                 <SelectTrigger className={errors.unit_of_measure ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select unit" />
+                                    <SelectValue placeholder={t("production.addOutput.selectUnit")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="KG">Kilogram</SelectItem>
-                                    <SelectItem value="METER">Meter</SelectItem>
-                                    <SelectItem value="METER_SQUARE">Square Meter</SelectItem>
-                                    <SelectItem value="METER_CUBIC">Cubic Meter</SelectItem>
-                                    <SelectItem value="PIECE">Piece</SelectItem>
-                                    <SelectItem value="LITER">Liter</SelectItem>
+                                    <SelectItem value="KG">{t("production.addOutput.kilogram")}</SelectItem>
+                                    <SelectItem value="METER">{t("production.addOutput.meter")}</SelectItem>
+                                    <SelectItem value="METER_SQUARE">{t("production.addOutput.squareMeter")}</SelectItem>
+                                    <SelectItem value="METER_CUBIC">{t("production.addOutput.cubicMeter")}</SelectItem>
+                                    <SelectItem value="PIECE">{t("production.addOutput.piece")}</SelectItem>
+                                    <SelectItem value="LITER">{t("production.addOutput.liter")}</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.unit_of_measure && (
@@ -257,19 +259,19 @@ export default function EditProductionOutputPage() {
                         {/* Quality Status */}
                         <div className="space-y-2">
                             <Label htmlFor="quality_status" className="text-sm font-medium">
-                                Quality Status *
+                                {t("production.addOutput.qualityStatus")} *
                             </Label>
                             <Select
                                 onValueChange={(val) => setValue("quality_status", val)}
                                 defaultValue={output.quality_status}
                             >
                                 <SelectTrigger className={errors.quality_status ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select quality status" />
+                                    <SelectValue placeholder={t("production.addOutput.selectQualityStatus")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="PASSED">Passed</SelectItem>
-                                    <SelectItem value="FAILED">Failed</SelectItem>
-                                    <SelectItem value="PENDING">Pending</SelectItem>
+                                    <SelectItem value="PASSED">{t("production.addOutput.passed")}</SelectItem>
+                                    <SelectItem value="FAILED">{t("production.addOutput.failed")}</SelectItem>
+                                    <SelectItem value="PENDING">{t("production.addOutput.pending")}</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.quality_status && (
@@ -280,11 +282,11 @@ export default function EditProductionOutputPage() {
                         {/* Quantity */}
                         <div className="space-y-2">
                             <Label htmlFor="quantity" className="text-sm font-medium">
-                                Quantity *
+                                {t("production.addOutput.quantity")} *
                             </Label>
                             <Input
                                 id="quantity"
-                                placeholder="Enter quantity"
+                                placeholder={t("production.addOutput.enterQuantity")}
                                 className={errors.quantity ? "border-red-500" : ""}
                                 {...register("quantity")}
                             />
@@ -296,11 +298,11 @@ export default function EditProductionOutputPage() {
                         {/* Weight */}
                         <div className="space-y-2">
                             <Label htmlFor="weight" className="text-sm font-medium">
-                                Weight (kg) *
+                                {t("production.addOutput.weight")} *
                             </Label>
                             <Input
                                 id="weight"
-                                placeholder="Enter weight"
+                                placeholder={t("production.addOutput.enterWeight")}
                                 className={errors.weight ? "border-red-500" : ""}
                                 {...register("weight")}
                             />
@@ -313,11 +315,11 @@ export default function EditProductionOutputPage() {
                     {/* Notes */}
                     <div className="space-y-2">
                         <Label htmlFor="notes" className="text-sm font-medium">
-                            Notes
+                            {t("production.addOutput.notes")}
                         </Label>
                         <Textarea
                             id="notes"
-                            placeholder="Enter additional notes"
+                            placeholder={t("production.addOutput.enterNotes")}
                             rows={3}
                             {...register("notes")}
                         />
@@ -329,7 +331,7 @@ export default function EditProductionOutputPage() {
                             type="submit"
                             className="flex items-center gap-2 w-full sm:w-auto"
                         >
-                            Update Output
+                            {t("production.editOutput.updateOutput")}
                         </Button>
                         <Button
                             type="button"
@@ -337,7 +339,7 @@ export default function EditProductionOutputPage() {
                             onClick={() => navigate("/production/outputs")}
                             className="w-full sm:w-auto"
                         >
-                            Cancel
+                            {t("common.cancel")}
                         </Button>
                     </div>
                 </form>

@@ -17,6 +17,7 @@ import { useLocationsStore } from "@/store/locations.store";
 import { useWarehousesStore } from "@/store/warehouses.store";
 import { useWorkcentersStore } from "@/store/workcenters.store";
 import { notifySuccess } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EditLocation() {
     const navigate = useNavigate();
@@ -35,6 +36,7 @@ export default function EditLocation() {
         is_active: true,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const { t } = useTranslation();
 
     useEffect(() => {
         fetchWarehouses();
@@ -67,7 +69,7 @@ export default function EditLocation() {
                     });
                 }
             } catch (error: any) {
-                setError(error?.response?.data?.detail || "Failed to load location");
+                setError(error?.response?.data?.detail || t("warehouse.locationNotUpdated"));
                 console.error("Error loading location:", error);
             } finally {
                 setInitialLoading(false);
@@ -81,20 +83,19 @@ export default function EditLocation() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = "Location name is required";
+            newErrors.name = t("warehouse.validation.nameRequired");
         }
 
         if (!formData.location_type) {
-            newErrors.location_type = "Location type is required";
+            newErrors.location_type = t("warehouse.validation.typeRequired");
         }
 
         if (formData.location_type === "WAREHOUSE" && !formData.warehouse) {
-            newErrors.warehouse = "Warehouse is required for warehouse location type";
+            newErrors.warehouse = t("warehouse.validation.warehouseRequired");
         }
 
         if (formData.location_type === "WORKCENTER" && !formData.work_center) {
-            newErrors.work_center =
-                "Work center is required for work center location type";
+            newErrors.work_center = t("warehouse.validation.workCenterRequired");
         }
 
         setErrors(newErrors);
@@ -149,10 +150,10 @@ export default function EditLocation() {
 
             const updatedLocation = await LocationsService.updateLocation(id, submitData);
             updateLocation(id, updatedLocation);
-            notifySuccess("Location updated successfully");
+            notifySuccess(t("warehouse.locationUpdated"));
             navigate("/warehouse/locations");
         } catch (error: any) {
-            setError(error?.response?.data?.detail || "Failed to update location");
+            setError(error?.response?.data?.detail || t("warehouse.locationNotUpdated"));
             console.error("Error updating location:", error);
         } finally {
             setLoading(false);
@@ -182,14 +183,14 @@ export default function EditLocation() {
                     className="flex items-center gap-2"
                 >
                     <ArrowLeft size={16} />
-                    Back
+                    {t("warehouse.back")}
                 </Button>
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                        Edit Location
+                        {t("warehouse.editLocation")}
                     </h1>
                     <p className="text-gray-600 mt-1 text-sm lg:text-base">
-                        Update location information
+                        {t("warehouse.editLocationDesc")}
                     </p>
                 </div>
             </div>
@@ -208,13 +209,13 @@ export default function EditLocation() {
                         {/* Location Name */}
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-sm font-medium">
-                                Location Name *
+                                {t("warehouse.locationName")} *
                             </Label>
                             <Input
                                 id="name"
                                 value={formData.name}
                                 onChange={(e) => handleInputChange("name", e.target.value)}
-                                placeholder="Enter location name"
+                                placeholder={t("warehouse.locationNamePlaceholder")}
                                 className={errors.name ? "border-red-500" : ""}
                             />
                             {errors.name && (
@@ -225,7 +226,7 @@ export default function EditLocation() {
                         {/* Location Type */}
                         <div className="space-y-2">
                             <Label htmlFor="location_type" className="text-sm font-medium">
-                                Location Type *
+                                {t("warehouse.locationType")} *
                             </Label>
                             <Select
                                 value={formData.location_type}
@@ -236,12 +237,12 @@ export default function EditLocation() {
                                 <SelectTrigger
                                     className={errors.location_type ? "border-red-500" : ""}
                                 >
-                                    <SelectValue placeholder="Select location type" />
+                                    <SelectValue placeholder={t("warehouse.selectLocationType")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="WAREHOUSE">Warehouse</SelectItem>
-                                    <SelectItem value="WORKCENTER">Work Center</SelectItem>
-                                    <SelectItem value="WORKSHOP">Workshop</SelectItem>
+                                    <SelectItem value="WAREHOUSE">{t("warehouse.warehouse")}</SelectItem>
+                                    <SelectItem value="WORKCENTER">{t("warehouse.workCenter")}</SelectItem>
+                                    <SelectItem value="WORKSHOP">{t("warehouse.workshop")}</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.location_type && (
@@ -254,7 +255,7 @@ export default function EditLocation() {
                     {formData.location_type === "WAREHOUSE" && (
                         <div className="space-y-2">
                             <Label htmlFor="warehouse" className="text-sm font-medium">
-                                Warehouse *
+                                {t("warehouse.warehouse")} *
                             </Label>
                             <Select
                                 value={formData.warehouse}
@@ -263,7 +264,7 @@ export default function EditLocation() {
                                 <SelectTrigger
                                     className={errors.warehouse ? "border-red-500" : ""}
                                 >
-                                    <SelectValue placeholder="Select warehouse" />
+                                    <SelectValue placeholder={t("warehouse.selectWarehouse")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {warehouses.map((warehouse) => (
@@ -283,7 +284,7 @@ export default function EditLocation() {
                     {formData.location_type === "WORKCENTER" && (
                         <div className="space-y-2">
                             <Label htmlFor="work_center" className="text-sm font-medium">
-                                Work Center *
+                                {t("warehouse.workCenter")} *
                             </Label>
                             <Select
                                 value={formData.work_center}
@@ -294,7 +295,7 @@ export default function EditLocation() {
                                 <SelectTrigger
                                     className={errors.work_center ? "border-red-500" : ""}
                                 >
-                                    <SelectValue placeholder="Select work center" />
+                                    <SelectValue placeholder={t("warehouse.selectWorkCenter")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {workcenters.map((workcenter) => (
@@ -312,7 +313,7 @@ export default function EditLocation() {
 
                     {/* Is Active */}
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium">Status</Label>
+                        <Label className="text-sm font-medium">{t("warehouse.status")}</Label>
                         <div className="flex items-center space-x-3 pt-2">
                             <Switch
                                 id="is_active"
@@ -322,7 +323,7 @@ export default function EditLocation() {
                                 }
                             />
                             <Label htmlFor="is_active" className="text-sm font-medium">
-                                Active
+                                {t("warehouse.activeStatus")}
                             </Label>
                         </div>
                     </div>
@@ -339,7 +340,7 @@ export default function EditLocation() {
                             ) : (
                                 <Save size={16} />
                             )}
-                            {loading ? "Updating..." : "Update Location"}
+                            {loading ? t("warehouse.updating") : t("warehouse.updateLocation")}
                         </Button>
                         <Button
                             type="button"
@@ -348,7 +349,7 @@ export default function EditLocation() {
                             disabled={loading}
                             className="w-full sm:w-auto"
                         >
-                            Cancel
+                            {t("warehouse.cancel")}
                         </Button>
                     </div>
                 </form>

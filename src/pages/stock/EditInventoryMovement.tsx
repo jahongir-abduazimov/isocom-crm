@@ -12,6 +12,7 @@ import {
 import { LocationsService } from "@/services/locations.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
 import request from "@/components/config";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface User {
   id: string;
@@ -42,6 +43,7 @@ interface Location {
 
 export default function EditInventoryMovementPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -68,7 +70,7 @@ export default function EditInventoryMovementPage() {
   useEffect(() => {
     const fetchData = async () => {
       if (!id) {
-        setError("Invalid movement ID");
+        setError(t("inventoryMovements.invalidMovementId"));
         setLoadingData(false);
         return;
       }
@@ -96,7 +98,7 @@ export default function EditInventoryMovementPage() {
           });
         } catch (err) {
           console.error("Error fetching movement:", err);
-          setError("Failed to load movement data");
+          setError(t("inventoryMovements.loadError"));
           return;
         }
 
@@ -158,7 +160,7 @@ export default function EditInventoryMovementPage() {
         console.log("Data fetching completed");
       } catch (err) {
         console.error("Error fetching data:", err);
-        setError("Failed to load form data. Please refresh the page.");
+        setError(t("inventoryMovements.loadError"));
       } finally {
         setLoadingData(false);
         console.log("Loading state set to false");
@@ -258,36 +260,32 @@ export default function EditInventoryMovementPage() {
 
     // At least one of material or product must be selected, but not both
     if (!formData.material && !formData.product) {
-      newErrors.material =
-        "Please select either a material or a product (not both)";
-      newErrors.product =
-        "Please select either a material or a product (not both)";
+      newErrors.material = t("inventoryMovements.materialRequired");
+      newErrors.product = t("inventoryMovements.productRequired");
     }
 
     // Ensure only one is selected (additional safety check)
     if (formData.material && formData.product) {
-      newErrors.material =
-        "Cannot select both material and product at the same time";
-      newErrors.product =
-        "Cannot select both material and product at the same time";
+      newErrors.material = t("inventoryMovements.bothSelected");
+      newErrors.product = t("inventoryMovements.bothSelected");
     }
 
     if (!formData.from_location) {
-      newErrors.from_location = "From location is required";
+      newErrors.from_location = t("inventoryMovements.fromLocationRequired");
     }
 
     if (!formData.to_location) {
-      newErrors.to_location = "To location is required";
+      newErrors.to_location = t("inventoryMovements.toLocationRequired");
     }
 
     if (!formData.quantity) {
-      newErrors.quantity = "Quantity is required";
+      newErrors.quantity = t("inventoryMovements.quantityRequired");
     } else if (isNaN(Number(formData.quantity))) {
-      newErrors.quantity = "Quantity must be a valid number";
+      newErrors.quantity = t("inventoryMovements.quantityInvalid");
     }
 
     if (!formData.user) {
-      newErrors.user = "User is required";
+      newErrors.user = t("inventoryMovements.userRequired");
     }
 
     setErrors(newErrors);
@@ -344,7 +342,7 @@ export default function EditInventoryMovementPage() {
     e.preventDefault();
 
     if (!id) {
-      setError("Invalid movement ID");
+      setError(t("inventoryMovements.invalidMovementId"));
       return;
     }
 
@@ -373,10 +371,10 @@ export default function EditInventoryMovementPage() {
 
       await stockService.updateInventoryMovementLog(id, submitData);
 
-      notifySuccess("Inventory movement updated successfully");
+      notifySuccess(t("inventoryMovements.updateSuccess"));
       navigate("/stock/inventory-movement-logs");
     } catch (err: any) {
-      let errorMessage = "Failed to update inventory movement";
+      let errorMessage = t("inventoryMovements.updateError");
 
       // Handle different types of errors
       if (err.response?.data?.detail) {
@@ -435,7 +433,7 @@ export default function EditInventoryMovementPage() {
             size={32}
             className="animate-spin mx-auto mb-4 text-blue-600"
           />
-          <p className="text-gray-600">Loading form data...</p>
+          <p className="text-gray-600">{t("inventoryMovements.loadingFormData")}</p>
         </div>
       </div>
     );
@@ -448,7 +446,7 @@ export default function EditInventoryMovementPage() {
         <div className="text-center">
           <div className="bg-red-50 border border-red-200 rounded-md p-6 max-w-md">
             <h3 className="text-red-800 font-medium mb-2">
-              Failed to Load Data
+              {t("inventoryMovements.failedToLoadData")}
             </h3>
             <p className="text-red-600 text-sm mb-4">{error}</p>
             <Button
@@ -456,7 +454,7 @@ export default function EditInventoryMovementPage() {
               variant="outline"
               size="sm"
             >
-              Refresh Page
+              {t("inventoryMovements.refreshPage")}
             </Button>
           </div>
         </div>
@@ -475,14 +473,14 @@ export default function EditInventoryMovementPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Back
+          {t("inventoryMovements.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Edit Inventory Movement
+            {t("inventoryMovements.editMovementTitle")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Update inventory movement details
+            {t("inventoryMovements.updateMovement")}
           </p>
         </div>
       </div>
@@ -501,19 +499,17 @@ export default function EditInventoryMovementPage() {
           {(materials.length === 0 ||
             locations.length === 0 ||
             users.length === 0) && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-              <p className="text-yellow-800 text-sm">
-                Some data is not available. Please check if materials,
-                locations, and users are properly configured.
-              </p>
-            </div>
-          )}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <p className="text-yellow-800 text-sm">
+                  {t("inventoryMovements.dataNotAvailable")}
+                </p>
+              </div>
+            )}
 
           {/* Info message about mutual exclusion */}
           <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
             <p className="text-blue-800 text-sm">
-              <strong>Note:</strong> You can select either a material OR a
-              product, but not both at the same time.
+              <strong>{t("common.note")}:</strong> {t("inventoryMovements.mutualExclusionNote")}
             </p>
           </div>
 
@@ -521,10 +517,10 @@ export default function EditInventoryMovementPage() {
             {/* Material */}
             <div className="space-y-2">
               <Label htmlFor="material" className="text-sm font-medium">
-                Material{" "}
+                {t("inventoryMovements.material")}{" "}
                 {formData.product && (
                   <span className="text-gray-500">
-                    (disabled when product is selected)
+                    ({t("inventoryMovements.materialDisabled")})
                   </span>
                 )}
               </Label>
@@ -533,14 +529,13 @@ export default function EditInventoryMovementPage() {
                 value={formData.material}
                 onChange={(e) => handleInputChange("material", e.target.value)}
                 disabled={!!formData.product}
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.material ? "border-red-500" : "border-gray-300"
-                } ${formData.product ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.material ? "border-red-500" : "border-gray-300"
+                  } ${formData.product ? "bg-gray-100 cursor-not-allowed" : ""}`}
               >
-                <option value="">None</option>
+                <option value="">{t("inventoryMovements.none")}</option>
                 {materials.length === 0 ? (
                   <option value="" disabled>
-                    No materials available
+                    {t("inventoryMovements.noMaterialsAvailable")}
                   </option>
                 ) : (
                   materials.map((material) => (
@@ -558,10 +553,10 @@ export default function EditInventoryMovementPage() {
             {/* Product */}
             <div className="space-y-2">
               <Label htmlFor="product" className="text-sm font-medium">
-                Product{" "}
+                {t("inventoryMovements.product")}{" "}
                 {formData.material && (
                   <span className="text-gray-500">
-                    (disabled when material is selected)
+                    ({t("inventoryMovements.productDisabled")})
                   </span>
                 )}
               </Label>
@@ -570,14 +565,13 @@ export default function EditInventoryMovementPage() {
                 value={formData.product}
                 onChange={(e) => handleInputChange("product", e.target.value)}
                 disabled={!!formData.material}
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.product ? "border-red-500" : "border-gray-300"
-                } ${formData.material ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.product ? "border-red-500" : "border-gray-300"
+                  } ${formData.material ? "bg-gray-100 cursor-not-allowed" : ""}`}
               >
-                <option value="">None</option>
+                <option value="">{t("inventoryMovements.none")}</option>
                 {products.length === 0 ? (
                   <option value="" disabled>
-                    No products available
+                    {t("inventoryMovements.noProductsAvailable")}
                   </option>
                 ) : (
                   products.map((product) => (
@@ -595,7 +589,7 @@ export default function EditInventoryMovementPage() {
             {/* From Location */}
             <div className="space-y-2">
               <Label htmlFor="from_location" className="text-sm font-medium">
-                From Location *
+                {t("inventoryMovements.fromLocationLabel")}
               </Label>
               <select
                 id="from_location"
@@ -603,14 +597,13 @@ export default function EditInventoryMovementPage() {
                 onChange={(e) =>
                   handleInputChange("from_location", e.target.value)
                 }
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.from_location ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.from_location ? "border-red-500" : "border-gray-300"
+                  }`}
               >
-                <option value="">Select from location</option>
+                <option value="">{t("inventoryMovements.selectFromLocation")}</option>
                 {locations.length === 0 ? (
                   <option value="" disabled>
-                    No locations available
+                    {t("inventoryMovements.noLocationsAvailable")}
                   </option>
                 ) : (
                   locations.map((location) => (
@@ -628,7 +621,7 @@ export default function EditInventoryMovementPage() {
             {/* To Location */}
             <div className="space-y-2">
               <Label htmlFor="to_location" className="text-sm font-medium">
-                To Location *
+                {t("inventoryMovements.toLocationLabel")}
               </Label>
               <select
                 id="to_location"
@@ -636,14 +629,13 @@ export default function EditInventoryMovementPage() {
                 onChange={(e) =>
                   handleInputChange("to_location", e.target.value)
                 }
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.to_location ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.to_location ? "border-red-500" : "border-gray-300"
+                  }`}
               >
-                <option value="">Select to location</option>
+                <option value="">{t("inventoryMovements.selectToLocation")}</option>
                 {locations.length === 0 ? (
                   <option value="" disabled>
-                    No locations available
+                    {t("inventoryMovements.noLocationsAvailable")}
                   </option>
                 ) : (
                   locations.map((location) => (
@@ -661,7 +653,7 @@ export default function EditInventoryMovementPage() {
             {/* Quantity */}
             <div className="space-y-2">
               <Label htmlFor="quantity" className="text-sm font-medium">
-                Quantity *
+                {t("inventoryMovements.quantityLabel")}
               </Label>
               <Input
                 id="quantity"
@@ -669,7 +661,7 @@ export default function EditInventoryMovementPage() {
                 step="0.01"
                 value={formData.quantity}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
-                placeholder="Enter quantity"
+                placeholder={t("inventoryMovements.enterQuantity")}
                 className={errors.quantity ? "border-red-500" : ""}
               />
               {errors.quantity && (
@@ -680,11 +672,11 @@ export default function EditInventoryMovementPage() {
               {currentStock && (
                 <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
                   <p className="text-sm text-blue-800">
-                    <strong>Current Stock:</strong> {currentStock.quantity}
+                    <strong>{t("inventoryMovements.currentStock")}:</strong> {currentStock.quantity}
                   </p>
                   {formData.quantity && !isNaN(Number(formData.quantity)) && (
                     <p className="text-sm text-blue-700 mt-1">
-                      <strong>After Movement:</strong>{" "}
+                      <strong>{t("inventoryMovements.afterMovement")}:</strong>{" "}
                       {Number(currentStock.quantity) -
                         Number(formData.quantity)}
                     </p>
@@ -699,8 +691,7 @@ export default function EditInventoryMovementPage() {
                 Number(currentStock.quantity) < Number(formData.quantity) && (
                   <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
                     <p className="text-sm text-red-800">
-                      <strong>Warning:</strong> Insufficient stock! Available:{" "}
-                      {currentStock.quantity}, Requested: {formData.quantity}
+                      <strong>{t("inventoryMovements.stockWarning")}</strong> {t("inventoryMovements.insufficientStock", { available: currentStock.quantity, requested: formData.quantity })}
                     </p>
                   </div>
                 )}
@@ -711,8 +702,7 @@ export default function EditInventoryMovementPage() {
                 !currentStock && (
                   <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      <strong>Warning:</strong> No stock available for the
-                      selected item at this location.
+                      <strong>{t("inventoryMovements.noStockWarning")}</strong> {t("inventoryMovements.noStockAvailable")}
                     </p>
                   </div>
                 )}
@@ -721,20 +711,19 @@ export default function EditInventoryMovementPage() {
             {/* User */}
             <div className="space-y-2">
               <Label htmlFor="user" className="text-sm font-medium">
-                User *
+                {t("inventoryMovements.userLabel")}
               </Label>
               <select
                 id="user"
                 value={formData.user}
                 onChange={(e) => handleInputChange("user", e.target.value)}
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
-                  errors.user ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-3 py-2 border rounded-md text-sm ${errors.user ? "border-red-500" : "border-gray-300"
+                  }`}
               >
-                <option value="">Select user</option>
+                <option value="">{t("inventoryMovements.selectUser")}</option>
                 {users.length === 0 ? (
                   <option value="" disabled>
-                    No users available
+                    {t("inventoryMovements.noUsersAvailable")}
                   </option>
                 ) : (
                   users.map((user) => (
@@ -771,7 +760,7 @@ export default function EditInventoryMovementPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Updating..." : "Update Movement"}
+              {loading ? t("inventoryMovements.updating") : t("inventoryMovements.update")}
             </Button>
             <Button
               type="button"
@@ -780,7 +769,7 @@ export default function EditInventoryMovementPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

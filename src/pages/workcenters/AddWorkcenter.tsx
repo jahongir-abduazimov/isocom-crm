@@ -16,30 +16,32 @@ import {
 } from "@/components/ui/select";
 import { useWorkcentersStore } from "@/store/workcenters.store";
 import { useLocationsStore } from "@/store/locations.store";
-
-const WORKCENTER_TYPES = [
-  { value: "EXTRUDER", label: "Extruder" },
-  { value: "DEGASSING_AREA", label: "Degassing Area" },
-  { value: "LAMINATOR", label: "Laminator" },
-  { value: "BRONIROVSHIK", label: "Bronirovshik" },
-  { value: "DUPLICATOR", label: "Duplicator" },
-  { value: "PACKAGING", label: "Packaging" },
-  { value: "QUALITY_CONTROL", label: "Quality Control" },
-  { value: "BRAK_MAYDALAGICH", label: "Brak maydalagich" },
-];
-
-const CAPACITY_UNITS = [
-  { value: "kg", label: "Kilogramm" },
-  { value: "m", label: "Metr" },
-  { value: "m2", label: "m²" },
-  { value: "piece", label: "Bo'lak" },
-  { value: "liter", label: "Litr" },
-];
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AddWorkcenterPage() {
   const navigate = useNavigate();
   const { addWorkcenter } = useWorkcentersStore();
   const { locations, fetchLocations } = useLocationsStore();
+  const { t } = useTranslation();
+
+  const WORKCENTER_TYPES = [
+    { value: "EXTRUDER", label: t("workcenters.extruder") },
+    { value: "DEGASSING_AREA", label: t("workcenters.degassingArea") },
+    { value: "LAMINATOR", label: t("workcenters.laminator") },
+    { value: "BRONIROVSHIK", label: t("workcenters.bronirovshik") },
+    { value: "DUPLICATOR", label: t("workcenters.duplicator") },
+    { value: "PACKAGING", label: t("workcenters.packaging") },
+    { value: "QUALITY_CONTROL", label: t("workcenters.qualityControl") },
+    { value: "BRAK_MAYDALAGICH", label: t("workcenters.brakMaydalagich") },
+  ];
+
+  const CAPACITY_UNITS = [
+    { value: "kg", label: t("workcenters.kilogram") },
+    { value: "m", label: t("workcenters.meter") },
+    { value: "m2", label: t("workcenters.squareMeter") },
+    { value: "piece", label: t("workcenters.piece") },
+    { value: "liter", label: t("workcenters.liter") },
+  ];
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -63,20 +65,19 @@ export default function AddWorkcenterPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Stanok nomi majburiy";
+      newErrors.name = t("workcenters.validation.nameRequired");
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Stanok nomi kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.name = t("workcenters.validation.nameMinLength");
     }
 
     if (!formData.type) {
-      newErrors.type = "Stanok turi majburiy";
+      newErrors.type = t("workcenters.validation.typeRequired");
     }
 
     if (!formData.location.trim()) {
-      newErrors.location = "Joylashuv majburiy";
+      newErrors.location = t("workcenters.validation.locationRequired");
     } else if (formData.location.trim().length < 2) {
-      newErrors.location =
-        "Joylashuv kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.location = t("workcenters.validation.locationMinLength");
     }
 
     if (
@@ -84,7 +85,7 @@ export default function AddWorkcenterPage() {
       (isNaN(Number(formData.capacity_per_hour)) ||
         Number(formData.capacity_per_hour) <= 0)
     ) {
-      newErrors.capacity_per_hour = "Sig'im 0 dan katta bo'lishi kerak";
+      newErrors.capacity_per_hour = t("workcenters.validation.capacityPositive");
     }
 
     setErrors(newErrors);
@@ -142,14 +143,14 @@ export default function AddWorkcenterPage() {
 
       const success = await addWorkcenter(apiData);
       if (success) {
-        notifySuccess("Stanok muvaffaqiyatli qo'shildi!");
+        notifySuccess(t("workcenters.workcenterAdded"));
         navigate("/workcenters");
       } else {
-        notifyError("Stanok qo'shilmadi yoki xatolik yuz berdi");
+        notifyError(t("workcenters.workcenterNotAdded"));
       }
     } catch (e) {
-      setError("Xatolik yuz berdi");
-      notifyError("Stanok qo'shilmadi yoki xatolik yuz berdi");
+      setError(t("common.error"));
+      notifyError(t("workcenters.workcenterNotAdded"));
     } finally {
       setLoading(false);
     }
@@ -170,14 +171,14 @@ export default function AddWorkcenterPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Ortga
+          {t("workcenters.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Yangi stanok qo'shish
+            {t("workcenters.addWorkcenter")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Yangi ishlab chiqarish stanogi yaratish
+            {t("workcenters.addWorkcenterDesc")}
           </p>
         </div>
       </div>
@@ -196,13 +197,13 @@ export default function AddWorkcenterPage() {
             {/* Stanok nomi */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Stanok nomi *
+                {t("workcenters.workcenterName")} *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Masalan: Extrusion Machine #1"
+                placeholder={t("workcenters.workcenterNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -213,14 +214,14 @@ export default function AddWorkcenterPage() {
             {/* Stanok turi */}
             <div className="space-y-2">
               <Label htmlFor="type" className="text-sm font-medium">
-                Stanok turi *
+                {t("workcenters.workcenterType")} *
               </Label>
               <Select
                 value={formData.type}
                 onValueChange={(value) => handleInputChange("type", value)}
               >
                 <SelectTrigger className={errors.type ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Turi tanlang" />
+                  <SelectValue placeholder={t("workcenters.selectType")} />
                 </SelectTrigger>
                 <SelectContent>
                   {WORKCENTER_TYPES.map((type) => (
@@ -238,7 +239,7 @@ export default function AddWorkcenterPage() {
             {/* Joylashuv */}
             <div className="space-y-2">
               <Label htmlFor="location" className="text-sm font-medium">
-                Joylashuv *
+                {t("workcenters.location")} *
               </Label>
               <Select
                 value={formData.location}
@@ -247,7 +248,7 @@ export default function AddWorkcenterPage() {
                 <SelectTrigger
                   className={errors.location ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Joylashuvni tanlang" />
+                  <SelectValue placeholder={t("workcenters.selectLocation")} />
                 </SelectTrigger>
                 <SelectContent>
                   {locations.map((location) => (
@@ -268,7 +269,7 @@ export default function AddWorkcenterPage() {
                 htmlFor="capacity_per_hour"
                 className="text-sm font-medium"
               >
-                Sig'im (ixtiyoriy)
+                {t("workcenters.capacityOptional")}
               </Label>
               <div className="flex gap-2">
                 <Input
@@ -280,7 +281,7 @@ export default function AddWorkcenterPage() {
                   onChange={(e) =>
                     handleInputChange("capacity_per_hour", e.target.value)
                   }
-                  placeholder="Masalan: 100"
+                  placeholder={t("workcenters.capacityPlaceholder")}
                   className={errors.capacity_per_hour ? "border-red-500" : ""}
                 />
                 <Select
@@ -314,7 +315,7 @@ export default function AddWorkcenterPage() {
                 htmlFor="last_maintenance_date"
                 className="text-sm font-medium"
               >
-                Oxirgi texnik xizmat sanasi (ixtiyoriy)
+                {t("workcenters.lastMaintenanceDate")}
               </Label>
               <Input
                 id="last_maintenance_date"
@@ -331,13 +332,13 @@ export default function AddWorkcenterPage() {
           {/* Tavsif */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Tavsif (ixtiyoriy)
+              {t("workcenters.descriptionOptional")}
             </Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Stanok haqida batafsil ma'lumot"
+              placeholder={t("workcenters.descriptionPlaceholder")}
               rows={3}
             />
           </div>
@@ -352,7 +353,7 @@ export default function AddWorkcenterPage() {
               }
             />
             <Label htmlFor="active" className="text-sm font-medium">
-              Faol holatda
+              {t("workcenters.activeStatus")}
             </Label>
           </div>
 
@@ -368,7 +369,7 @@ export default function AddWorkcenterPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Saqlanmoqda..." : "Saqlash"}
+              {loading ? t("workcenters.saving") : t("workcenters.save")}
             </Button>
             <Button
               type="button"
@@ -377,7 +378,7 @@ export default function AddWorkcenterPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Bekor qilish
+              {t("workcenters.cancel")}
             </Button>
           </div>
         </form>

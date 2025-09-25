@@ -18,6 +18,7 @@ import { ArrowLeft } from "lucide-react";
 import { useProductionStore } from "@/store/production.store";
 import { useProductsStore } from "@/store/products.store";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Form validation schema
 const formSchema = z.object({
@@ -36,6 +37,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function EditOrderPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { selectedOrder, fetchOrderById, updateOrder, loading, error } =
     useProductionStore();
@@ -123,10 +125,10 @@ export default function EditOrderPage() {
       };
 
       await updateOrder(id, orderData);
-      notifySuccess("Buyurtma muvaffaqiyatli yangilandi!");
+      notifySuccess(t("production.editOrder.orderUpdated"));
       navigate("/production/orders");
     } catch (e) {
-      notifyError("Buyurtma yangilashda xatolik yuz berdi");
+      notifyError(t("production.editOrder.updateError"));
     }
   };
 
@@ -137,7 +139,7 @@ export default function EditOrderPage() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-gray-600">
-              Buyurtma ma'lumotlari yuklanmoqda...
+              {t("production.editOrder.loadingOrder")}
             </p>
           </div>
         </div>
@@ -157,12 +159,12 @@ export default function EditOrderPage() {
           <span>Ortga</span>
         </Button>
         <div className="text-center py-12">
-          <h1 className="text-2xl font-bold mb-4">Buyurtma topilmadi</h1>
+          <h1 className="text-2xl font-bold mb-4">{t("production.editOrder.orderNotFound")}</h1>
           <p className="text-gray-600 mb-6">
-            So'ralgan buyurtma mavjud emas yoki o'chirilgan.
+            {t("production.editOrder.orderNotFoundDesc")}
           </p>
           <Button onClick={() => navigate("/production/orders")}>
-            Buyurtmalar ro'yxatiga qaytish
+            {t("production.editOrder.backToOrders")}
           </Button>
         </div>
       </div>
@@ -184,10 +186,10 @@ export default function EditOrderPage() {
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Edit Order
+            {t("production.editOrder.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Update production order details
+            {t("production.editOrder.subtitle")}
           </p>
         </div>
       </div>
@@ -206,14 +208,14 @@ export default function EditOrderPage() {
             {/* Produced Product Selection */}
             <div className="space-y-2">
               <Label htmlFor="produced_product" className="text-sm font-medium">
-                Product *
+                {t("production.addOrder.product")} *
               </Label>
               <Select
                 onValueChange={(val) => setValue("produced_product", val)}
                 value={watchedValues.produced_product || ""}
               >
                 <SelectTrigger className={errors.produced_product ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select product" />
+                  <SelectValue placeholder={t("production.addOrder.selectProduct")} />
                 </SelectTrigger>
                 <SelectContent>
                   {products
@@ -233,22 +235,22 @@ export default function EditOrderPage() {
             {/* Unit of Measure */}
             <div className="space-y-2">
               <Label htmlFor="unit_of_measure" className="text-sm font-medium">
-                Unit of Measure *
+                {t("production.addOrder.unitOfMeasure")} *
               </Label>
               <Select
                 onValueChange={(val) => setValue("unit_of_measure", val)}
                 value={watchedValues.unit_of_measure || "KG"}
               >
                 <SelectTrigger className={errors.unit_of_measure ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select unit" />
+                  <SelectValue placeholder={t("production.addOrder.selectUnit")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="KG">Kilogram</SelectItem>
-                  <SelectItem value="METER">Meter</SelectItem>
-                  <SelectItem value="METER_SQUARE">Square Meter</SelectItem>
-                  <SelectItem value="METER_CUBIC">Cubic Meter</SelectItem>
-                  <SelectItem value="PIECE">Piece</SelectItem>
-                  <SelectItem value="LITER">Liter</SelectItem>
+                  <SelectItem value="KG">{t("production.addOrder.kilogram")}</SelectItem>
+                  <SelectItem value="METER">{t("production.addOrder.meter")}</SelectItem>
+                  <SelectItem value="METER_SQUARE">{t("production.addOrder.squareMeter")}</SelectItem>
+                  <SelectItem value="METER_CUBIC">{t("production.addOrder.cubicMeter")}</SelectItem>
+                  <SelectItem value="PIECE">{t("production.addOrder.piece")}</SelectItem>
+                  <SelectItem value="LITER">{t("production.addOrder.liter")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.unit_of_measure && (
@@ -259,11 +261,11 @@ export default function EditOrderPage() {
             {/* Produced Quantity */}
             <div className="space-y-2">
               <Label htmlFor="produced_quantity" className="text-sm font-medium">
-                Quantity *
+                {t("production.addOrder.quantity")} *
               </Label>
               <Input
                 id="produced_quantity"
-                placeholder="Enter quantity"
+                placeholder={t("production.addOrder.enterQuantity")}
                 className={errors.produced_quantity ? "border-red-500" : ""}
                 {...register("produced_quantity")}
               />
@@ -275,20 +277,20 @@ export default function EditOrderPage() {
             {/* Status */}
             <div className="space-y-2">
               <Label htmlFor="status" className="text-sm font-medium">
-                Status *
+                {t("production.addOrder.status")} *
               </Label>
               <Select
                 onValueChange={(val) => setValue("status", val)}
                 value={watchedValues.status || "PENDING"}
               >
                 <SelectTrigger className={errors.status ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("production.addOrder.selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PENDING">Pending</SelectItem>
-                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="PENDING">{t("production.orders.pending")}</SelectItem>
+                  <SelectItem value="IN_PROGRESS">{t("production.orders.inProgress")}</SelectItem>
+                  <SelectItem value="COMPLETED">{t("production.orders.completed")}</SelectItem>
+                  <SelectItem value="CANCELLED">{t("production.orders.cancelled")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.status && (
@@ -299,7 +301,7 @@ export default function EditOrderPage() {
             {/* Start Date */}
             <div className="space-y-2">
               <Label htmlFor="start_date" className="text-sm font-medium">
-                Start Date *
+                {t("production.addOrder.startDate")} *
               </Label>
               <Input
                 id="start_date"
@@ -315,7 +317,7 @@ export default function EditOrderPage() {
             {/* Completion Date */}
             <div className="space-y-2">
               <Label htmlFor="completion_date" className="text-sm font-medium">
-                Completion Date
+                {t("production.addOrder.completionDate")}
               </Label>
               <Input
                 id="completion_date"
@@ -332,11 +334,11 @@ export default function EditOrderPage() {
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Description *
+              {t("production.addOrder.description")} *
             </Label>
             <Textarea
               id="description"
-              placeholder="Enter order description"
+              placeholder={t("production.addOrder.enterDescription")}
               rows={3}
               className={errors.description ? "border-red-500" : ""}
               {...register("description")}
@@ -353,7 +355,7 @@ export default function EditOrderPage() {
               disabled={loading}
               className="flex items-center gap-2 w-full sm:w-auto"
             >
-              {loading ? "Updating..." : "Update Order"}
+              {loading ? t("production.editOrder.updating") : t("production.editOrder.updateOrder")}
             </Button>
             <Button
               type="button"
@@ -362,7 +364,7 @@ export default function EditOrderPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

@@ -13,11 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUsersStore } from "../../store/users.store";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EditUserPage() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { fetchUser, updateUser, loading, error } = useUsersStore();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -63,22 +65,22 @@ export default function EditUserPage() {
       formData.email.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
     ) {
-      newErrors.email = "To'g'ri email manzilini kiriting";
+      newErrors.email = t("users.validation.emailInvalid");
     }
 
     if (
       formData.phone_number.trim() &&
       !/^[0-9+\-\s()]+$/.test(formData.phone_number)
     ) {
-      newErrors.phone_number = "To'g'ri telefon raqamini kiriting";
+      newErrors.phone_number = t("users.validation.phoneInvalid");
     }
 
     if (!formData.role.trim()) {
-      newErrors.role = "Rol majburiy";
+      newErrors.role = t("users.validation.roleRequired");
     }
 
     if (!formData.shift.trim()) {
-      newErrors.shift = "Smena majburiy";
+      newErrors.shift = t("users.validation.shiftRequired");
     }
 
     setErrors(newErrors);
@@ -158,14 +160,14 @@ export default function EditUserPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Ortga
+          {t("users.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Foydalanuvchini tahrirlash
+            {t("users.editUser")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Foydalanuvchi ma'lumotlarini yangilash
+            {t("users.editUserDesc")}
           </p>
         </div>
       </div>
@@ -184,7 +186,7 @@ export default function EditUserPage() {
             {/* Ism */}
             <div className="space-y-2">
               <Label htmlFor="first_name" className="text-sm font-medium">
-                Ism
+                {t("users.firstName")}
               </Label>
               <Input
                 id="first_name"
@@ -192,7 +194,7 @@ export default function EditUserPage() {
                 onChange={(e) =>
                   handleInputChange("first_name", e.target.value)
                 }
-                placeholder="Masalan: Ahmad"
+                placeholder={t("users.firstNamePlaceholder")}
                 className={errors.first_name ? "border-red-500" : ""}
               />
               {errors.first_name && (
@@ -203,13 +205,13 @@ export default function EditUserPage() {
             {/* Familiya */}
             <div className="space-y-2">
               <Label htmlFor="last_name" className="text-sm font-medium">
-                Familiya
+                {t("users.lastName")}
               </Label>
               <Input
                 id="last_name"
                 value={formData.last_name}
                 onChange={(e) => handleInputChange("last_name", e.target.value)}
-                placeholder="Masalan: Karimov"
+                placeholder={t("users.lastNamePlaceholder")}
                 className={errors.last_name ? "border-red-500" : ""}
               />
               {errors.last_name && (
@@ -220,7 +222,7 @@ export default function EditUserPage() {
             {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email
+                {t("users.email")}
               </Label>
               <div className="relative">
                 <Mail
@@ -232,7 +234,7 @@ export default function EditUserPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder="Masalan: user@example.com"
+                  placeholder={t("users.emailPlaceholder")}
                   className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
                 />
               </div>
@@ -244,7 +246,7 @@ export default function EditUserPage() {
             {/* Telefon raqami */}
             <div className="space-y-2">
               <Label htmlFor="phone_number" className="text-sm font-medium">
-                Telefon raqami
+                {t("users.phoneNumber")}
               </Label>
               <Input
                 id="phone_number"
@@ -253,7 +255,7 @@ export default function EditUserPage() {
                 onChange={(e) =>
                   handleInputChange("phone_number", e.target.value)
                 }
-                placeholder="Masalan: +998901234567"
+                placeholder={t("users.phoneNumberPlaceholder")}
                 className={errors.phone_number ? "border-red-500" : ""}
               />
               {errors.phone_number && (
@@ -264,32 +266,32 @@ export default function EditUserPage() {
             {/* Role */}
             <div className="space-y-2">
               <Label htmlFor="role" className="text-sm font-medium">
-                Rol
+                {t("users.role")}
               </Label>
               <Select
                 value={formData.role}
                 onValueChange={(value) => handleInputChange("role", value)}
               >
                 <SelectTrigger className={errors.role ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Rolni tanlang" />
+                  <SelectValue placeholder={t("users.selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="DIRECTOR">Director</SelectItem>
-                  <SelectItem value="HISOBCHI">Hisobchi</SelectItem>
-                  <SelectItem value="TEXNOLOG">Texnolog</SelectItem>
-                  <SelectItem value="WAREHOUSE">Warehouse</SelectItem>
+                  <SelectItem value="ADMIN">{t("users.admin")}</SelectItem>
+                  <SelectItem value="DIRECTOR">{t("users.director")}</SelectItem>
+                  <SelectItem value="HISOBCHI">{t("users.accountant")}</SelectItem>
+                  <SelectItem value="TEXNOLOG">{t("users.technologist")}</SelectItem>
+                  <SelectItem value="WAREHOUSE">{t("users.warehouse")}</SelectItem>
                   <SelectItem value="SMENA_BOSHLIGI">
-                    Smena Boshlig'i
+                    {t("users.shiftSupervisor")}
                   </SelectItem>
                   <SelectItem value="KATTA_MUTAXASSIS">
-                    Katta Mutaxassis
+                    {t("users.seniorSpecialist")}
                   </SelectItem>
                   <SelectItem value="KICHIK_MUTAXASSIS">
-                    Kichik Mutaxassis
+                    {t("users.juniorSpecialist")}
                   </SelectItem>
-                  <SelectItem value="STAJER">Stajer</SelectItem>
-                  <SelectItem value="WORKER">Worker</SelectItem>
+                  <SelectItem value="STAJER">{t("users.intern")}</SelectItem>
+                  <SelectItem value="WORKER">{t("users.worker")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.role && (
@@ -300,18 +302,18 @@ export default function EditUserPage() {
             {/* Shift */}
             <div className="space-y-2">
               <Label htmlFor="shift" className="text-sm font-medium">
-                Smena
+                {t("users.shift")}
               </Label>
               <Select
                 value={formData.shift}
                 onValueChange={(value) => handleInputChange("shift", value)}
               >
                 <SelectTrigger className={errors.shift ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Smenani tanlang" />
+                  <SelectValue placeholder={t("users.selectShift")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DAY">Kunduzgi smena</SelectItem>
-                  <SelectItem value="NIGHT">Kechki smena</SelectItem>
+                  <SelectItem value="DAY">{t("users.dayShift")}</SelectItem>
+                  <SelectItem value="NIGHT">{t("users.nightShift")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.shift && (
@@ -324,7 +326,7 @@ export default function EditUserPage() {
           <div className="space-y-4 pt-4 border-t">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
               <Shield size={20} />
-              Ruxsatlar
+              {t("users.permissions")}
             </h3>
 
             <div className="space-y-4">
@@ -332,10 +334,10 @@ export default function EditUserPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="is_active" className="text-sm font-medium">
-                    Faol holatda
+                    {t("users.activeStatus")}
                   </Label>
                   <p className="text-xs text-gray-500">
-                    Foydalanuvchi tizimga kirishi mumkin
+                    {t("users.activeStatusDesc")}
                   </p>
                 </div>
                 <Switch
@@ -351,10 +353,10 @@ export default function EditUserPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="is_staff" className="text-sm font-medium">
-                    Admin ruxsati
+                    {t("users.adminPermission")}
                   </Label>
                   <p className="text-xs text-gray-500">
-                    Admin paneliga kirish ruxsati
+                    {t("users.adminPermissionDesc")}
                   </p>
                 </div>
                 <Switch
@@ -380,7 +382,7 @@ export default function EditUserPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Saqlanmoqda..." : "Saqlash"}
+              {loading ? t("users.saving") : t("users.save")}
             </Button>
             <Button
               type="button"
@@ -389,7 +391,7 @@ export default function EditUserPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Bekor qilish
+              {t("users.cancel")}
             </Button>
           </div>
         </form>

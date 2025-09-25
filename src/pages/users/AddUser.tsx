@@ -23,10 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUsersStore } from "../../store/users.store";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AddUserPage() {
   const navigate = useNavigate();
   const { createUser, loading, error } = useUsersStore();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -50,23 +52,23 @@ export default function AddUserPage() {
     const errors: string[] = [];
 
     if (password.length < 8) {
-      errors.push("kamida 8 ta belgi");
+      errors.push(t("users.validation.passwordMinLength"));
     }
 
     if (!/[0-9]/.test(password)) {
-      errors.push("kamida bitta raqam");
+      errors.push(t("users.validation.passwordNumber"));
     }
 
     if (!/[A-Z]/.test(password)) {
-      errors.push("kamida bitta katta harf");
+      errors.push(t("users.validation.passwordUppercase"));
     }
 
     if (!/[a-z]/.test(password)) {
-      errors.push("kamida bitta kichik harf");
+      errors.push(t("users.validation.passwordLowercase"));
     }
 
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      errors.push("kamida bitta maxsus belgi");
+      errors.push(t("users.validation.passwordSpecial"));
     }
 
     return errors;
@@ -87,53 +89,52 @@ export default function AddUserPage() {
     score = checks.filter(Boolean).length;
 
     if (score <= 2)
-      return { strength: score, label: "Zaif", color: "bg-red-500" };
+      return { strength: score, label: t("users.weak"), color: "bg-red-500" };
     if (score <= 3)
-      return { strength: score, label: "O'rtacha", color: "bg-yellow-500" };
+      return { strength: score, label: t("users.medium"), color: "bg-yellow-500" };
     if (score <= 4)
-      return { strength: score, label: "Yaxshi", color: "bg-blue-500" };
-    return { strength: score, label: "Kuchli", color: "bg-green-500" };
+      return { strength: score, label: t("users.good"), color: "bg-blue-500" };
+    return { strength: score, label: t("users.strong"), color: "bg-green-500" };
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.username.trim()) {
-      newErrors.username = "Foydalanuvchi nomi majburiy";
+      newErrors.username = t("users.validation.usernameRequired");
     } else if (formData.username.trim().length < 3) {
-      newErrors.username =
-        "Foydalanuvchi nomi kamida 3 ta belgidan iborat bo'lishi kerak";
+      newErrors.username = t("users.validation.usernameMinLength");
     }
 
     if (
       formData.email.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
     ) {
-      newErrors.email = "To'g'ri email manzilini kiriting";
+      newErrors.email = t("users.validation.emailInvalid");
     }
 
     if (
       formData.phone_number.trim() &&
       !/^[0-9+\-\s()]+$/.test(formData.phone_number)
     ) {
-      newErrors.phone_number = "To'g'ri telefon raqamini kiriting";
+      newErrors.phone_number = t("users.validation.phoneInvalid");
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = "Parol majburiy";
+      newErrors.password = t("users.validation.passwordRequired");
     } else {
       const passwordErrors = validatePassword(formData.password);
       if (passwordErrors.length > 0) {
-        newErrors.password = `Parol ${passwordErrors.join(
+        newErrors.password = `${t("users.password")} ${passwordErrors.join(
           ", "
         )} bo'lishi kerak`;
       }
     }
 
     if (!formData.password_confirm.trim()) {
-      newErrors.password_confirm = "Parolni tasdiqlash majburiy";
+      newErrors.password_confirm = t("users.validation.passwordConfirmRequired");
     } else if (formData.password !== formData.password_confirm) {
-      newErrors.password_confirm = "Parollar mos kelmaydi";
+      newErrors.password_confirm = t("users.validation.passwordMismatch");
     }
 
     setErrors(newErrors);
@@ -198,14 +199,14 @@ export default function AddUserPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Ortga
+          {t("users.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Yangi foydalanuvchi qo'shish
+            {t("users.addUser")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Yangi foydalanuvchi yaratish
+            {t("users.addUserDesc")}
           </p>
         </div>
       </div>
@@ -224,7 +225,7 @@ export default function AddUserPage() {
             {/* Foydalanuvchi nomi */}
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-medium">
-                Foydalanuvchi nomi *
+                {t("users.username")} *
               </Label>
               <div className="relative">
                 <User
@@ -237,7 +238,7 @@ export default function AddUserPage() {
                   onChange={(e) =>
                     handleInputChange("username", e.target.value)
                   }
-                  placeholder="Masalan: admin"
+                  placeholder={t("users.usernamePlaceholder")}
                   className={`pl-10 ${errors.username ? "border-red-500" : ""}`}
                 />
               </div>
@@ -249,7 +250,7 @@ export default function AddUserPage() {
             {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email
+                {t("users.email")}
               </Label>
               <div className="relative">
                 <Mail
@@ -261,7 +262,7 @@ export default function AddUserPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  placeholder="Masalan: admin@example.com"
+                  placeholder={t("users.emailPlaceholder")}
                   className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
                 />
               </div>
@@ -273,7 +274,7 @@ export default function AddUserPage() {
             {/* Ism */}
             <div className="space-y-2">
               <Label htmlFor="first_name" className="text-sm font-medium">
-                Ism
+                {t("users.firstName")}
               </Label>
               <Input
                 id="first_name"
@@ -281,7 +282,7 @@ export default function AddUserPage() {
                 onChange={(e) =>
                   handleInputChange("first_name", e.target.value)
                 }
-                placeholder="Masalan: Ahmad"
+                placeholder={t("users.firstNamePlaceholder")}
                 className={errors.first_name ? "border-red-500" : ""}
               />
               {errors.first_name && (
@@ -292,13 +293,13 @@ export default function AddUserPage() {
             {/* Familiya */}
             <div className="space-y-2">
               <Label htmlFor="last_name" className="text-sm font-medium">
-                Familiya
+                {t("users.lastName")}
               </Label>
               <Input
                 id="last_name"
                 value={formData.last_name}
                 onChange={(e) => handleInputChange("last_name", e.target.value)}
-                placeholder="Masalan: Karimov"
+                placeholder={t("users.lastNamePlaceholder")}
                 className={errors.last_name ? "border-red-500" : ""}
               />
               {errors.last_name && (
@@ -309,7 +310,7 @@ export default function AddUserPage() {
             {/* Parol */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
-                Parol *
+                {t("users.password")} *
               </Label>
               <div className="relative">
                 <Lock
@@ -323,7 +324,7 @@ export default function AddUserPage() {
                   onChange={(e) =>
                     handleInputChange("password", e.target.value)
                   }
-                  placeholder="Kuchli parol kiriting (8+ belgi, raqam, harflar)"
+                  placeholder={t("users.passwordPlaceholder")}
                   className={`pl-10 pr-10 ${errors.password ? "border-red-500" : ""
                     }`}
                 />
@@ -338,15 +339,15 @@ export default function AddUserPage() {
               {formData.password && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-600">Parol kuchi:</span>
+                    <span className="text-xs text-gray-600">{t("users.passwordStrength")}</span>
                     <span
                       className={`text-xs font-medium ${getPasswordStrength(formData.password).strength <= 2
-                          ? "text-red-600"
-                          : getPasswordStrength(formData.password).strength <= 3
-                            ? "text-yellow-600"
-                            : getPasswordStrength(formData.password).strength <= 4
-                              ? "text-blue-600"
-                              : "text-green-600"
+                        ? "text-red-600"
+                        : getPasswordStrength(formData.password).strength <= 3
+                          ? "text-yellow-600"
+                          : getPasswordStrength(formData.password).strength <= 4
+                            ? "text-blue-600"
+                            : "text-green-600"
                         }`}
                     >
                       {getPasswordStrength(formData.password).label}
@@ -357,9 +358,9 @@ export default function AddUserPage() {
                       <div
                         key={level}
                         className={`h-1 flex-1 rounded ${level <=
-                            getPasswordStrength(formData.password).strength
-                            ? getPasswordStrength(formData.password).color
-                            : "bg-gray-200"
+                          getPasswordStrength(formData.password).strength
+                          ? getPasswordStrength(formData.password).color
+                          : "bg-gray-200"
                           }`}
                       />
                     ))}
@@ -374,7 +375,7 @@ export default function AddUserPage() {
             {/* Parolni tasdiqlash */}
             <div className="space-y-2">
               <Label htmlFor="password_confirm" className="text-sm font-medium">
-                Parolni tasdiqlash *
+                {t("users.passwordConfirm")} *
               </Label>
               <div className="relative">
                 <Lock
@@ -388,7 +389,7 @@ export default function AddUserPage() {
                   onChange={(e) =>
                     handleInputChange("password_confirm", e.target.value)
                   }
-                  placeholder="Parolni qayta kiriting"
+                  placeholder={t("users.passwordConfirmPlaceholder")}
                   className={`pl-10 pr-10 ${errors.password_confirm ? "border-red-500" : ""
                     }`}
                 />
@@ -414,7 +415,7 @@ export default function AddUserPage() {
             {/* Telefon raqami */}
             <div className="space-y-2">
               <Label htmlFor="phone_number" className="text-sm font-medium">
-                Telefon raqami
+                {t("users.phoneNumber")}
               </Label>
               <Input
                 id="phone_number"
@@ -423,7 +424,7 @@ export default function AddUserPage() {
                 onChange={(e) =>
                   handleInputChange("phone_number", e.target.value)
                 }
-                placeholder="Masalan: +998901234567"
+                placeholder={t("users.phoneNumberPlaceholder")}
                 className={errors.phone_number ? "border-red-500" : ""}
               />
               {errors.phone_number && (
@@ -453,32 +454,32 @@ export default function AddUserPage() {
             {/* Role */}
             <div className="space-y-2">
               <Label htmlFor="role" className="text-sm font-medium">
-                Rol
+                {t("users.role")}
               </Label>
               <Select
                 value={formData.role}
                 onValueChange={(value) => handleInputChange("role", value)}
               >
                 <SelectTrigger className={errors.role ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Rolni tanlang" />
+                  <SelectValue placeholder={t("users.selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="DIRECTOR">Director</SelectItem>
-                  <SelectItem value="HISOBCHI">Hisobchi</SelectItem>
-                  <SelectItem value="TEXNOLOG">Texnolog</SelectItem>
-                  <SelectItem value="WAREHOUSE">Warehouse</SelectItem>
+                  <SelectItem value="ADMIN">{t("users.admin")}</SelectItem>
+                  <SelectItem value="DIRECTOR">{t("users.director")}</SelectItem>
+                  <SelectItem value="HISOBCHI">{t("users.accountant")}</SelectItem>
+                  <SelectItem value="TEXNOLOG">{t("users.technologist")}</SelectItem>
+                  <SelectItem value="WAREHOUSE">{t("users.warehouse")}</SelectItem>
                   <SelectItem value="SMENA_BOSHLIGI">
-                    Smena Boshlig'i
+                    {t("users.shiftSupervisor")}
                   </SelectItem>
                   <SelectItem value="KATTA_MUTAXASSIS">
-                    Katta Mutaxassis
+                    {t("users.seniorSpecialist")}
                   </SelectItem>
                   <SelectItem value="KICHIK_MUTAXASSIS">
-                    Kichik Mutaxassis
+                    {t("users.juniorSpecialist")}
                   </SelectItem>
-                  <SelectItem value="STAJER">Stajer</SelectItem>
-                  <SelectItem value="WORKER">Worker</SelectItem>
+                  <SelectItem value="STAJER">{t("users.intern")}</SelectItem>
+                  <SelectItem value="WORKER">{t("users.worker")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.role && (
@@ -489,18 +490,18 @@ export default function AddUserPage() {
             {/* Shift */}
             <div className="space-y-2">
               <Label htmlFor="shift" className="text-sm font-medium">
-                Smena
+                {t("users.shift")}
               </Label>
               <Select
                 value={formData.shift}
                 onValueChange={(value) => handleInputChange("shift", value)}
               >
                 <SelectTrigger className={errors.shift ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Smenani tanlang" />
+                  <SelectValue placeholder={t("users.selectShift")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DAY">Kunduzgi smena</SelectItem>
-                  <SelectItem value="NIGHT">Kechki smena</SelectItem>
+                  <SelectItem value="DAY">{t("users.dayShift")}</SelectItem>
+                  <SelectItem value="NIGHT">{t("users.nightShift")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.shift && (
@@ -513,7 +514,7 @@ export default function AddUserPage() {
           <div className="space-y-4 pt-4 border-t">
             <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
               <Shield size={20} />
-              Ruxsatlar
+              {t("users.permissions")}
             </h3>
 
             <div className="space-y-4">
@@ -521,10 +522,10 @@ export default function AddUserPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="is_active" className="text-sm font-medium">
-                    Faol holatda
+                    {t("users.activeStatus")}
                   </Label>
                   <p className="text-xs text-gray-500">
-                    Foydalanuvchi tizimga kirishi mumkin
+                    {t("users.activeStatusDesc")}
                   </p>
                 </div>
                 <Switch
@@ -540,10 +541,10 @@ export default function AddUserPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <Label htmlFor="is_staff" className="text-sm font-medium">
-                    Admin ruxsati
+                    {t("users.adminPermission")}
                   </Label>
                   <p className="text-xs text-gray-500">
-                    Admin paneliga kirish ruxsati
+                    {t("users.adminPermissionDesc")}
                   </p>
                 </div>
                 <Switch
@@ -569,7 +570,7 @@ export default function AddUserPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Saqlanmoqda..." : "Saqlash"}
+              {loading ? t("users.saving") : t("users.save")}
             </Button>
             <Button
               type="button"
@@ -578,7 +579,7 @@ export default function AddUserPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Bekor qilish
+              {t("users.cancel")}
             </Button>
           </div>
         </form>

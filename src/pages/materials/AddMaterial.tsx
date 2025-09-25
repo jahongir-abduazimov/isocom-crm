@@ -15,25 +15,27 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useMaterialsStore } from "@/store/materials.store";
-
-const MATERIAL_TYPES = [
-  { value: "GRANULA", label: "Granula" },
-  { value: "ZAR", label: "Zar" },
-  { value: "OTHER", label: "Boshqa" },
-];
-
-const UNITS = [
-  { value: "KG", label: "Kilogramm" },
-  { value: "METER", label: "Metr" },
-  { value: "METER_SQUARE", label: "m²" },
-  { value: "METER_CUBIC", label: "m³" },
-  { value: "PIECE", label: "Bo'lak" },
-  { value: "LITER", label: "Litr" },
-];
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AddMaterialPage() {
   const navigate = useNavigate();
   const { addMaterial } = useMaterialsStore();
+  const { t } = useTranslation();
+
+  const MATERIAL_TYPES = [
+    { value: "GRANULA", label: t("materials.granula") },
+    { value: "ZAR", label: t("materials.zar") },
+    { value: "OTHER", label: t("materials.other") },
+  ];
+
+  const UNITS = [
+    { value: "KG", label: t("materials.kilogram") },
+    { value: "METER", label: t("materials.meter") },
+    { value: "METER_SQUARE", label: t("materials.squareMeter") },
+    { value: "METER_CUBIC", label: t("materials.cubicMeter") },
+    { value: "PIECE", label: t("materials.piece") },
+    { value: "LITER", label: t("materials.liter") },
+  ];
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -53,41 +55,41 @@ export default function AddMaterialPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Material nomi majburiy";
+      newErrors.name = t("materials.validation.nameRequired");
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Material nomi kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.name = t("materials.validation.nameMinLength");
     }
 
     if (!formData.slug.trim()) {
-      newErrors.slug = "Slug majburiy";
+      newErrors.slug = t("materials.validation.slugRequired");
     } else if (formData.slug.trim().length < 2) {
-      newErrors.slug = "Slug kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.slug = t("materials.validation.slugMinLength");
     }
 
     if (!formData.code.trim()) {
-      newErrors.code = "Kod majburiy";
+      newErrors.code = t("materials.validation.codeRequired");
     } else if (formData.code.trim().length < 2) {
-      newErrors.code = "Kod kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.code = t("materials.validation.codeMinLength");
     }
 
     if (!formData.type) {
-      newErrors.type = "Material turi majburiy";
+      newErrors.type = t("materials.validation.typeRequired");
     }
 
     if (!formData.unit) {
-      newErrors.unit = "O'lchov birligi majburiy";
+      newErrors.unit = t("materials.validation.unitRequired");
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = "Tavsif majburiy";
+      newErrors.description = t("materials.validation.descriptionRequired");
     } else if (formData.description.trim().length < 5) {
-      newErrors.description = "Tavsif kamida 5 ta belgidan iborat bo'lishi kerak";
+      newErrors.description = t("materials.validation.descriptionMinLength");
     }
 
     if (!formData.price.trim()) {
-      newErrors.price = "Narx majburiy";
+      newErrors.price = t("materials.validation.priceRequired");
     } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-      newErrors.price = "Narx 0 dan katta bo'lishi kerak";
+      newErrors.price = t("materials.validation.pricePositive");
     }
 
     setErrors(newErrors);
@@ -133,14 +135,14 @@ export default function AddMaterialPage() {
 
       const success = await addMaterial(apiData);
       if (success) {
-        notifySuccess("Material muvaffaqiyatli qo'shildi!");
+        notifySuccess(t("materials.materialAdded"));
         navigate("/materials");
       } else {
-        notifyError("Material qo'shilmadi yoki xatolik yuz berdi");
+        notifyError(t("materials.materialNotAdded"));
       }
     } catch (e) {
-      setError("Xatolik yuz berdi");
-      notifyError("Material qo'shilmadi yoki xatolik yuz berdi");
+      setError(t("common.error"));
+      notifyError(t("materials.materialNotAdded"));
     } finally {
       setLoading(false);
     }
@@ -161,14 +163,14 @@ export default function AddMaterialPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Ortga
+          {t("materials.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Yangi material qo'shish
+            {t("materials.addMaterial")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Yangi material yaratish
+            {t("materials.addMaterialDesc")}
           </p>
         </div>
       </div>
@@ -187,13 +189,13 @@ export default function AddMaterialPage() {
             {/* Material nomi */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Material nomi *
+                {t("materials.materialName")} *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Masalan: Sement 500"
+                placeholder={t("materials.materialNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -204,13 +206,13 @@ export default function AddMaterialPage() {
             {/* Slug */}
             <div className="space-y-2">
               <Label htmlFor="slug" className="text-sm font-medium">
-                Slug *
+                {t("materials.slug")} *
               </Label>
               <Input
                 id="slug"
                 value={formData.slug}
                 onChange={(e) => handleInputChange("slug", e.target.value)}
-                placeholder="Masalan: sement-500"
+                placeholder={t("materials.slugPlaceholder")}
                 className={errors.slug ? "border-red-500" : ""}
               />
               {errors.slug && (
@@ -221,13 +223,13 @@ export default function AddMaterialPage() {
             {/* Kod */}
             <div className="space-y-2">
               <Label htmlFor="code" className="text-sm font-medium">
-                Kod *
+                {t("materials.code")} *
               </Label>
               <Input
                 id="code"
                 value={formData.code}
                 onChange={(e) => handleInputChange("code", e.target.value)}
-                placeholder="Masalan: SMT-500"
+                placeholder={t("materials.codePlaceholder")}
                 className={errors.code ? "border-red-500" : ""}
               />
               {errors.code && (
@@ -238,14 +240,14 @@ export default function AddMaterialPage() {
             {/* Material turi */}
             <div className="space-y-2">
               <Label htmlFor="type" className="text-sm font-medium">
-                Material turi *
+                {t("materials.materialType")} *
               </Label>
               <Select
                 value={formData.type}
                 onValueChange={(value) => handleInputChange("type", value)}
               >
                 <SelectTrigger className={errors.type ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Turi tanlang" />
+                  <SelectValue placeholder={t("materials.selectType")} />
                 </SelectTrigger>
                 <SelectContent>
                   {MATERIAL_TYPES.map((type) => (
@@ -263,14 +265,14 @@ export default function AddMaterialPage() {
             {/* O'lchov birligi */}
             <div className="space-y-2">
               <Label htmlFor="unit" className="text-sm font-medium">
-                O'lchov birligi *
+                {t("materials.unitOfMeasure")} *
               </Label>
               <Select
                 value={formData.unit}
                 onValueChange={(value) => handleInputChange("unit", value)}
               >
                 <SelectTrigger className={errors.unit ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Birlik tanlang" />
+                  <SelectValue placeholder={t("materials.selectUnit")} />
                 </SelectTrigger>
                 <SelectContent>
                   {UNITS.map((unit) => (
@@ -288,7 +290,7 @@ export default function AddMaterialPage() {
             {/* Narx */}
             <div className="space-y-2">
               <Label htmlFor="price" className="text-sm font-medium">
-                Narx *
+                {t("materials.price")} *
               </Label>
               <Input
                 id="price"
@@ -297,7 +299,7 @@ export default function AddMaterialPage() {
                 min="0"
                 value={formData.price}
                 onChange={(e) => handleInputChange("price", e.target.value)}
-                placeholder="Masalan: 120000"
+                placeholder={t("materials.pricePlaceholder")}
                 className={errors.price ? "border-red-500" : ""}
               />
               {errors.price && (
@@ -309,13 +311,13 @@ export default function AddMaterialPage() {
           {/* Tavsif */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Tavsif *
+              {t("materials.description")} *
             </Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Material haqida batafsil ma'lumot"
+              placeholder={t("materials.descriptionPlaceholder")}
               rows={3}
               className={errors.description ? "border-red-500" : ""}
             />
@@ -332,7 +334,7 @@ export default function AddMaterialPage() {
               onCheckedChange={(checked) => handleInputChange("active", checked)}
             />
             <Label htmlFor="active" className="text-sm font-medium">
-              Faol holatda
+              {t("materials.activeStatus")}
             </Label>
           </div>
 
@@ -348,7 +350,7 @@ export default function AddMaterialPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Saqlanmoqda..." : "Saqlash"}
+              {loading ? t("materials.saving") : t("materials.save")}
             </Button>
             <Button
               type="button"
@@ -357,7 +359,7 @@ export default function AddMaterialPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Bekor qilish
+              {t("materials.cancel")}
             </Button>
           </div>
         </form>

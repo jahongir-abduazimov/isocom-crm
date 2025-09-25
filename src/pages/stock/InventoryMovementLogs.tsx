@@ -17,9 +17,11 @@ import { useMaterialsStore } from "@/store/materials.store";
 import { useLocationsStore } from "@/store/locations.store";
 import { useProductsStore } from "@/store/products.store";
 import { useAuthStore } from "@/store/auth.store";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function InventoryMovementLogsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [movements, setMovements] = useState<InventoryMovement[]>([]);
@@ -79,7 +81,7 @@ export default function InventoryMovementLogsPage() {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Inventar harakatlarini olishda xato";
+          : t("inventoryMovements.fetchError");
       setError(errorMessage);
       console.error("Error fetching inventory movements:", err);
     } finally {
@@ -104,12 +106,12 @@ export default function InventoryMovementLogsPage() {
         prevMovements.filter((movement) => movement.id !== movementToDelete.id)
       );
 
-      notifySuccess("Inventar harakati muvaffaqiyatli o'chirildi");
+      notifySuccess(t("inventoryMovements.deleteSuccess"));
       setDeleteModalOpen(false);
       setMovementToDelete(null);
     } catch (err) {
       console.error("Error deleting inventory movement:", err);
-      notifyError("Inventar harakatini o'chirishda xato");
+      notifyError(t("inventoryMovements.deleteError"));
     } finally {
       setDeleting(false);
     }
@@ -122,13 +124,13 @@ export default function InventoryMovementLogsPage() {
 
   // Helper functions to get names from IDs
   const getMaterialName = (materialId: string | null) => {
-    if (!materialId) return "Noma'lum";
+    if (!materialId) return t("inventoryMovements.unknown");
     const material = materials.find((m) => m.id === materialId);
     return material ? material.name : materialId;
   };
 
   const getProductName = (productId: string | null) => {
-    if (!productId) return "Noma'lum";
+    if (!productId) return t("inventoryMovements.unknown");
     const product = products.find((p) => p.id === productId);
     return product ? product.name : productId;
   };
@@ -170,11 +172,11 @@ export default function InventoryMovementLogsPage() {
 
   const getMovementTypeLabel = (movement: InventoryMovement) => {
     if (movement.material !== null) {
-      return "Material";
+      return t("inventoryMovements.material");
     } else if (movement.product !== null) {
-      return "Mahsulot";
+      return t("inventoryMovements.product");
     }
-    return "Unknown";
+    return t("inventoryMovements.unknown");
   };
 
   const formatDate = (dateString: string) => {
@@ -192,7 +194,7 @@ export default function InventoryMovementLogsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Inventar Harakatlari Jurnali
+            {t("inventoryMovements.title")}
           </h1>
         </div>
         <Button
@@ -200,7 +202,7 @@ export default function InventoryMovementLogsPage() {
           onClick={() => navigate("/stock/inventory-movement-logs/add")}
         >
           <Plus size={20} />
-          Yangi Harakat
+          {t("inventoryMovements.addMovement")}
         </Button>
       </div>
 
@@ -211,7 +213,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Jami Harakatlar
+                  {t("inventoryMovements.totalMovements")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {movements.length}
@@ -226,7 +228,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Material Harakatlari
+                  {t("inventoryMovements.materialMovements")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-blue-600">
                   {movements.filter((m) => m.material !== null).length}
@@ -241,7 +243,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Mahsulot Harakatlari
+                  {t("inventoryMovements.productMovements")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {movements.filter((m) => m.product !== null).length}
@@ -256,7 +258,7 @@ export default function InventoryMovementLogsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Jami Miqdor
+                  {t("inventoryMovements.totalQuantity")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {movements
@@ -285,7 +287,7 @@ export default function InventoryMovementLogsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Harakatlarni qidirish..."
+                  placeholder={t("inventoryMovements.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -295,12 +297,12 @@ export default function InventoryMovementLogsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="Barcha Turlar" />
+                  <SelectValue placeholder={t("inventoryMovements.filterAll")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Barcha Turlar</SelectItem>
-                  <SelectItem value="material">Material</SelectItem>
-                  <SelectItem value="product">Mahsulot</SelectItem>
+                  <SelectItem value="all">{t("inventoryMovements.filterAll")}</SelectItem>
+                  <SelectItem value="material">{t("inventoryMovements.filterMaterial")}</SelectItem>
+                  <SelectItem value="product">{t("inventoryMovements.filterProduct")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -316,25 +318,25 @@ export default function InventoryMovementLogsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Element
+                    {t("inventoryMovements.element")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tur
+                    {t("inventoryMovements.type")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Miqdor
+                    {t("inventoryMovements.quantity")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Qayerdan
+                    {t("inventoryMovements.fromLocation")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Qayerga
+                    {t("inventoryMovements.toLocation")}
                   </th>
                   {/* <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th> */}
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amallar
+                    {t("inventoryMovements.actions")}
                   </th>
                 </tr>
               </thead>
@@ -428,23 +430,23 @@ export default function InventoryMovementLogsPage() {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg mt-4">
-            Inventar harakatlari yuklanmoqda...
+            {t("inventoryMovements.movementsLoading")}
           </p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Xato: {error}</p>
+          <p className="text-red-500 text-lg">{t("common.error")}: {error}</p>
           <p className="text-gray-500 text-sm mt-2">
-            Batafsil ma'lumot uchun konsolni tekshiring
+            {t("inventoryMovements.errorDetails")}
           </p>
           <Button
             onClick={fetchInventoryMovements}
             className="mt-4"
             variant="outline"
           >
-            Qayta urinish
+            {t("inventoryMovements.retry")}
           </Button>
         </div>
       )}
@@ -452,7 +454,7 @@ export default function InventoryMovementLogsPage() {
       {!loading && !error && filteredMovements.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            Qidiruv mezonlaringizga mos inventar harakatlari topilmadi.
+            {t("inventoryMovements.noMovementsFound")}
           </p>
         </div>
       )}
@@ -460,10 +462,10 @@ export default function InventoryMovementLogsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Inventar Harakatini O'chirish"
-        description={`Bu harakatni o'chirishni xohlaysizmi? Bu amalni bekor qilish mumkin emas.`}
-        confirmText={deleting ? "O'chirilmoqda..." : "O'chirish"}
-        cancelText="Bekor qilish"
+        title={t("inventoryMovements.deleteMovement")}
+        description={t("inventoryMovements.deleteConfirmation")}
+        confirmText={deleting ? t("inventoryMovements.deleting") : t("common.delete")}
+        cancelText={t("common.cancel")}
         onConfirm={confirmDeleteMovement}
         onCancel={cancelDelete}
       />

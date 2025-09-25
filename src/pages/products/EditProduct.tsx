@@ -15,25 +15,27 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useProductsStore } from "@/store/products.store";
-
-const PRODUCT_TYPES = [
-  { value: "FINISHED_PRODUCT", label: "Tayyor maxsulot" },
-  { value: "SEMI_FINISHED_PRODUCT", label: "Yarim tayyor maxsulot" },
-];
-
-const UNITS = [
-  { value: "dona", label: "Dona" },
-  { value: "kg", label: "Kilogram" },
-  { value: "m", label: "Metr" },
-  { value: "m2", label: "Kvadrat metr" },
-  { value: "m3", label: "Kub metr" },
-  { value: "litr", label: "Litr" },
-];
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function EditProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { products, updateProduct, loading, error } = useProductsStore();
+  const { t } = useTranslation();
+
+  const PRODUCT_TYPES = [
+    { value: "FINISHED_PRODUCT", label: t("products.finishedProduct") },
+    { value: "SEMI_FINISHED_PRODUCT", label: t("products.semiFinishedProduct") },
+  ];
+
+  const UNITS = [
+    { value: "dona", label: t("products.piece") },
+    { value: "kg", label: t("products.kilogram") },
+    { value: "m", label: t("products.meter") },
+    { value: "m2", label: t("products.squareMeter") },
+    { value: "m3", label: t("products.cubicMeter") },
+    { value: "litr", label: t("products.liter") },
+  ];
   const [fetching, setFetching] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -68,35 +70,35 @@ export default function EditProductPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Maxsulot nomi majburiy";
+      newErrors.name = t("products.validation.nameRequired");
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Maxsulot nomi kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.name = t("products.validation.nameMinLength");
     }
 
     if (!formData.code.trim()) {
-      newErrors.code = "Kod majburiy";
+      newErrors.code = t("products.validation.codeRequired");
     } else if (formData.code.trim().length < 2) {
-      newErrors.code = "Kod kamida 2 ta belgidan iborat bo'lishi kerak";
+      newErrors.code = t("products.validation.codeMinLength");
     }
 
     if (!formData.type) {
-      newErrors.type = "Maxsulot turi majburiy";
+      newErrors.type = t("products.validation.typeRequired");
     }
 
     if (!formData.unit) {
-      newErrors.unit = "O'lchov birligi majburiy";
+      newErrors.unit = t("products.validation.unitRequired");
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = "Tavsif majburiy";
+      newErrors.description = t("products.validation.descriptionRequired");
     } else if (formData.description.trim().length < 5) {
-      newErrors.description = "Tavsif kamida 5 ta belgidan iborat bo'lishi kerak";
+      newErrors.description = t("products.validation.descriptionMinLength");
     }
 
     if (!formData.price.trim()) {
-      newErrors.price = "Narx majburiy";
+      newErrors.price = t("products.validation.priceRequired");
     } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-      newErrors.price = "Narx 0 dan katta bo'lishi kerak";
+      newErrors.price = t("products.validation.pricePositive");
     }
 
     setErrors(newErrors);
@@ -122,7 +124,7 @@ export default function EditProductPage() {
     e.preventDefault();
 
     if (!id) {
-      notifyError("Maxsulot ID topilmadi");
+      notifyError(t("products.productIdNotFound"));
       return;
     }
 
@@ -142,13 +144,13 @@ export default function EditProductPage() {
       };
       const success = await updateProduct(id, apiData);
       if (success) {
-        notifySuccess("Maxsulot muvaffaqiyatli tahrirlandi!");
+        notifySuccess(t("products.productUpdated"));
         navigate("/products");
       } else {
-        notifyError("Maxsulot tahrirlanmadi yoki xatolik yuz berdi");
+        notifyError(t("products.productNotUpdated"));
       }
     } catch (e) {
-      notifyError("Xatolik yuz berdi");
+      notifyError(t("common.error"));
     }
   };
 
@@ -161,7 +163,7 @@ export default function EditProductPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <Loader2 size={32} className="animate-spin mx-auto mb-4" />
-          <p className="text-gray-500">Maxsulot yuklanmoqda...</p>
+          <p className="text-gray-500">{t("products.loadingProduct")}</p>
         </div>
       </div>
     );
@@ -171,9 +173,9 @@ export default function EditProductPage() {
   if (!product) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-500 text-lg mb-4">Maxsulot topilmadi</p>
+        <p className="text-red-500 text-lg mb-4">{t("products.productNotFound")}</p>
         <Button onClick={handleCancel} variant="outline">
-          Maxsulotlar ro'yxatiga qaytish
+          {t("products.backToList")}
         </Button>
       </div>
     );
@@ -190,14 +192,14 @@ export default function EditProductPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Ortga
+          {t("products.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Maxsulotni tahrirlash
+            {t("products.editProduct")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Maxsulot ma'lumotlarini yangilash
+            {t("products.editProductDesc")}
           </p>
         </div>
       </div>
@@ -216,13 +218,13 @@ export default function EditProductPage() {
             {/* Maxsulot nomi */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Maxsulot nomi *
+                {t("products.productName")} *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Masalan: Sement 500"
+                placeholder={t("products.productNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -233,13 +235,13 @@ export default function EditProductPage() {
             {/* Kod */}
             <div className="space-y-2">
               <Label htmlFor="code" className="text-sm font-medium">
-                Kod *
+                {t("products.code")} *
               </Label>
               <Input
                 id="code"
                 value={formData.code}
                 onChange={(e) => handleInputChange("code", e.target.value)}
-                placeholder="Masalan: SMT-500"
+                placeholder={t("products.codePlaceholder")}
                 className={errors.code ? "border-red-500" : ""}
               />
               {errors.code && (
@@ -250,14 +252,14 @@ export default function EditProductPage() {
             {/* Maxsulot turi */}
             <div className="space-y-2">
               <Label htmlFor="type" className="text-sm font-medium">
-                Maxsulot turi *
+                {t("products.productType")} *
               </Label>
               <Select
                 value={formData.type}
                 onValueChange={(value) => handleInputChange("type", value)}
               >
                 <SelectTrigger className={errors.type ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Turi tanlang" />
+                  <SelectValue placeholder={t("products.selectType")} />
                 </SelectTrigger>
                 <SelectContent>
                   {PRODUCT_TYPES.map((type) => (
@@ -275,14 +277,14 @@ export default function EditProductPage() {
             {/* O'lchov birligi */}
             <div className="space-y-2">
               <Label htmlFor="unit" className="text-sm font-medium">
-                O'lchov birligi *
+                {t("products.unit")} *
               </Label>
               <Select
                 value={formData.unit}
                 onValueChange={(value) => handleInputChange("unit", value)}
               >
                 <SelectTrigger className={errors.unit ? "border-red-500" : ""}>
-                  <SelectValue placeholder="O'lchov birligini tanlang" />
+                  <SelectValue placeholder={t("products.selectUnit")} />
                 </SelectTrigger>
                 <SelectContent>
                   {UNITS.map((unit) => (
@@ -300,7 +302,7 @@ export default function EditProductPage() {
             {/* Narx */}
             <div className="space-y-2">
               <Label htmlFor="price" className="text-sm font-medium">
-                Narx *
+                {t("products.price")} *
               </Label>
               <Input
                 id="price"
@@ -309,7 +311,7 @@ export default function EditProductPage() {
                 min="0"
                 value={formData.price}
                 onChange={(e) => handleInputChange("price", e.target.value)}
-                placeholder="Masalan: 120000"
+                placeholder={t("products.pricePlaceholder")}
                 className={errors.price ? "border-red-500" : ""}
               />
               {errors.price && (
@@ -321,13 +323,13 @@ export default function EditProductPage() {
           {/* Tavsif */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Tavsif *
+              {t("products.description")} *
             </Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Maxsulot haqida batafsil ma'lumot"
+              placeholder={t("products.descriptionPlaceholder")}
               rows={3}
               className={errors.description ? "border-red-500" : ""}
             />
@@ -344,7 +346,7 @@ export default function EditProductPage() {
               onCheckedChange={(checked) => handleInputChange("is_active", checked)}
             />
             <Label htmlFor="is_active" className="text-sm font-medium">
-              Faol holatda
+              {t("products.activeStatus")}
             </Label>
           </div>
 
@@ -360,7 +362,7 @@ export default function EditProductPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Saqlanmoqda..." : "Saqlash"}
+              {loading ? t("products.saving") : t("products.save")}
             </Button>
             <Button
               type="button"
@@ -369,7 +371,7 @@ export default function EditProductPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Bekor qilish
+              {t("products.cancel")}
             </Button>
           </div>
         </form>

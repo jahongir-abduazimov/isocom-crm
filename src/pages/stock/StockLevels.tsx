@@ -28,9 +28,11 @@ import { useLocationsStore } from "@/store/locations.store";
 import { useProductsStore } from "@/store/products.store";
 import { useStockStore } from "@/store/stock.store";
 import { useAuthStore } from "@/store/auth.store";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function StockLevelsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [stockLevels, setStockLevels] = useState<StockLevel[]>([]);
@@ -64,7 +66,7 @@ export default function StockLevelsPage() {
       const response = await stockService.getStockLevels();
       setStockLevels(response.results);
     } catch (err) {
-      setError("Failed to fetch stock levels");
+      setError(t("stockLevels.fetchError"));
       console.error("Error fetching stock levels:", err);
     } finally {
       setLoading(false);
@@ -89,16 +91,16 @@ export default function StockLevelsPage() {
           prevItems.filter((item) => item.id !== itemToDelete.id)
         );
 
-        notifySuccess("Stock level deleted successfully");
+        notifySuccess(t("stockLevels.deleteSuccess"));
         setDeleteModalOpen(false);
         setItemToDelete(null);
       } else {
-        notifyError("Failed to delete stock level");
+        notifyError(t("stockLevels.deleteError"));
       }
     } catch (err) {
       console.error("Error deleting stock level:", err);
       notifyError(
-        err instanceof Error ? err.message : "Failed to delete stock level"
+        err instanceof Error ? err.message : t("stockLevels.deleteError")
       );
     } finally {
       setDeleting(false);
@@ -112,13 +114,13 @@ export default function StockLevelsPage() {
 
   // Helper functions to get names from IDs
   const getMaterialName = (materialId: string | null) => {
-    if (!materialId) return "Unknown";
+    if (!materialId) return t("stockLevels.unknown");
     const material = materials.find((m) => m.id === materialId);
     return material ? material.name : materialId;
   };
 
   const getProductName = (productId: string | null) => {
-    if (!productId) return "Unknown";
+    if (!productId) return t("stockLevels.unknown");
     const product = products.find((p) => p.id === productId);
     return product ? product.name : productId;
   };
@@ -148,7 +150,7 @@ export default function StockLevelsPage() {
   });
 
   const getItemType = (item: StockLevel) => {
-    return item.material ? "Material" : "Product";
+    return item.material ? t("stockLevels.material") : t("stockLevels.product");
   };
 
   const getItemTypeColor = (item: StockLevel) => {
@@ -185,6 +187,21 @@ export default function StockLevelsPage() {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "OUT_OF_STOCK":
+        return t("stockLevels.statusOutOfStock");
+      case "LOW":
+        return t("stockLevels.statusLow");
+      case "NORMAL":
+        return t("stockLevels.statusNormal");
+      case "HIGH":
+        return t("stockLevels.statusHigh");
+      default:
+        return status;
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "OUT_OF_STOCK":
@@ -218,7 +235,7 @@ export default function StockLevelsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Stock Levels
+            {t("stockLevels.title")}
           </h1>
         </div>
         <Button
@@ -226,7 +243,7 @@ export default function StockLevelsPage() {
           onClick={() => navigate("/stock/stock-levels/add")}
         >
           <Plus size={20} />
-          New Movement
+          {t("stockLevels.addStockLevel")}
         </Button>
       </div>
 
@@ -236,7 +253,7 @@ export default function StockLevelsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Items</p>
+                <p className="text-sm font-medium text-gray-600">{t("stockLevels.totalItems")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {totalItems}
                 </p>
@@ -249,7 +266,7 @@ export default function StockLevelsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Materials</p>
+                <p className="text-sm font-medium text-gray-600">{t("stockLevels.materials")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {materialItems}
                 </p>
@@ -262,7 +279,7 @@ export default function StockLevelsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Products</p>
+                <p className="text-sm font-medium text-gray-600">{t("stockLevels.products")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {productItems}
                 </p>
@@ -276,7 +293,7 @@ export default function StockLevelsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Quantity
+                  {t("stockLevels.totalQuantity")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-orange-600">
                   {totalQuantity.toLocaleString()}
@@ -304,7 +321,7 @@ export default function StockLevelsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search stock levels..."
+                  placeholder={t("stockLevels.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -314,12 +331,12 @@ export default function StockLevelsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder={t("stockLevels.filterAll")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="material">Materials</SelectItem>
-                  <SelectItem value="product">Products</SelectItem>
+                  <SelectItem value="all">{t("stockLevels.filterAll")}</SelectItem>
+                  <SelectItem value="material">{t("stockLevels.filterMaterial")}</SelectItem>
+                  <SelectItem value="product">{t("stockLevels.filterProduct")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -335,22 +352,22 @@ export default function StockLevelsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Item
+                    {t("stockLevels.item")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
+                    {t("stockLevels.type")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
+                    {t("stockLevels.quantity")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t("stockLevels.status")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
+                    {t("stockLevels.location")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t("stockLevels.actions")}
                   </th>
                 </tr>
               </thead>
@@ -365,7 +382,7 @@ export default function StockLevelsPage() {
                             ? getMaterialName(item.material)
                             : item.product
                               ? getProductName(item.product)
-                              : "Unknown Item"}
+                              : t("stockLevels.unknownItem")}
                         </div>
                         <div className="lg:hidden mt-1">
                           <span
@@ -392,7 +409,7 @@ export default function StockLevelsPage() {
                             {formatQuantity(item.quantity)}
                           </span>
                           <span className="text-xs text-gray-500 md:hidden">
-                            {status.replace("_", " ")}
+                            {getStatusText(status)}
                           </span>
                         </div>
                       </td>
@@ -404,7 +421,7 @@ export default function StockLevelsPage() {
                               status
                             )}`}
                           >
-                            {status.replace("_", " ")}
+                            {getStatusText(status)}
                           </span>
                         </div>
                       </td>
@@ -450,15 +467,16 @@ export default function StockLevelsPage() {
       {loading && (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-gray-500 text-lg mt-4">Loading stock levels...</p>
+          <p className="text-gray-500 text-lg mt-4">{t("stockLevels.stockLevelsLoading")}</p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">{t("common.error")}: {error}</p>
+          <p className="text-gray-500 text-sm mt-2">{t("stockLevels.errorDetails")}</p>
           <Button onClick={fetchStockLevels} className="mt-4" variant="outline">
-            Retry
+            {t("stockLevels.retry")}
           </Button>
         </div>
       )}
@@ -466,7 +484,7 @@ export default function StockLevelsPage() {
       {!loading && !error && filteredStockLevels.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No stock levels found matching your criteria.
+            {t("stockLevels.noStockLevelsFound")}
           </p>
         </div>
       )}
@@ -474,10 +492,10 @@ export default function StockLevelsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Stock Level"
-        description={`Are you sure you want to delete this stock level? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title={t("stockLevels.deleteStockLevel")}
+        description={t("stockLevels.deleteConfirmation")}
+        confirmText={deleting ? t("stockLevels.deleting") : t("common.delete")}
+        cancelText={t("common.cancel")}
         onConfirm={confirmDeleteItem}
         onCancel={cancelDelete}
       />

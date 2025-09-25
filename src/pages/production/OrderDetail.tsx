@@ -23,10 +23,12 @@ import { useProductionStore } from "@/store/production.store";
 import { useWorkerStore } from "@/store/worker.store";
 import { STATUS_MAPPINGS } from "@/config/api.config";
 import ConfirmModal from "@/components/ui/confirm-modal";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const {
@@ -69,7 +71,7 @@ export default function OrderDetailPage() {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return t("production.orderDetail.notAvailable");
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -138,7 +140,7 @@ export default function OrderDetailPage() {
     return (
       <div className="flex justify-center items-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Loading order details...</span>
+        <span className="ml-2 text-gray-600">{t("production.orderDetail.loadingOrder")}</span>
       </div>
     );
   }
@@ -147,12 +149,12 @@ export default function OrderDetailPage() {
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold mb-4">Order Not Found</h1>
+        <h1 className="text-2xl font-bold mb-4">{t("production.orderDetail.orderNotFound")}</h1>
         <p className="text-gray-600 mb-6">
-          {error || "The requested order could not be found."}
+          {error || t("production.orderDetail.orderNotFoundDesc")}
         </p>
         <Button onClick={() => navigate("/production/orders")}>
-          Back to Orders
+          {t("production.orderDetail.backToOrders")}
         </Button>
       </div>
     );
@@ -170,14 +172,14 @@ export default function OrderDetailPage() {
             className="flex items-center gap-2"
           >
             <ArrowLeft size={16} />
-            Back to Orders
+            {t("production.orderDetail.backToOrders")}
           </Button>
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-              Order Details
+              {t("production.orderDetail.title")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm lg:text-base">
-              Order #{selectedOrder.id.slice(0, 8)}...
+              {t("production.orderDetail.orderNumber")} #{selectedOrder.id.slice(0, 8)}...
             </p>
           </div>
         </div>
@@ -191,7 +193,7 @@ export default function OrderDetailPage() {
             className="flex items-center gap-2"
           >
             <Edit size={16} />
-            Edit Order
+            {t("production.orderDetail.editOrder")}
           </Button>
           <Button
             variant="outline"
@@ -200,7 +202,7 @@ export default function OrderDetailPage() {
             className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <Trash2 size={16} />
-            Delete
+            {t("production.orderDetail.delete")}
           </Button>
         </div>
       </div>
@@ -213,7 +215,7 @@ export default function OrderDetailPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {selectedOrder.produced_product_name || "N/A"}
+                  {selectedOrder.produced_product_name || t("production.orderDetail.notAvailable")}
                 </h2>
                 <p className="text-gray-600 mt-1">
                   {selectedOrder.description}
@@ -233,7 +235,7 @@ export default function OrderDetailPage() {
               <div className="flex items-center gap-3">
                 <Package className="h-5 w-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Quantity</p>
+                  <p className="text-sm text-gray-600">{t("production.orderDetail.quantity")}</p>
                   <p className="font-medium text-gray-900">
                     {selectedOrder.produced_quantity}{" "}
                     {formatUnitOfMeasure(selectedOrder.unit_of_measure)}
@@ -243,7 +245,7 @@ export default function OrderDetailPage() {
               <div className="flex items-center gap-3">
                 <TrendingUp className="h-5 w-5 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Progress</p>
+                  <p className="text-sm text-gray-600">{t("production.orderDetail.progress")}</p>
                   <p className="font-medium text-gray-900">
                     {selectedOrder.completion_percentage}%
                   </p>
@@ -254,7 +256,7 @@ export default function OrderDetailPage() {
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Completion Progress</span>
+                <span className="text-gray-600">{t("production.orderDetail.completionProgress")}</span>
                 <span className="font-medium text-gray-900">
                   {selectedOrder.completion_percentage}%
                 </span>
@@ -270,12 +272,12 @@ export default function OrderDetailPage() {
 
           {/* Timeline */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Timeline</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t("production.orderDetail.timeline")}</h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Start Date</p>
+                  <p className="text-sm text-gray-600">{t("production.orderDetail.startDate")}</p>
                   <p className="text-sm font-medium text-gray-900">
                     {formatDate(selectedOrder.start_date)}
                   </p>
@@ -284,7 +286,7 @@ export default function OrderDetailPage() {
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Completion Date</p>
+                  <p className="text-sm text-gray-600">{t("production.orderDetail.completionDate")}</p>
                   <p className="text-sm font-medium text-gray-900">
                     {formatDate(selectedOrder.completion_date)}
                   </p>
@@ -293,7 +295,7 @@ export default function OrderDetailPage() {
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Created</p>
+                  <p className="text-sm text-gray-600">{t("production.orderDetail.created")}</p>
                   <p className="text-sm font-medium text-gray-900">
                     {formatDate(selectedOrder.created_at)}
                   </p>
@@ -311,7 +313,7 @@ export default function OrderDetailPage() {
           <div className="flex items-center gap-2 mb-4">
             <Users className="h-5 w-5 text-blue-600" />
             <h3 className="text-lg font-semibold text-gray-900">
-              Assigned Operators
+              {t("production.orderDetail.assignedOperators")}
             </h3>
           </div>
           {selectedOrder.operators && selectedOrder.operators.length > 0 ? (
@@ -353,7 +355,7 @@ export default function OrderDetailPage() {
               })}
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No operators assigned</p>
+            <p className="text-gray-500 text-sm">{t("production.orderDetail.noOperatorsAssigned")}</p>
           )}
         </div>
 
@@ -362,7 +364,7 @@ export default function OrderDetailPage() {
           <div className="flex items-center gap-2 mb-4">
             <Activity className="h-5 w-5 text-green-600" />
             <h3 className="text-lg font-semibold text-gray-900">
-              Current Step
+              {t("production.orderDetail.currentStep")}
             </h3>
           </div>
           {selectedOrder.current_step ? (
@@ -411,7 +413,7 @@ export default function OrderDetailPage() {
               </div>
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">No current step information</p>
+            <p className="text-gray-500 text-sm">{t("production.orderDetail.noCurrentStep")}</p>
           )}
         </div>
       </div>
@@ -423,7 +425,7 @@ export default function OrderDetailPage() {
             <div className="flex items-center gap-2 mb-4">
               <Package className="h-5 w-5 text-orange-600" />
               <h3 className="text-lg font-semibold text-gray-900">
-                Used Materials
+                {t("production.orderDetail.usedMaterials")}
               </h3>
             </div>
             <div className="overflow-x-auto">
@@ -431,16 +433,16 @@ export default function OrderDetailPage() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-2 font-medium text-gray-700">
-                      Material
+                      {t("production.orderDetail.material")}
                     </th>
                     <th className="text-left py-2 font-medium text-gray-700">
-                      Quantity
+                      {t("production.orderDetail.quantity")}
                     </th>
                     <th className="text-left py-2 font-medium text-gray-700">
-                      Available
+                      {t("production.orderDetail.available")}
                     </th>
                     <th className="text-left py-2 font-medium text-gray-700">
-                      Work Center
+                      {t("production.orderDetail.workCenter")}
                     </th>
                   </tr>
                 </thead>
@@ -474,7 +476,7 @@ export default function OrderDetailPage() {
             <div className="flex items-center gap-2 mb-4">
               <Settings className="h-5 w-5 text-purple-600" />
               <h3 className="text-lg font-semibold text-gray-900">
-                Production Steps
+                {t("production.orderDetail.productionSteps")}
               </h3>
             </div>
             <div className="space-y-4">
@@ -494,7 +496,7 @@ export default function OrderDetailPage() {
                         </h4>
                         {step.assigned_operator && (
                           <p className="text-sm text-gray-600">
-                            Operator:{" "}
+                            {t("production.orderDetail.operator")}:{" "}
                             {(() => {
                               const operator = getOperatorById(step.assigned_operator);
                               return (
@@ -522,7 +524,7 @@ export default function OrderDetailPage() {
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-gray-400" />
                         <div>
-                          <p className="text-gray-600">Start Time</p>
+                          <p className="text-gray-600">{t("production.orderDetail.startTime")}</p>
                           <p className="font-medium text-gray-900">
                             {formatDate(step.start_time)}
                           </p>
@@ -533,7 +535,7 @@ export default function OrderDetailPage() {
                       <div className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-gray-400" />
                         <div>
-                          <p className="text-gray-600">End Time</p>
+                          <p className="text-gray-600">{t("production.orderDetail.endTime")}</p>
                           <p className="font-medium text-gray-900">
                             {formatDate(step.end_time)}
                           </p>
@@ -544,7 +546,7 @@ export default function OrderDetailPage() {
                       <div className="flex items-center gap-2">
                         <Activity className="h-4 w-4 text-gray-400" />
                         <div>
-                          <p className="text-gray-600">Duration</p>
+                          <p className="text-gray-600">{t("production.orderDetail.duration")}</p>
                           <p className="font-medium text-gray-900">
                             {step.actual_duration_hours}h
                           </p>
@@ -558,7 +560,7 @@ export default function OrderDetailPage() {
                       {step.notes && (
                         <div className="mb-2">
                           <p className="text-sm text-gray-600 font-medium">
-                            Notes:
+                            {t("production.orderDetail.notes")}:
                           </p>
                           <p className="text-sm text-gray-800">{step.notes}</p>
                         </div>
@@ -566,7 +568,7 @@ export default function OrderDetailPage() {
                       {step.quality_notes && (
                         <div>
                           <p className="text-sm text-gray-600 font-medium">
-                            Quality Notes:
+                            {t("production.orderDetail.qualityNotes")}:
                           </p>
                           <p className="text-sm text-gray-800">
                             {step.quality_notes}
@@ -584,10 +586,10 @@ export default function OrderDetailPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Production Order"
-        description="Are you sure you want to delete this production order? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t("production.orderDetail.deleteOrder")}
+        description={t("production.orderDetail.deleteConfirm")}
+        confirmText={t("production.orderDetail.deleteButton")}
+        cancelText={t("production.orderDetail.cancelButton")}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />

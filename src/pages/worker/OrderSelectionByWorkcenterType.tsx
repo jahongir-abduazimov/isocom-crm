@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Package,
   Search,
@@ -24,18 +24,25 @@ import {
 import StepIndicator from "@/components/ui/step-indicator";
 import { useWorkerStore } from "@/store/worker.store";
 
-export default function WorkerOrderListPage() {
+export default function OrderSelectionByWorkcenterTypePage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const { workcenterType } = useParams<{ workcenterType: string }>();
 
-  const { orders, ordersLoading, ordersError, fetchOrders, setSelectedOrder, currentStep, setCurrentStep } =
-    useWorkerStore();
+  const {
+    allOrders,
+    ordersLoading,
+    ordersError,
+    fetchAllOrders,
+    setSelectedOrder,
+    setCurrentStep,
+  } = useWorkerStore();
 
   useEffect(() => {
-    fetchOrders();
-    setCurrentStep(1); // Set current step to 1 (Order selection)
-  }, [fetchOrders, setCurrentStep]);
+    fetchAllOrders();
+    setCurrentStep(2); // Set current step to 2 (Order selection)
+  }, [fetchAllOrders, setCurrentStep]);
 
   const formatStatus = (status: string) => {
     switch (status.toUpperCase()) {
@@ -82,29 +89,35 @@ export default function WorkerOrderListPage() {
     }
   };
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      order.produced_product__name
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredOrders =
+    allOrders?.filter((order) => {
+      const matchesSearch =
+        order.produced_product_name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        order.id.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "ALL" || order.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "ALL" || order.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+      // Only show PENDING and IN_PROGRESS orders
+      const isAllowedStatus =
+        order.status === "PENDING" || order.status === "IN_PROGRESS";
+
+      return matchesSearch && matchesStatus && isAllowedStatus;
+    }) || [];
 
   const handleOrderSelect = (order: any) => {
     setSelectedOrder(order);
-    navigate(`/worker/orders/${order.id}`);
+    // Navigate to workcenter selection first, then to order
+    navigate(`/worker/workcenter-type/${workcenterType}/order/${order.id}`);
   };
 
   if (ordersLoading) {
     return (
       <div className="flex justify-center items-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-        <span className="ml-2 text-gray-600">Orderlar yuklanmoqda...</span>
+        <span className="ml-2 text-gray-600">Buyurtmalar yuklanmoqda...</span>
       </div>
     );
   }
@@ -115,7 +128,7 @@ export default function WorkerOrderListPage() {
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
         <h1 className="text-2xl font-bold mb-4">Xato</h1>
         <p className="text-gray-600 mb-6">{ordersError}</p>
-        <Button onClick={() => fetchOrders()}>Qayta urinish</Button>
+        <Button onClick={() => fetchAllOrders()}>Qayta urinish</Button>
       </div>
     );
   }
@@ -136,17 +149,17 @@ export default function WorkerOrderListPage() {
           </Button>
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-              Ishlab chiqarish buyurtmalari
+              Buyurtma tanlash
             </h1>
             <p className="text-gray-600 mt-1 text-sm lg:text-base">
-              Material ishlatish uchun buyurtma tanlang
+              Barcha buyurtmalar
             </p>
           </div>
         </div>
       </div>
 
       {/* Progress Indicator */}
-      <StepIndicator currentStep={currentStep} />
+      <StepIndicator currentStep={2} />
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-sm border p-4">
@@ -171,8 +184,6 @@ export default function WorkerOrderListPage() {
                 <SelectItem value="ALL">Barcha holatlar</SelectItem>
                 <SelectItem value="PENDING">Kutilmoqda</SelectItem>
                 <SelectItem value="IN_PROGRESS">Jarayonda</SelectItem>
-                <SelectItem value="COMPLETED">Tugallangan</SelectItem>
-                <SelectItem value="CANCELLED">Bekor qilingan</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -190,7 +201,7 @@ export default function WorkerOrderListPage() {
             <p className="text-gray-600">
               {searchTerm || statusFilter !== "ALL"
                 ? "Qidiruv shartlariga mos buyurtmalar yo'q"
-                : "Hozircha buyurtmalar mavjud emas"}
+                : "Buyurtmalar mavjud emas"}
             </p>
           </div>
         ) : (
@@ -224,9 +235,20 @@ export default function WorkerOrderListPage() {
                       </div>
                       <div>
                         <span className="font-medium">Miqdor:</span>{" "}
-                        {order.produced_quantity}
+                        {order.produced_quantity} {order.unit_of_measure}
                       </div>
+                      {order.step_name && (
+                        <div>
+                          <span className="font-medium">Qadam:</span>{" "}
+                          {order.step_name}
+                        </div>
+                      )}
                     </div>
+                    {order.description && (
+                      <div className="mt-2 text-sm text-gray-500">
+                        {order.description}
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -250,19 +272,19 @@ export default function WorkerOrderListPage() {
       </div>
 
       {/* Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
           <div>
             <h4 className="text-sm font-medium text-blue-900 mb-1">Ma'lumot</h4>
             <p className="text-sm text-blue-700">
-              Faqat "Kutilmoqda" va "Jarayonda" holatidagi buyurtmalar uchun
-              material ishlatish mumkin. Buyurtma tanlash uchun ustiga bosing
-              yoki "Tanlash" tugmasini bosing.
+              Faqat "Kutilmoqda" va "Jarayonda" holatidagi buyurtmalar
+              ko'rsatiladi. Buyurtma tanlash uchun ustiga bosing yoki "Tanlash"
+              tugmasini bosing.
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

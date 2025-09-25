@@ -16,9 +16,11 @@ import {
   type ProductionOutput,
 } from "@/services/production.service";
 import { STATUS_MAPPINGS } from "@/config/api.config";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ProductionOutputsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [outputs, setOutputs] = useState<ProductionOutput[]>([]);
@@ -122,7 +124,7 @@ export default function ProductionOutputsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Production Outputs
+            {t("production.outputs.title")}
           </h1>
         </div>
         <Button
@@ -130,7 +132,7 @@ export default function ProductionOutputsPage() {
           onClick={() => navigate("/production/outputs/add")}
         >
           <Plus size={20} />
-          New Output
+          {t("production.outputs.newOutput")}
         </Button>
       </div>
 
@@ -141,7 +143,7 @@ export default function ProductionOutputsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Outputs
+                  {t("production.outputs.totalOutputs")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {outputs.length}
@@ -155,7 +157,7 @@ export default function ProductionOutputsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Passed</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.outputs.passed")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {outputs.filter((o) => o.quality_status === "PASSED").length}
                 </p>
@@ -168,7 +170,7 @@ export default function ProductionOutputsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Failed</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.outputs.failed")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-red-600">
                   {outputs.filter((o) => o.quality_status === "FAILED").length}
                 </p>
@@ -182,7 +184,7 @@ export default function ProductionOutputsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Weight
+                  {t("production.outputs.totalWeight")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {outputs
@@ -210,7 +212,7 @@ export default function ProductionOutputsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search outputs..."
+                  placeholder={t("production.outputs.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -220,13 +222,13 @@ export default function ProductionOutputsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Quality Status" />
+                  <SelectValue placeholder={t("production.outputs.allQualityStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Quality Status</SelectItem>
-                  <SelectItem value="passed">Passed</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="all">{t("production.outputs.allQualityStatus")}</SelectItem>
+                  <SelectItem value="passed">{t("production.outputs.passed")}</SelectItem>
+                  <SelectItem value="failed">{t("production.outputs.failed")}</SelectItem>
+                  <SelectItem value="pending">{t("production.outputs.pending")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -242,31 +244,31 @@ export default function ProductionOutputsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    ID
+                    {t("production.outputs.id")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Step Execution
+                    {t("production.outputs.stepExecution")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product
+                    {t("production.outputs.product")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
+                    {t("production.outputs.quantity")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Unit
+                    {t("production.outputs.unit")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Weight
+                    {t("production.outputs.weight")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quality Status
+                    {t("production.outputs.qualityStatus")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Notes
+                    {t("production.outputs.notes")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t("production.outputs.actions")}
                   </th>
                 </tr>
               </thead>
@@ -350,20 +352,20 @@ export default function ProductionOutputsPage() {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg mt-4">
-            Loading production outputs...
+            {t("production.outputs.loadingOutputs")}
           </p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">{t("production.outputs.loadingError")}: {error}</p>
           <Button
             onClick={() => window.location.reload()}
             className="mt-4"
             variant="outline"
           >
-            Retry
+            {t("production.outputs.retry")}
           </Button>
         </div>
       )}
@@ -371,7 +373,7 @@ export default function ProductionOutputsPage() {
       {!loading && !error && filteredOutputs.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No outputs found matching your criteria.
+            {t("production.outputs.noOutputsFound")}
           </p>
         </div>
       )}
@@ -379,10 +381,10 @@ export default function ProductionOutputsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Production Output"
-        description={`Are you sure you want to delete this production output for "${outputToDelete?.product_name}"? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title={t("production.outputs.deleteOutput")}
+        description={t("production.outputs.deleteConfirm")}
+        confirmText={deleting ? t("production.outputs.deleteButton") + "..." : t("production.outputs.deleteButton")}
+        cancelText={t("production.outputs.cancelButton")}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />

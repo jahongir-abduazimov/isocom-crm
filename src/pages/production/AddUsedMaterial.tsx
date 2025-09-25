@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { ProductionService } from "@/services/production.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Order {
   id: string;
@@ -36,6 +37,7 @@ interface StepExecution {
 
 export default function AddUsedMaterialPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -81,21 +83,21 @@ export default function AddUsedMaterialPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.order) {
-      newErrors.order = "Order is required";
+      newErrors.order = t("production.addUsedMaterial.orderRequired");
     }
 
     if (!formData.material) {
-      newErrors.material = "Material is required";
+      newErrors.material = t("production.addUsedMaterial.materialRequired");
     }
 
     if (!formData.quantity) {
-      newErrors.quantity = "Quantity is required";
+      newErrors.quantity = t("production.addUsedMaterial.quantityRequired");
     } else if (isNaN(Number(formData.quantity))) {
-      newErrors.quantity = "Quantity must be a valid number";
+      newErrors.quantity = t("production.addUsedMaterial.quantityValid");
     }
 
     if (!formData.step_execution) {
-      newErrors.step_execution = "Step execution is required";
+      newErrors.step_execution = t("production.addUsedMaterial.stepExecutionRequired");
     }
 
     setErrors(newErrors);
@@ -137,13 +139,13 @@ export default function AddUsedMaterialPage() {
 
       await ProductionService.createUsedMaterial(submitData);
 
-      notifySuccess("Used material record created successfully");
+      notifySuccess(t("production.addUsedMaterial.recordCreated"));
       navigate("/production/used-materials");
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Failed to create used material record";
+          : t("production.addUsedMaterial.createError");
       setError(errorMessage);
       notifyError(errorMessage);
       console.error("Error creating used material:", err);
@@ -166,7 +168,7 @@ export default function AddUsedMaterialPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-gray-500 text-lg mt-4">Loading form data...</p>
+          <p className="text-gray-500 text-lg mt-4">{t("production.addUsedMaterial.loadingData")}</p>
         </div>
       </div>
     );
@@ -187,10 +189,10 @@ export default function AddUsedMaterialPage() {
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Add Used Material
+            {t("production.addUsedMaterial.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Record material usage in production
+            {t("production.addUsedMaterial.subtitle")}
           </p>
         </div>
       </div>
@@ -209,19 +211,19 @@ export default function AddUsedMaterialPage() {
             {/* Order Selection */}
             <div className="space-y-2">
               <Label htmlFor="order" className="text-sm font-medium">
-                Order *
+                {t("production.addUsedMaterial.order")} *
               </Label>
               <Select
                 value={formData.order}
                 onValueChange={(value) => handleInputChange("order", value)}
               >
                 <SelectTrigger className={errors.order ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select order" />
+                  <SelectValue placeholder={t("production.addUsedMaterial.selectOrder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {orders.map((order) => (
                     <SelectItem key={order.id} value={order.id}>
-                      {order.produced_product_name || "Unknown Product"} -{" "}
+                      {order.produced_product_name || t("production.addUsedMaterial.unknownProduct")} -{" "}
                       {order.produced_quantity} {order.unit_of_measure} (
                       {order.status})
                     </SelectItem>
@@ -236,7 +238,7 @@ export default function AddUsedMaterialPage() {
             {/* Material Selection */}
             <div className="space-y-2">
               <Label htmlFor="material" className="text-sm font-medium">
-                Material *
+                {t("production.addUsedMaterial.material")} *
               </Label>
               <Select
                 value={formData.material}
@@ -245,7 +247,7 @@ export default function AddUsedMaterialPage() {
                 <SelectTrigger
                   className={errors.material ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select material" />
+                  <SelectValue placeholder={t("production.addUsedMaterial.selectMaterial")} />
                 </SelectTrigger>
                 <SelectContent>
                   {materials.map((material) => (
@@ -263,7 +265,7 @@ export default function AddUsedMaterialPage() {
             {/* Quantity */}
             <div className="space-y-2">
               <Label htmlFor="quantity" className="text-sm font-medium">
-                Quantity *
+                {t("production.addUsedMaterial.quantity")} *
               </Label>
               <Input
                 id="quantity"
@@ -271,7 +273,7 @@ export default function AddUsedMaterialPage() {
                 step="0.01"
                 value={formData.quantity}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
-                placeholder="Enter quantity used"
+                placeholder={t("production.addUsedMaterial.enterQuantity")}
                 className={errors.quantity ? "border-red-500" : ""}
               />
               {errors.quantity && (
@@ -282,7 +284,7 @@ export default function AddUsedMaterialPage() {
             {/* Step Execution */}
             <div className="space-y-2">
               <Label htmlFor="step_execution" className="text-sm font-medium">
-                Step Execution *
+                {t("production.addUsedMaterial.stepExecution")} *
               </Label>
               <Select
                 value={formData.step_execution}
@@ -297,8 +299,8 @@ export default function AddUsedMaterialPage() {
                   <SelectValue
                     placeholder={
                       formData.order
-                        ? "Select step execution"
-                        : "Select order first"
+                        ? t("production.addUsedMaterial.selectStepExecution")
+                        : t("production.addUsedMaterial.selectOrderFirst")
                     }
                   />
                 </SelectTrigger>
@@ -328,7 +330,7 @@ export default function AddUsedMaterialPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Creating..." : "Create Record"}
+              {loading ? t("production.addUsedMaterial.creating") : t("production.addUsedMaterial.createRecord")}
             </Button>
             <Button
               type="button"
@@ -337,7 +339,7 @@ export default function AddUsedMaterialPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

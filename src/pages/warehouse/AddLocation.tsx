@@ -17,6 +17,7 @@ import { useLocationsStore } from "@/store/locations.store";
 import { useWarehousesStore } from "@/store/warehouses.store";
 import { useWorkcentersStore } from "@/store/workcenters.store";
 import { notifySuccess } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AddLocation() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function AddLocation() {
     is_active: true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchWarehouses();
@@ -43,16 +45,15 @@ export default function AddLocation() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Location name is required";
+      newErrors.name = t("warehouse.validation.nameRequired");
     }
 
     if (formData.location_type === "WAREHOUSE" && !formData.warehouse) {
-      newErrors.warehouse = "Warehouse is required for warehouse location type";
+      newErrors.warehouse = t("warehouse.validation.warehouseRequired");
     }
 
     if (formData.location_type === "WORKCENTER" && !formData.work_center) {
-      newErrors.work_center =
-        "Work center is required for work center location type";
+      newErrors.work_center = t("warehouse.validation.workCenterRequired");
     }
 
     setErrors(newErrors);
@@ -106,10 +107,10 @@ export default function AddLocation() {
 
       const newLocation = await LocationsService.createLocation(submitData);
       addLocation(newLocation);
-      notifySuccess("Location created successfully");
+      notifySuccess(t("warehouse.locationCreated"));
       navigate("/warehouse/locations");
     } catch (error: any) {
-      setError(error?.response?.data?.detail || "Failed to create location");
+      setError(error?.response?.data?.detail || t("warehouse.locationNotCreated"));
       console.error("Error creating location:", error);
     } finally {
       setLoading(false);
@@ -131,14 +132,14 @@ export default function AddLocation() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Back
+          {t("warehouse.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Add Location
+            {t("warehouse.addLocation")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Create a new location for warehouse, work center, or workshop
+            {t("warehouse.addLocationDesc")}
           </p>
         </div>
       </div>
@@ -157,13 +158,13 @@ export default function AddLocation() {
             {/* Location Name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Location Name *
+                {t("warehouse.locationName")} *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Enter location name"
+                placeholder={t("warehouse.locationNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -174,7 +175,7 @@ export default function AddLocation() {
             {/* Location Type */}
             <div className="space-y-2">
               <Label htmlFor="location_type" className="text-sm font-medium">
-                Location Type *
+                {t("warehouse.locationType")} *
               </Label>
               <Select
                 value={formData.location_type}
@@ -185,12 +186,12 @@ export default function AddLocation() {
                 <SelectTrigger
                   className={errors.location_type ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select location type" />
+                  <SelectValue placeholder={t("warehouse.selectLocationType")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="WAREHOUSE">Warehouse</SelectItem>
-                  <SelectItem value="WORKCENTER">Work Center</SelectItem>
-                  <SelectItem value="WORKSHOP">Workshop</SelectItem>
+                  <SelectItem value="WAREHOUSE">{t("warehouse.warehouse")}</SelectItem>
+                  <SelectItem value="WORKCENTER">{t("warehouse.workCenter")}</SelectItem>
+                  <SelectItem value="WORKSHOP">{t("warehouse.workshop")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.location_type && (
@@ -203,7 +204,7 @@ export default function AddLocation() {
           {formData.location_type === "WAREHOUSE" && (
             <div className="space-y-2">
               <Label htmlFor="warehouse" className="text-sm font-medium">
-                Warehouse *
+                {t("warehouse.warehouse")} *
               </Label>
               <Select
                 value={formData.warehouse}
@@ -212,7 +213,7 @@ export default function AddLocation() {
                 <SelectTrigger
                   className={errors.warehouse ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select warehouse" />
+                  <SelectValue placeholder={t("warehouse.selectWarehouse")} />
                 </SelectTrigger>
                 <SelectContent>
                   {warehouses.map((warehouse) => (
@@ -232,7 +233,7 @@ export default function AddLocation() {
           {formData.location_type === "WORKCENTER" && (
             <div className="space-y-2">
               <Label htmlFor="work_center" className="text-sm font-medium">
-                Work Center *
+                {t("warehouse.workCenter")} *
               </Label>
               <Select
                 value={formData.work_center}
@@ -243,7 +244,7 @@ export default function AddLocation() {
                 <SelectTrigger
                   className={errors.work_center ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select work center" />
+                  <SelectValue placeholder={t("warehouse.selectWorkCenter")} />
                 </SelectTrigger>
                 <SelectContent>
                   {workcenters.map((workcenter) => (
@@ -261,7 +262,7 @@ export default function AddLocation() {
 
           {/* Is Active */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Status</Label>
+            <Label className="text-sm font-medium">{t("warehouse.status")}</Label>
             <div className="flex items-center space-x-3 pt-2">
               <Switch
                 id="is_active"
@@ -271,7 +272,7 @@ export default function AddLocation() {
                 }
               />
               <Label htmlFor="is_active" className="text-sm font-medium">
-                Active
+                {t("warehouse.activeStatus")}
               </Label>
             </div>
           </div>
@@ -288,7 +289,7 @@ export default function AddLocation() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Creating..." : "Create Location"}
+              {loading ? t("warehouse.creating") : t("warehouse.createLocation")}
             </Button>
             <Button
               type="button"
@@ -297,7 +298,7 @@ export default function AddLocation() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("warehouse.cancel")}
             </Button>
           </div>
         </form>

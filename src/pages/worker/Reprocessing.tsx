@@ -304,11 +304,10 @@ export default function OperatorReprocessingPage() {
           <nav className="-mb-px flex space-x-8 px-6">
             <button
               onClick={() => setActiveTab("pending")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "pending"
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "pending"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 <Package size={16} />
@@ -317,11 +316,10 @@ export default function OperatorReprocessingPage() {
             </button>
             <button
               onClick={() => setActiveTab("reprocessed")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "reprocessed"
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "reprocessed"
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2">
                 <RefreshCw size={16} />
@@ -369,8 +367,8 @@ export default function OperatorReprocessingPage() {
                       {type === "HARD"
                         ? "Qattiq"
                         : type === "SOFT"
-                        ? "Yumshoq"
-                        : type}
+                          ? "Yumshoq"
+                          : type}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -387,8 +385,8 @@ export default function OperatorReprocessingPage() {
                         {status === "PENDING"
                           ? "Kutilmoqda"
                           : status === "CONFIRMED"
-                          ? "Tasdiqlangan"
-                          : status}
+                            ? "Tasdiqlangan"
+                            : status}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -405,12 +403,12 @@ export default function OperatorReprocessingPage() {
                       {reason === "MATERIAL_DEFECT"
                         ? "Material nuqsoni"
                         : reason === "MACHINE_ERROR"
-                        ? "Mashina xatosi"
-                        : reason === "OPERATOR_ERROR"
-                        ? "Operator xatosi"
-                        : reason === "QUALITY_ISSUE"
-                        ? "Sifat muammosi"
-                        : reason}
+                          ? "Mashina xatosi"
+                          : reason === "OPERATOR_ERROR"
+                            ? "Operator xatosi"
+                            : reason === "QUALITY_ISSUE"
+                              ? "Sifat muammosi"
+                              : reason}
                     </SelectItem>
                   ))}
                 </SelectContent>

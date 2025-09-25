@@ -18,9 +18,12 @@ import { useLocationsStore } from "@/store/locations.store";
 import { useWorkcentersStore } from "@/store/workcenters.store";
 import { useWarehousesStore } from "@/store/warehouses.store";
 import { stockService } from "@/services/stock.service";
+import { useTranslation } from "@/hooks/useTranslation";
+import { notifySuccess, notifyError } from "@/lib/notification";
 
 export default function EditStockLevelPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -81,7 +84,7 @@ export default function EditStockLevelPage() {
       });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to fetch stock level data"
+        err instanceof Error ? err.message : t("stockLevels.loadError")
       );
       console.error("Error fetching stock level:", err);
     } finally {
@@ -100,19 +103,19 @@ export default function EditStockLevelPage() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.location) {
-      newErrors.location = "Location is required";
+      newErrors.location = t("stockLevels.locationRequired");
     }
 
     if (!formData.quantity) {
-      newErrors.quantity = "Quantity is required";
+      newErrors.quantity = t("stockLevels.quantityRequired");
     } else if (isNaN(Number(formData.quantity))) {
-      newErrors.quantity = "Quantity must be a valid number";
+      newErrors.quantity = t("stockLevels.quantityInvalid");
     }
 
     // At least one of material or product must be selected (but not both)
     if (!formData.material && !formData.product) {
-      newErrors.material = "Either material or product must be selected";
-      newErrors.product = "Either material or product must be selected";
+      newErrors.material = t("stockLevels.materialOrProductRequired");
+      newErrors.product = t("stockLevels.materialOrProductRequired");
     }
 
     setErrors(newErrors);
@@ -167,15 +170,16 @@ export default function EditStockLevelPage() {
       const result = await updateStockLevel(id, submitData as any);
 
       if (result) {
+        notifySuccess(t("stockLevels.updateSuccess"));
         // Navigate back to stock levels page
         navigate("/stock/stock-levels");
       } else {
-        setError("Failed to update stock level");
+        setError(t("stockLevels.updateError"));
       }
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update stock level"
-      );
+      const errorMessage = err instanceof Error ? err.message : t("stockLevels.updateError");
+      setError(errorMessage);
+      notifyError(errorMessage);
       console.error("Error updating stock level:", err);
     } finally {
       setLoading(false);
@@ -191,7 +195,7 @@ export default function EditStockLevelPage() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-2 text-gray-600">
           <Loader2 size={20} className="animate-spin" />
-          Loading stock level data...
+          {t("stockLevels.loadingData")}
         </div>
       </div>
     );
@@ -208,14 +212,14 @@ export default function EditStockLevelPage() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Back
+          {t("stockLevels.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Edit Stock Level
+            {t("stockLevels.editStockLevelTitle")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Update stock level entry
+            {t("stockLevels.updateStockLevel")}
           </p>
         </div>
       </div>
@@ -234,7 +238,7 @@ export default function EditStockLevelPage() {
             {/* Material */}
             <div className="space-y-2">
               <Label htmlFor="material" className="text-sm font-medium">
-                Material
+                {t("stockLevels.material")}
               </Label>
               <Select
                 value={formData.material}
@@ -243,14 +247,20 @@ export default function EditStockLevelPage() {
                 <SelectTrigger
                   className={errors.material ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select material (optional)" />
+                  <SelectValue placeholder={t("stockLevels.selectMaterial")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {materials.map((material) => (
-                    <SelectItem key={material.id} value={material.id}>
-                      {material.name} ({material.code})
+                  {materials.length === 0 ? (
+                    <SelectItem value="" disabled>
+                      {t("stockLevels.noMaterialsAvailable")}
                     </SelectItem>
-                  ))}
+                  ) : (
+                    materials.map((material) => (
+                      <SelectItem key={material.id} value={material.id}>
+                        {material.name} ({material.code})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               {errors.material && (
@@ -261,7 +271,7 @@ export default function EditStockLevelPage() {
             {/* Product */}
             <div className="space-y-2">
               <Label htmlFor="product" className="text-sm font-medium">
-                Product
+                {t("stockLevels.product")}
               </Label>
               <Select
                 value={formData.product}
@@ -270,14 +280,20 @@ export default function EditStockLevelPage() {
                 <SelectTrigger
                   className={errors.product ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select product (optional)" />
+                  <SelectValue placeholder={t("stockLevels.selectProduct")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {products.map((product) => (
-                    <SelectItem key={product.id} value={product.id!}>
-                      {product.name} ({product.code})
+                  {products.length === 0 ? (
+                    <SelectItem value="" disabled>
+                      {t("stockLevels.noProductsAvailable")}
                     </SelectItem>
-                  ))}
+                  ) : (
+                    products.map((product) => (
+                      <SelectItem key={product.id} value={product.id!}>
+                        {product.name} ({product.code})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               {errors.product && (
@@ -288,7 +304,7 @@ export default function EditStockLevelPage() {
             {/* Location */}
             <div className="space-y-2">
               <Label htmlFor="location" className="text-sm font-medium">
-                Location *
+                {t("stockLevels.locationLabel")}
               </Label>
               <Select
                 value={formData.location}
@@ -297,14 +313,20 @@ export default function EditStockLevelPage() {
                 <SelectTrigger
                   className={errors.location ? "border-red-500" : ""}
                 >
-                  <SelectValue placeholder="Select location" />
+                  <SelectValue placeholder={t("stockLevels.selectLocation")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {filteredLocations.map((location) => (
-                    <SelectItem key={location.id} value={location.id}>
-                      {location.name} ({location.location_type})
+                  {filteredLocations.length === 0 ? (
+                    <SelectItem value="" disabled>
+                      {t("stockLevels.noLocationsAvailable")}
                     </SelectItem>
-                  ))}
+                  ) : (
+                    filteredLocations.map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name} ({location.location_type})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               {errors.location && (
@@ -315,7 +337,7 @@ export default function EditStockLevelPage() {
             {/* Quantity */}
             <div className="space-y-2">
               <Label htmlFor="quantity" className="text-sm font-medium">
-                Quantity *
+                {t("stockLevels.quantityLabel")}
               </Label>
               <Input
                 id="quantity"
@@ -323,7 +345,7 @@ export default function EditStockLevelPage() {
                 step="0.01"
                 value={formData.quantity}
                 onChange={(e) => handleInputChange("quantity", e.target.value)}
-                placeholder="Enter quantity"
+                placeholder={t("stockLevels.enterQuantity")}
                 className={errors.quantity ? "border-red-500" : ""}
               />
               {errors.quantity && (
@@ -335,9 +357,7 @@ export default function EditStockLevelPage() {
           {/* Help Text */}
           <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
             <p className="text-blue-700 text-sm">
-              <strong>Note:</strong> You can select either a material OR a
-              product, but not both. Selecting one will automatically clear the
-              other selection.
+              <strong>{t("common.note")}:</strong> {t("stockLevels.mutualExclusionNote")}
             </p>
           </div>
 
@@ -353,7 +373,7 @@ export default function EditStockLevelPage() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Updating..." : "Update Stock Level"}
+              {loading ? t("stockLevels.updating") : t("stockLevels.update")}
             </Button>
             <Button
               type="button"
@@ -362,7 +382,7 @@ export default function EditStockLevelPage() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

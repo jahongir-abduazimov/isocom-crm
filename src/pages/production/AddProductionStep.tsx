@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { ProductionService } from "@/services/production.service";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const STEP_TYPES = [
     { value: "EXTRUSION", label: "Ekstruziya" },
@@ -29,6 +30,7 @@ const STEP_TYPES = [
 
 export default function AddProductionStepPage() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -47,21 +49,21 @@ export default function AddProductionStepPage() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = "Step name is required";
+            newErrors.name = t("production.addStep.stepNameRequired");
         }
 
         if (!formData.step_type) {
-            newErrors.step_type = "Step type is required";
+            newErrors.step_type = t("production.addStep.stepTypeRequired");
         }
 
         if (!formData.order_sequence) {
-            newErrors.order_sequence = "Order sequence is required";
+            newErrors.order_sequence = t("production.addStep.orderSequenceRequired");
         } else if (isNaN(Number(formData.order_sequence)) || Number(formData.order_sequence) < 1) {
-            newErrors.order_sequence = "Order sequence must be a positive number";
+            newErrors.order_sequence = t("production.addStep.orderSequencePositive");
         }
 
         if (formData.duration_hours && (isNaN(Number(formData.duration_hours)) || Number(formData.duration_hours) < 0)) {
-            newErrors.duration_hours = "Duration must be a positive number";
+            newErrors.duration_hours = t("production.addStep.durationPositive");
         }
 
         setErrors(newErrors);
@@ -108,7 +110,7 @@ export default function AddProductionStepPage() {
             // Navigate back to production steps page
             navigate("/production/steps");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to create production step");
+            setError(err instanceof Error ? err.message : t("production.addStep.createError"));
             console.error("Error creating production step:", err);
         } finally {
             setLoading(false);
@@ -134,10 +136,10 @@ export default function AddProductionStepPage() {
                 </Button>
                 <div>
                     <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-                        Add Production Step
+                        {t("production.addStep.title")}
                     </h1>
                     <p className="text-gray-600 mt-1 text-sm lg:text-base">
-                        Create a new production workflow step
+                        {t("production.addStep.subtitle")}
                     </p>
                 </div>
             </div>
@@ -156,13 +158,13 @@ export default function AddProductionStepPage() {
                         {/* Step Name */}
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-sm font-medium">
-                                Step Name *
+                                {t("production.addStep.stepName")} *
                             </Label>
                             <Input
                                 id="name"
                                 value={formData.name}
                                 onChange={(e) => handleInputChange("name", e.target.value)}
-                                placeholder="Enter step name"
+                                placeholder={t("production.addStep.enterStepName")}
                                 className={errors.name ? "border-red-500" : ""}
                             />
                             {errors.name && (
@@ -173,14 +175,14 @@ export default function AddProductionStepPage() {
                         {/* Step Type */}
                         <div className="space-y-2">
                             <Label htmlFor="step_type" className="text-sm font-medium">
-                                Step Type *
+                                {t("production.addStep.stepType")} *
                             </Label>
                             <Select
                                 value={formData.step_type}
                                 onValueChange={(value) => handleInputChange("step_type", value)}
                             >
                                 <SelectTrigger className={errors.step_type ? "border-red-500" : ""}>
-                                    <SelectValue placeholder="Select step type" />
+                                    <SelectValue placeholder={t("production.addStep.selectStepType")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {STEP_TYPES.map((type) => (
@@ -198,7 +200,7 @@ export default function AddProductionStepPage() {
                         {/* Order Sequence */}
                         <div className="space-y-2">
                             <Label htmlFor="order_sequence" className="text-sm font-medium">
-                                Order Sequence *
+                                {t("production.addStep.orderSequence")} *
                             </Label>
                             <Input
                                 id="order_sequence"
@@ -206,7 +208,7 @@ export default function AddProductionStepPage() {
                                 min="1"
                                 value={formData.order_sequence}
                                 onChange={(e) => handleInputChange("order_sequence", e.target.value)}
-                                placeholder="Enter order sequence"
+                                placeholder={t("production.addStep.enterOrderSequence")}
                                 className={errors.order_sequence ? "border-red-500" : ""}
                             />
                             {errors.order_sequence && (
@@ -217,7 +219,7 @@ export default function AddProductionStepPage() {
                         {/* Duration Hours */}
                         <div className="space-y-2">
                             <Label htmlFor="duration_hours" className="text-sm font-medium">
-                                Duration (Hours)
+                                {t("production.addStep.duration")}
                             </Label>
                             <Input
                                 id="duration_hours"
@@ -226,7 +228,7 @@ export default function AddProductionStepPage() {
                                 min="0"
                                 value={formData.duration_hours}
                                 onChange={(e) => handleInputChange("duration_hours", e.target.value)}
-                                placeholder="Enter duration in hours"
+                                placeholder={t("production.addStep.enterDuration")}
                                 className={errors.duration_hours ? "border-red-500" : ""}
                             />
                             {errors.duration_hours && (
@@ -238,13 +240,13 @@ export default function AddProductionStepPage() {
                     {/* Description */}
                     <div className="space-y-2">
                         <Label htmlFor="description" className="text-sm font-medium">
-                            Description
+                            {t("production.addStep.description")}
                         </Label>
                         <Textarea
                             id="description"
                             value={formData.description}
                             onChange={(e) => handleInputChange("description", e.target.value)}
-                            placeholder="Enter step description"
+                            placeholder={t("production.addStep.enterDescription")}
                             rows={3}
                         />
                     </div>
@@ -257,7 +259,7 @@ export default function AddProductionStepPage() {
                             onCheckedChange={(checked) => handleInputChange("is_required", checked)}
                         />
                         <Label htmlFor="is_required" className="text-sm font-medium">
-                            Required Step
+                            {t("production.addStep.requiredStep")}
                         </Label>
                     </div>
 
@@ -273,7 +275,7 @@ export default function AddProductionStepPage() {
                             ) : (
                                 <Save size={16} />
                             )}
-                            {loading ? "Creating..." : "Create Step"}
+                            {loading ? t("production.addStep.creating") : t("production.addStep.createStep")}
                         </Button>
                         <Button
                             type="button"
@@ -282,7 +284,7 @@ export default function AddProductionStepPage() {
                             disabled={loading}
                             className="w-full sm:w-auto"
                         >
-                            Cancel
+                            {t("common.cancel")}
                         </Button>
                     </div>
                 </form>

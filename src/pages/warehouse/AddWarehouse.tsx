@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { WarehouseService } from "@/services/warehouse.service";
 import { useWarehousesStore } from "@/store/warehouses.store";
 import { notifySuccess } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AddWarehouse() {
   const navigate = useNavigate();
@@ -21,12 +22,13 @@ export default function AddWarehouse() {
     is_active: true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { t } = useTranslation();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Omborxona nomi majburiy";
+      newErrors.name = t("warehouse.warehouses.validation.nameRequired");
     }
 
     setErrors(newErrors);
@@ -67,10 +69,10 @@ export default function AddWarehouse() {
 
       const newWarehouse = await WarehouseService.createWarehouse(submitData);
       addWarehouse(newWarehouse);
-      notifySuccess("Warehouse created successfully");
+      notifySuccess(t("warehouse.warehouses.warehouseCreated"));
       navigate("/warehouse/warehouses");
     } catch (error: any) {
-      setError(error?.response?.data?.detail || "Failed to create warehouse");
+      setError(error?.response?.data?.detail || t("warehouse.warehouses.warehouseNotCreated"));
       console.error("Error creating warehouse:", error);
     } finally {
       setLoading(false);
@@ -92,14 +94,14 @@ export default function AddWarehouse() {
           className="flex items-center gap-2"
         >
           <ArrowLeft size={16} />
-          Back
+          {t("warehouse.warehouses.back")}
         </Button>
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Add Warehouse
+            {t("warehouse.warehouses.addWarehouse")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
-            Create a new warehouse location
+            {t("warehouse.warehouses.addWarehouseDesc")}
           </p>
         </div>
       </div>
@@ -118,13 +120,13 @@ export default function AddWarehouse() {
             {/* Warehouse Name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
-                Warehouse Name *
+                {t("warehouse.warehouses.warehouseName")} *
               </Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="Enter warehouse name"
+                placeholder={t("warehouse.warehouses.warehouseNamePlaceholder")}
                 className={errors.name ? "border-red-500" : ""}
               />
               {errors.name && (
@@ -134,7 +136,7 @@ export default function AddWarehouse() {
 
             {/* Is Active */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Status</Label>
+              <Label className="text-sm font-medium">{t("warehouse.warehouses.status")}</Label>
               <div className="flex items-center space-x-3 pt-2">
                 <Switch
                   id="is_active"
@@ -144,7 +146,7 @@ export default function AddWarehouse() {
                   }
                 />
                 <Label htmlFor="is_active" className="text-sm font-medium">
-                  Active
+                  {t("warehouse.warehouses.activeStatus")}
                 </Label>
               </div>
             </div>
@@ -153,13 +155,13 @@ export default function AddWarehouse() {
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              Description
+              {t("warehouse.warehouses.description")}
             </Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              placeholder="Enter warehouse description"
+              placeholder={t("warehouse.warehouses.descriptionPlaceholder")}
               rows={3}
             />
           </div>
@@ -176,7 +178,7 @@ export default function AddWarehouse() {
               ) : (
                 <Save size={16} />
               )}
-              {loading ? "Creating..." : "Create Warehouse"}
+              {loading ? t("warehouse.warehouses.creating") : t("warehouse.warehouses.createWarehouse")}
             </Button>
             <Button
               type="button"
@@ -185,7 +187,7 @@ export default function AddWarehouse() {
               disabled={loading}
               className="w-full sm:w-auto"
             >
-              Cancel
+              {t("warehouse.warehouses.cancel")}
             </Button>
           </div>
         </form>

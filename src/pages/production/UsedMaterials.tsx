@@ -16,9 +16,11 @@ import {
   type UsedMaterial,
 } from "@/services/production.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function UsedMaterialsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterWorkcenter, setFilterWorkcenter] = useState("all");
   const [materials, setMaterials] = useState<UsedMaterial[]>([]);
@@ -63,12 +65,12 @@ export default function UsedMaterialsPage() {
         prevMaterials.filter((material) => material.id !== materialToDelete.id)
       );
 
-      notifySuccess("Used material deleted successfully");
+      notifySuccess(t("production.usedMaterials.deleteMaterial"));
       setDeleteModalOpen(false);
       setMaterialToDelete(null);
     } catch (err) {
       console.error("Error deleting used material:", err);
-      notifyError("Failed to delete used material");
+      notifyError(t("production.usedMaterials.deleteMaterial"));
     } finally {
       setDeleting(false);
     }
@@ -121,7 +123,7 @@ export default function UsedMaterialsPage() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
-            Used Materials
+            {t("production.usedMaterials.title")}
           </h1>
         </div>
         <Button
@@ -129,7 +131,7 @@ export default function UsedMaterialsPage() {
           onClick={() => navigate("/production/used-materials/add")}
         >
           <Plus size={20} />
-          Record Usage
+          {t("production.usedMaterials.recordUsage")}
         </Button>
       </div>
 
@@ -139,7 +141,7 @@ export default function UsedMaterialsPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Records</p>
+                <p className="text-sm font-medium text-gray-600">{t("production.usedMaterials.totalRecords")}</p>
                 <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {materials.length}
                 </p>
@@ -153,7 +155,7 @@ export default function UsedMaterialsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Total Quantity
+                  {t("production.usedMaterials.totalQuantity")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {materials.reduce((sum, m) => sum + parseFloat(m.quantity), 0).toFixed(2)}
@@ -168,7 +170,7 @@ export default function UsedMaterialsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Work Centers
+                  {t("production.usedMaterials.workCenters")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-purple-600">
                   {getUniqueWorkcenters().length}
@@ -183,7 +185,7 @@ export default function UsedMaterialsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Avg Quantity
+                  {t("production.usedMaterials.avgQuantity")}
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-orange-600">
                   {materials.length > 0
@@ -210,7 +212,7 @@ export default function UsedMaterialsPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <Input
-                  placeholder="Search materials..."
+                  placeholder={t("production.usedMaterials.searchPlaceholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -220,10 +222,10 @@ export default function UsedMaterialsPage() {
             <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
               <Select value={filterWorkcenter} onValueChange={setFilterWorkcenter}>
                 <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="All Work Centers" />
+                  <SelectValue placeholder={t("production.usedMaterials.allWorkCenters")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Work Centers</SelectItem>
+                  <SelectItem value="all">{t("production.usedMaterials.allWorkCenters")}</SelectItem>
                   {getUniqueWorkcenters().map((workcenter) => (
                     <SelectItem key={workcenter} value={workcenter}>
                       {workcenter}
@@ -244,22 +246,22 @@ export default function UsedMaterialsPage() {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Material Name
+                    {t("production.usedMaterials.materialName")}
                   </th>
                   <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Order ID
+                    {t("production.usedMaterials.orderId")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quantity
+                    {t("production.usedMaterials.quantity")}
                   </th>
                   <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Available
+                    {t("production.usedMaterials.available")}
                   </th>
                   <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Work Center
+                    {t("production.usedMaterials.workCenter")}
                   </th>
                   <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t("production.usedMaterials.actions")}
                   </th>
                 </tr>
               </thead>
@@ -291,7 +293,7 @@ export default function UsedMaterialsPage() {
                           {formatQuantity(material.quantity)}
                         </span>
                         <span className="text-xs text-gray-500 md:hidden">
-                          Available: {material.available_quantity}
+                          {t("production.usedMaterials.availableLabel")}: {material.available_quantity}
                         </span>
                       </div>
                     </td>
@@ -341,20 +343,20 @@ export default function UsedMaterialsPage() {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg mt-4">
-            Loading used materials...
+            {t("production.usedMaterials.loadingMaterials")}
           </p>
         </div>
       )}
 
       {error && (
         <div className="text-center py-12">
-          <p className="text-red-500 text-lg">Error: {error}</p>
+          <p className="text-red-500 text-lg">{t("production.usedMaterials.loadingError")}: {error}</p>
           <Button
             onClick={fetchUsedMaterials}
             className="mt-4"
             variant="outline"
           >
-            Retry
+            {t("production.usedMaterials.retry")}
           </Button>
         </div>
       )}
@@ -362,7 +364,7 @@ export default function UsedMaterialsPage() {
       {!loading && !error && filteredMaterials.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
-            No used materials found matching your criteria.
+            {t("production.usedMaterials.noMaterialsFound")}
           </p>
         </div>
       )}
@@ -370,10 +372,10 @@ export default function UsedMaterialsPage() {
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         open={deleteModalOpen}
-        title="Delete Used Material"
-        description={`Are you sure you want to delete the usage record for "${materialToDelete?.material_name}"? This action cannot be undone.`}
-        confirmText={deleting ? "Deleting..." : "Delete"}
-        cancelText="Cancel"
+        title={t("production.usedMaterials.deleteMaterial")}
+        description={t("production.usedMaterials.deleteConfirm")}
+        confirmText={deleting ? t("production.usedMaterials.deleteButton") + "..." : t("production.usedMaterials.deleteButton")}
+        cancelText={t("production.usedMaterials.cancelButton")}
         onConfirm={confirmDeleteMaterial}
         onCancel={cancelDelete}
       />
