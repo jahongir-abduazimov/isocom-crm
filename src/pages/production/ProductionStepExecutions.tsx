@@ -172,7 +172,7 @@ export default function ProductionStepExecutionsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.stepExecutions.title")}
           </h1>
         </div>
@@ -254,8 +254,8 @@ export default function ProductionStepExecutionsPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -269,9 +269,9 @@ export default function ProductionStepExecutionsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full sm:w-auto">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("production.stepExecutions.allStatus")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -288,35 +288,35 @@ export default function ProductionStepExecutionsPage() {
         </div>
       )}
 
-      {/* Executions Table */}
+      {/* Executions Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.stepName")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.orderId")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.operator")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.startTime")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.endTime")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.duration")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.status")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.stepExecutions.actions")}
                   </th>
                 </tr>
@@ -324,43 +324,33 @@ export default function ProductionStepExecutionsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredExecutions.map((execution) => (
                   <tr key={execution.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {execution.production_step_name}
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span className="text-xs text-gray-500">
-                          Order: {execution.order.substring(0, 8)}...
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="max-w-[120px] truncate">
                         {execution.order.substring(0, 8)}...
                       </div>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="truncate">
                         {execution.assigned_operator_name || t("production.stepExecutions.unassigned")}
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {formatDateTime(execution.start_time)}
-                        </span>
-                        <span className="text-xs text-gray-500 md:hidden">
-                          {getStatusDisplayName(execution.status)}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {formatDateTime(execution.start_time)}
+                      </span>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDateTime(execution.end_time)}
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDuration(execution.actual_duration_hours)}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(execution.status)}
                         <span
@@ -372,12 +362,12 @@ export default function ProductionStepExecutionsPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(
                               `/production/step-executions/${execution.id}/edit`
@@ -389,7 +379,7 @@ export default function ProductionStepExecutionsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => handleDeleteExecution(execution)}
                         >
                           <Trash2 size={14} />
@@ -401,6 +391,102 @@ export default function ProductionStepExecutionsPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Executions Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredExecutions.map((execution) => (
+            <div key={execution.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Step Name and Status */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {execution.production_step_name}
+                    </h3>
+                    <div className="mt-1">
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(execution.status)}
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                            execution.status
+                          )}`}
+                        >
+                          {getStatusDisplayName(execution.status)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order ID and Operator */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.stepExecutions.orderId")}</h4>
+                    <p className="text-sm text-gray-600 truncate">
+                      {execution.order.substring(0, 8)}...
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.stepExecutions.operator")}</h4>
+                    <p className="text-sm text-gray-600 truncate">
+                      {execution.assigned_operator_name || t("production.stepExecutions.unassigned")}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Times and Duration */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.stepExecutions.startTime")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {formatDateTime(execution.start_time)}
+                    </p>
+                  </div>
+                  {execution.end_time && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-xs">{t("production.stepExecutions.endTime")}</h4>
+                      <p className="text-sm text-gray-600">
+                        {formatDateTime(execution.end_time)}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.stepExecutions.duration")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {formatDuration(execution.actual_duration_hours)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      navigate(`/production/step-executions/${execution.id}/edit`)
+                    }
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("common.edit")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteExecution(execution)}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("common.delete")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

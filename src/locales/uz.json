@@ -131,6 +131,17 @@
     "squareMeter": "Kvadrat metr",
     "cubicMeter": "Kub metr",
     "liter": "Litr",
+    "FINISHED_PRODUCT": "Tayyor maxsulot",
+    "SEMI_FINISHED_PRODUCT": "Yarim tayyor maxsulot",
+    "length": "Uzunlik (m)",
+    "thickness": "Qalinlik (sm)",
+    "diameter": "Diametr (sm)",
+    "width": "Kenglik (sm)",
+    "lengthPlaceholder": "Masalan: 2.5",
+    "thicknessPlaceholder": "Masalan: 10",
+    "diameterPlaceholder": "Masalan: 15",
+    "widthPlaceholder": "Masalan: 20",
+    "optional": "Ixtiyoriy",
     "validation": {
       "nameRequired": "Maxsulot nomi majburiy",
       "nameMinLength": "Maxsulot nomi kamida 2 ta belgidan iborat bo'lishi kerak",
@@ -245,6 +256,7 @@
     "cubicMeter": "m³",
     "piece": "Bo'lak",
     "liter": "Litr",
+    "optional": "Ixtiyoriy",
     "validation": {
       "nameRequired": "Material nomi majburiy",
       "nameMinLength": "Material nomi kamida 2 ta belgidan iborat bo'lishi kerak",
@@ -963,6 +975,8 @@
       "passwordSpecial": "kamida bitta maxsus belgi",
       "passwordConfirmRequired": "Parolni tasdiqlash majburiy",
       "passwordMismatch": "Parollar mos kelmaydi",
+      "firstNameRequired": "Ism majburiy",
+      "lastNameRequired": "Familiya majburiy",
       "roleRequired": "Rol majburiy",
       "shiftRequired": "Smena majburiy"
     }

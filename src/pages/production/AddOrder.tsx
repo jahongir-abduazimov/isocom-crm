@@ -26,9 +26,7 @@ const formSchema = z.object({
   unit_of_measure: z.string().min(1, "O'lchov birligi majburiy"),
   produced_quantity: z.string().min(1, "Ishlab chiqarish miqdori majburiy"),
   status: z.string().min(1, "Holat majburiy"),
-  description: z
-    .string()
-    .min(5, "Tavsif kamida 5 ta belgidan iborat bo'lishi kerak"),
+  description: z.string().optional(),
   start_date: z.string().min(1, "Boshlanish sanasi majburiy"),
   completion_date: z.string().optional(),
 });
@@ -78,7 +76,7 @@ export default function AddOrderPage() {
           | "IN_PROGRESS"
           | "COMPLETED"
           | "CANCELLED",
-        description: data.description,
+        description: data.description || "",
         start_date: data.start_date,
         completion_date: data.completion_date || null,
         used_materials: [],
@@ -98,18 +96,18 @@ export default function AddOrderPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/production/orders")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           Back
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.addOrder.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -119,7 +117,7 @@ export default function AddOrderPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -128,7 +126,7 @@ export default function AddOrderPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Produced Product Selection */}
             <div className="space-y-2">
               <Label htmlFor="produced_product" className="text-sm font-medium">
@@ -255,7 +253,7 @@ export default function AddOrderPage() {
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              {t("production.addOrder.description")} *
+              {t("production.addOrder.description")}
             </Label>
             <Textarea
               id="description"
@@ -274,7 +272,7 @@ export default function AddOrderPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {loading ? t("production.addOrder.creating") : t("production.addOrder.createOrder")}
             </Button>
@@ -283,7 +281,7 @@ export default function AddOrderPage() {
               variant="outline"
               onClick={() => navigate("/production/orders")}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("common.cancel")}
             </Button>

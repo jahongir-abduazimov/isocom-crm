@@ -114,12 +114,12 @@ const UsersPage = () => {
 
   return (
     <div className="">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">{t("users.title")}</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{t("users.title")}</h1>
         </div>
         <Button
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto"
           onClick={() => navigate("/users/add")}
         >
           <Plus size={20} />
@@ -129,8 +129,8 @@ const UsersPage = () => {
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-        <form onSubmit={handleSearch} className="flex gap-4 items-center">
-          <div className="flex-1">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 items-center">
+          <div className="flex-1 w-full">
             <div className="relative">
               <Search
                 size={20}
@@ -144,9 +144,6 @@ const UsersPage = () => {
               />
             </div>
           </div>
-          <Button type="submit" variant="outline">
-            {t("users.searchButton")}
-          </Button>
         </form>
       </div>
 
@@ -190,29 +187,29 @@ const UsersPage = () => {
         }}
       />
 
-      {/* Users Table */}
+      {/* Users Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("users.user")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("users.email")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("users.role")}
                   </th>
-                  <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("users.joinedDate")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("users.status")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("users.actions")}
                   </th>
                 </tr>
@@ -220,7 +217,7 @@ const UsersPage = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-gray-900">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-8 w-8">
                           <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -239,16 +236,16 @@ const UsersPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {user.email || "-"}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {getRoleBadge(user)}
                     </td>
-                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(user.date_joined)}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.is_active
                           ? "bg-green-100 text-green-800"
@@ -258,12 +255,12 @@ const UsersPage = () => {
                         {user.is_active ? t("users.active") : t("users.inactive")}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() => navigate(`/users/${user.id}/edit`)}
                         >
                           <Edit size={14} className="mr-1" />
@@ -272,7 +269,7 @@ const UsersPage = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700"
+                          className="text-sm px-3 text-red-600 hover:text-red-700"
                           onClick={() => {
                             setDeleteId(user.id);
                             setModalOpen(true);
@@ -288,6 +285,96 @@ const UsersPage = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Users Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredUsers.map((user) => (
+            <div key={user.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* User Info */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0 h-10 w-10">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Users size={18} className="text-blue-600" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900 truncate">
+                      {user.full_name?.trim() ||
+                        `${user.first_name} ${user.last_name}`.trim() ||
+                        user.username}
+                    </div>
+                    <div className="text-sm text-gray-500 truncate">
+                      @{user.username}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Email and Role */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("users.email")}</h4>
+                    <p className="text-sm text-gray-600">{user.email || "-"}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("users.role")}</h4>
+                    <div className="mt-1">
+                      {getRoleBadge(user)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Joined Date and Status */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("users.joinedDate")}</h4>
+                    <p className="text-sm text-gray-600">{formatDate(user.date_joined)}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("users.status")}</h4>
+                    <div className="mt-1">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.is_active
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                          }`}
+                      >
+                        {user.is_active ? t("users.active") : t("users.inactive")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => navigate(`/users/${user.id}/edit`)}
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("users.editButton")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      setDeleteId(user.id);
+                      setModalOpen(true);
+                    }}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("users.deleteButtonAction")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

@@ -11,6 +11,10 @@ export interface Product {
   description?: string;
   price?: number | string;
   is_active?: boolean;
+  length?: number | null;
+  thickness?: number | null;
+  diameter?: number | null;
+  width?: number | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -37,8 +41,10 @@ export const useProductsStore = create<ProductsState>((set) => ({
     set({ loading: true, error: null });
     try {
       const res = await request.get("/products/");
+      console.log("API Response - GET /products/", res.data);
       set({ products: res.data.results || [], loading: false });
     } catch (error) {
+      console.error("API Error - GET /products/", error);
       set({
         error: (error as Error).message || "Xatolik yuz berdi",
         loading: false,
@@ -49,9 +55,12 @@ export const useProductsStore = create<ProductsState>((set) => ({
   addProduct: async (product) => {
     set({ loading: true, error: null });
     try {
-      await request.post("/products/", product);
+      console.log("API Request - POST /products/", product);
+      const response = await request.post("/products/", product);
+      console.log("API Response - POST /products/", response.data);
       set({ loading: false });
     } catch (error) {
+      console.error("API Error - POST /products/", error);
       set({ loading: false, error: (error as Error).message });
     }
   },
@@ -80,7 +89,9 @@ export const useProductsStore = create<ProductsState>((set) => ({
   ) => {
     set({ loading: true });
     try {
-      await request.patch(`/products/${id}/`, data);
+      console.log(`API Request - PATCH /products/${id}/`, data);
+      const response = await request.patch(`/products/${id}/`, data);
+      console.log(`API Response - PATCH /products/${id}/`, response.data);
       set((state) => ({
         products: state.products.map((p) =>
           p.id === id ? { ...p, ...data } : p
@@ -89,6 +100,7 @@ export const useProductsStore = create<ProductsState>((set) => ({
       }));
       return true;
     } catch (error) {
+      console.error(`API Error - PATCH /products/${id}/`, error);
       set({
         error: (error as Error).message || "Xatolik yuz berdi",
         loading: false,

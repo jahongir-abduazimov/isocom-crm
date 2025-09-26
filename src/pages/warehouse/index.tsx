@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Edit, Trash2, Search, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -70,7 +70,7 @@ export default function WarehousesPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("warehouse.warehouses.title")}
           </h1>
         </div>
@@ -83,81 +83,11 @@ export default function WarehousesPage() {
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.warehouses.totalWarehouses")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-gray-900">
-                  {warehouses.length}
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-blue-100 rounded-full">
-                <Eye size={20} className="text-blue-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.warehouses.activeWarehouses")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-green-600">
-                  {warehouses.filter((w) => w.is_active).length}
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-green-100 rounded-full">
-                <Eye size={20} className="text-green-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.warehouses.inactiveWarehouses")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-gray-600">
-                  {warehouses.filter((w) => !w.is_active).length}
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-gray-100 rounded-full">
-                <Eye size={20} className="text-gray-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.warehouses.withDescription")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-purple-600">
-                  {
-                    warehouses.filter(
-                      (w) => w.description && w.description.trim() !== ""
-                    ).length
-                  }
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-purple-100 rounded-full">
-                <Eye size={20} className="text-purple-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -171,9 +101,9 @@ export default function WarehousesPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full sm:w-auto">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("warehouse.warehouses.allStatus")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -187,26 +117,26 @@ export default function WarehousesPage() {
         </div>
       )}
 
-      {/* Warehouses Table */}
+      {/* Warehouses Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.warehouses.name")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.warehouses.description")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.warehouses.created")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.warehouses.status")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.warehouses.actions")}
                   </th>
                 </tr>
@@ -214,17 +144,12 @@ export default function WarehousesPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredWarehouses.map((warehouse) => (
                   <tr key={warehouse.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {warehouse.name}
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span className="text-xs text-gray-500">
-                          {warehouse.is_active ? t("warehouse.warehouses.active") : t("warehouse.warehouses.inactive")}
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div
                         className="truncate"
                         title={warehouse.description || t("warehouse.warehouses.noDescription")}
@@ -232,10 +157,10 @@ export default function WarehousesPage() {
                         {warehouse.description || t("warehouse.warehouses.noDescription")}
                       </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(warehouse.created_at).toLocaleDateString()}
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${warehouse.is_active
                           ? "bg-green-100 text-green-800"
@@ -245,12 +170,12 @@ export default function WarehousesPage() {
                         {warehouse.is_active ? t("warehouse.warehouses.active") : t("warehouse.warehouses.inactive")}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(
                               `/warehouse/warehouses/${warehouse.id}/edit`
@@ -262,7 +187,7 @@ export default function WarehousesPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => {
                             setWarehouseToDelete(warehouse.id);
                             setShowDeleteModal(true);
@@ -277,6 +202,81 @@ export default function WarehousesPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Warehouses Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredWarehouses.map((warehouse) => (
+            <div key={warehouse.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Warehouse Name and Status */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {warehouse.name}
+                    </h3>
+                    <div className="mt-1">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${warehouse.is_active
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                          }`}
+                      >
+                        {warehouse.is_active ? t("warehouse.warehouses.active") : t("warehouse.warehouses.inactive")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                {warehouse.description && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("warehouse.warehouses.description")}</h4>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {warehouse.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Created Date */}
+                <div>
+                  <h4 className="font-medium text-gray-900 text-xs">{t("warehouse.warehouses.created")}</h4>
+                  <p className="text-sm text-gray-600">
+                    {new Date(warehouse.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      navigate(`/warehouse/warehouses/${warehouse.id}/edit`)
+                    }
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("warehouse.warehouses.editButton")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      setWarehouseToDelete(warehouse.id);
+                      setShowDeleteModal(true);
+                    }}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("warehouse.warehouses.deleteButtonAction")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

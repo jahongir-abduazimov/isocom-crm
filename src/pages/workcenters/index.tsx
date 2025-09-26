@@ -115,14 +115,14 @@ const WorkcentersPage = () => {
 
   return (
     <div className="">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("workcenters.title")}
           </h1>
         </div>
         <Button
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto"
           onClick={() => navigate("/workcenters/add")}
         >
           <Plus size={20} />
@@ -132,7 +132,7 @@ const WorkcentersPage = () => {
 
       {/* Statistics Cards */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Total Workcenters Card */}
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="flex items-center justify-between">
@@ -234,7 +234,7 @@ const WorkcentersPage = () => {
           </div>
 
           {/* Filter Dropdowns */}
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
             <div className="flex items-center gap-2">
               <Filter size={16} className="text-gray-500" />
               <span className="text-sm font-medium text-gray-700">
@@ -243,12 +243,12 @@ const WorkcentersPage = () => {
             </div>
 
             {/* Location Filter */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <label className="text-sm text-gray-600 whitespace-nowrap">
                 {t("workcenters.location")}:
               </label>
               <Select value={locationFilter} onValueChange={setLocationFilter}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder={t("workcenters.selectLocation")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -264,12 +264,12 @@ const WorkcentersPage = () => {
             </div>
 
             {/* Status Filter */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <label className="text-sm text-gray-600 whitespace-nowrap">
                 {t("workcenters.status")}:
               </label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger className="w-full sm:w-[150px]">
                   <SelectValue placeholder={t("workcenters.selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,12 +281,12 @@ const WorkcentersPage = () => {
             </div>
 
             {/* Type Filter */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <label className="text-sm text-gray-600 whitespace-nowrap">
                 {t("workcenters.type")}:
               </label>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder={t("workcenters.selectType")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -342,32 +342,32 @@ const WorkcentersPage = () => {
         }}
       />
 
-      {/* Workcenters Table */}
+      {/* Workcenters Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.workcenterName")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.type")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.location")}
                   </th>
-                  <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.capacity")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.lastMaintenance")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.status")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("workcenters.actions")}
                   </th>
                 </tr>
@@ -375,36 +375,36 @@ const WorkcentersPage = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredWorkcenters.map((workcenter) => (
                   <tr key={workcenter.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
+                    <td className="px-6 py-4 text-sm text-gray-900">
                       <div className="flex items-center gap-2">
                         <Factory size={16} className="text-gray-400" />
-                        <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                        <div className="max-w-[200px] truncate">
                           {workcenter.name}
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {workcenter.type || "-"}
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {workcenter.location
                         ? getLocationName(workcenter.location)
                         : "-"}
                     </td>
-                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {workcenter.capacity_per_hour
                         ? `${workcenter.capacity_per_hour} ${workcenter.capacity_unit || ""
                         }`
                         : "-"}
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {workcenter.last_maintenance_date
                         ? new Date(
                           workcenter.last_maintenance_date
                         ).toLocaleDateString("uz-UZ")
                         : "-"}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${workcenter.is_active
                           ? "bg-green-100 text-green-800"
@@ -414,12 +414,12 @@ const WorkcentersPage = () => {
                         {workcenter.is_active ? t("workcenters.active") : t("workcenters.inactive")}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(`/workcenters/${workcenter.id}/edit`)
                           }
@@ -430,7 +430,7 @@ const WorkcentersPage = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700"
+                          className="text-sm px-3 text-red-600 hover:text-red-700"
                           onClick={() => {
                             setDeleteId(workcenter.id);
                             setModalOpen(true);
@@ -446,6 +446,98 @@ const WorkcentersPage = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Workcenters Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredWorkcenters.map((workcenter) => (
+            <div key={workcenter.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Workcenter Name */}
+                <div>
+                  <h3 className="font-medium text-gray-900 text-sm flex items-center gap-2">
+                    <Factory size={16} className="text-gray-400" />
+                    {t("workcenters.workcenterName")}
+                  </h3>
+                  <p className="text-sm text-gray-600 truncate">{workcenter.name}</p>
+                </div>
+
+                {/* Type and Location */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("workcenters.type")}</h4>
+                    <p className="text-sm text-gray-600">{workcenter.type || "-"}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("workcenters.location")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {workcenter.location ? getLocationName(workcenter.location) : "-"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Capacity and Maintenance */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("workcenters.capacity")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {workcenter.capacity_per_hour
+                        ? `${workcenter.capacity_per_hour} ${workcenter.capacity_unit || ""}`
+                        : "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("workcenters.lastMaintenance")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {workcenter.last_maintenance_date
+                        ? new Date(workcenter.last_maintenance_date).toLocaleDateString("uz-UZ")
+                        : "-"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <h4 className="font-medium text-gray-900 text-xs">{t("workcenters.status")}</h4>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${workcenter.is_active
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                      }`}
+                  >
+                    {workcenter.is_active ? t("workcenters.active") : t("workcenters.inactive")}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => navigate(`/workcenters/${workcenter.id}/edit`)}
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("workcenters.editButton")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      setDeleteId(workcenter.id);
+                      setModalOpen(true);
+                    }}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("workcenters.deleteButtonAction")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

@@ -43,30 +43,30 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <Button
         variant="outline"
-        className="flex items-center gap-2 min-w-[120px] justify-start"
+        className="flex items-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[120px] justify-start text-xs sm:text-sm"
         onClick={() => setIsOpen(!isOpen)}
+        size="sm"
       >
-        <Globe size={16} />
+        <Globe size={14} className="sm:w-4 sm:h-4" />
         {/* <span className="text-lg">{currentLanguage.flag}</span> */}
-        <span className="text-sm font-medium">{currentLanguage.name}</span>
+        <span className="font-medium truncate">{currentLanguage.name}</span>
       </Button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 w-30 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div className="absolute top-full right-0 mt-1 w-28 sm:w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           {languages.map((language) => (
             <button
               key={language.code}
               onClick={() => changeLanguage(language.code)}
-              className={`w-full flex cursor-pointer items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                i18n.language === language.code
+              className={`w-full flex cursor-pointer items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 text-left hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${i18n.language === language.code
                   ? "bg-blue-50 text-blue-600"
                   : "text-gray-700"
-              }`}
+                }`}
             >
               {/* <span className="text-lg">{language.flag}</span> */}
-              <span className="text-sm font-medium">{language.name}</span>
+              <span className="text-xs sm:text-sm font-medium truncate">{language.name}</span>
               {i18n.language === language.code && (
-                <span className="ml-auto text-blue-600">✓</span>
+                <span className="ml-auto text-blue-600 text-xs sm:text-sm">✓</span>
               )}
             </button>
           ))}

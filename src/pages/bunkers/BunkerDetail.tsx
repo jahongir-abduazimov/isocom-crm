@@ -100,40 +100,31 @@ const BunkerDetailPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate("/bunkers")}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-fit"
           >
             <ArrowLeft size={16} />
             {t("common.back")}
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{bunker.name}</h1>
-            <p className="text-gray-600 mt-2">{bunker.work_center_name}</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{bunker.name}</h1>
+            <p className="text-gray-600 mt-2 text-sm lg:text-base">{bunker.work_center_name}</p>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => navigate(`/bunkers/${bunker.id}/edit`)}
-            className="flex items-center gap-2"
-          >
-            <Edit size={16} />
-            {t("common.edit")}
-          </Button>
         </div>
       </div>
 
       {/* Status and Basic Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">
                   {t("bunkers.status")}
                 </p>
                 <Badge
@@ -146,26 +137,26 @@ const BunkerDetailPage: React.FC = () => {
                 </Badge>
               </div>
               {bunker.is_filled ? (
-                <CheckCircle className="h-8 w-8 text-green-600" />
+                <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
               ) : (
-                <AlertCircle className="h-8 w-8 text-red-600" />
+                <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600" />
               )}
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-600">
                   {t("bunkers.capacity")}
                 </p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">
                   {bunker.capacity_kg} kg
                 </p>
               </div>
-              <Package className="h-8 w-8 text-blue-600" />
+              <Package className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
@@ -188,14 +179,14 @@ const BunkerDetailPage: React.FC = () => {
       {/* Containers Section */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
-              <Container size={24} />
+              <Container size={20} className="sm:w-6 sm:h-6" />
               {t("containers.title")}
             </CardTitle>
             <Button
               onClick={() => navigate(`/bunkers/${bunker.id}/containers/add`)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Plus size={16} />
               {t("containers.addContainer")}
@@ -235,7 +226,7 @@ const BunkerDetailPage: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {bunkerContainers.map((container) => (
                 <Card
                   key={container.id}
@@ -243,18 +234,18 @@ const BunkerDetailPage: React.FC = () => {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                           {container.container_name}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">
                           {container.bunker_name}
                         </p>
                       </div>
                     </div>
 
                     <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs sm:text-sm">
                         <span className="text-gray-600">
                           {t("containers.emptyWeight")}:
                         </span>
@@ -262,7 +253,7 @@ const BunkerDetailPage: React.FC = () => {
                           {container.empty_weight_kg} kg
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-xs sm:text-sm">
                         <span className="text-gray-600">
                           {t("containers.availableCapacity")}:
                         </span>
@@ -285,16 +276,17 @@ const BunkerDetailPage: React.FC = () => {
                             `/bunkers/${bunker.id}/containers/${container.id}/edit`
                           )
                         }
+                        className="text-xs sm:text-sm"
                       >
-                        <Edit size={16} />
+                        <Edit size={14} />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleDeleteContainer(container.id)}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-red-600 hover:text-red-700 text-xs sm:text-sm"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} />
                       </Button>
                     </div>
                   </CardContent>

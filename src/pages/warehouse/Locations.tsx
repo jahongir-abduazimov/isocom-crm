@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Edit, Trash2, Search, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -109,7 +109,7 @@ export default function LocationsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("warehouse.locations")}
           </h1>
         </div>
@@ -122,81 +122,11 @@ export default function LocationsPage() {
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.totalLocations")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-gray-900">
-                  {locations.length}
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-blue-100 rounded-full">
-                <Eye size={20} className="text-blue-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.activeLocations")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-green-600">
-                  {locations.filter((l) => l.is_active).length}
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-green-100 rounded-full">
-                <Eye size={20} className="text-green-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">{t("warehouse.warehouses")}</p>
-                <p className="text-xl lg:text-2xl font-bold text-blue-600">
-                  {
-                    locations.filter((l) => l.location_type === "WAREHOUSE")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-blue-100 rounded-full">
-                <Eye size={20} className="text-blue-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {t("warehouse.workCenters")}
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-green-600">
-                  {
-                    locations.filter((l) => l.location_type === "WORKCENTER")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-green-100 rounded-full">
-                <Eye size={20} className="text-green-600 lg:w-6 lg:h-6" />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -210,9 +140,9 @@ export default function LocationsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full sm:w-auto">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("warehouse.allStatus")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -222,7 +152,7 @@ export default function LocationsPage() {
                 </SelectContent>
               </Select>
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("warehouse.allTypes")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -237,32 +167,32 @@ export default function LocationsPage() {
         </div>
       )}
 
-      {/* Locations Table */}
+      {/* Locations Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.name")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.type")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.warehouse")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.workCenter")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.created")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.status")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("warehouse.actions")}
                   </th>
                 </tr>
@@ -270,46 +200,34 @@ export default function LocationsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredLocations.map((location) => (
                   <tr key={location.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {location.name}
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLocationTypeColor(
-                            location.location_type
-                          )}`}
-                        >
-                          {getLocationTypeLabel(location.location_type)}
-                        </span>
-                        <span className="ml-2 text-xs text-gray-500">
-                          {location.is_active ? t("warehouse.active") : t("warehouse.inactive")}
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLocationTypeColor(
                           location.location_type
                         )}`}
                       >
-                        {location.location_type}
+                        {getLocationTypeLabel(location.location_type)}
                       </span>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="truncate">
                         {getWarehouseName(location.warehouse)}
                       </div>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="truncate">
                         {getWorkCenterName(location.work_center)}
                       </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(location.created_at).toLocaleDateString()}
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${location.is_active
                           ? "bg-green-100 text-green-800"
@@ -319,12 +237,12 @@ export default function LocationsPage() {
                         {location.is_active ? t("warehouse.active") : t("warehouse.inactive")}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(`/warehouse/locations/${location.id}/edit`)
                           }
@@ -334,7 +252,7 @@ export default function LocationsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => {
                             setLocationToDelete(location.id);
                             setShowDeleteModal(true);
@@ -349,6 +267,98 @@ export default function LocationsPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Locations Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredLocations.map((location) => (
+            <div key={location.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Location Name and Type */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {location.name}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLocationTypeColor(
+                          location.location_type
+                        )}`}
+                      >
+                        {getLocationTypeLabel(location.location_type)}
+                      </span>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${location.is_active
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                          }`}
+                      >
+                        {location.is_active ? t("warehouse.active") : t("warehouse.inactive")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warehouse and Work Center */}
+                <div className="grid grid-cols-1 gap-3">
+                  {location.warehouse && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-xs">{t("warehouse.warehouse")}</h4>
+                      <p className="text-sm text-gray-600 truncate">
+                        {getWarehouseName(location.warehouse)}
+                      </p>
+                    </div>
+                  )}
+                  {location.work_center && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-xs">{t("warehouse.workCenter")}</h4>
+                      <p className="text-sm text-gray-600 truncate">
+                        {getWorkCenterName(location.work_center)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Created Date */}
+                <div>
+                  <h4 className="font-medium text-gray-900 text-xs">{t("warehouse.created")}</h4>
+                  <p className="text-sm text-gray-600">
+                    {new Date(location.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      navigate(`/warehouse/locations/${location.id}/edit`)
+                    }
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("warehouse.editButton")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      setLocationToDelete(location.id);
+                      setShowDeleteModal(true);
+                    }}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("warehouse.deleteButtonAction")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

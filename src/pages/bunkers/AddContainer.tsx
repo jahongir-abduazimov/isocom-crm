@@ -132,21 +132,21 @@ const AddContainer: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(`/bunkers/${bunkerId}`)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           {t("common.back")}
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("containers.addContainer")}
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 mt-2 text-sm lg:text-base">
             {t("containers.addContainerDesc", {
               bunkerName: currentBunker?.name,
             })}
@@ -164,7 +164,7 @@ const AddContainer: React.FC = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Container Name */}
               <div className="space-y-2">
                 <Label htmlFor="container_name">{t("containers.name")} *</Label>
@@ -304,11 +304,11 @@ const AddContainer: React.FC = () => {
             )}
 
             {/* Actions */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button
                 type="submit"
                 disabled={isSubmitting || containersLoading}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
               >
                 {isSubmitting || containersLoading ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -325,6 +325,7 @@ const AddContainer: React.FC = () => {
                 variant="outline"
                 onClick={() => navigate(`/bunkers/${bunkerId}`)}
                 disabled={isSubmitting || containersLoading}
+                className="w-full sm:w-auto sm:min-w-[120px]"
               >
                 {t("common.cancel")}
               </Button>

@@ -26,9 +26,7 @@ const formSchema = z.object({
   unit_of_measure: z.string().min(1, "O'lchov birligi majburiy"),
   produced_quantity: z.string().min(1, "Ishlab chiqarish miqdori majburiy"),
   status: z.string().min(1, "Holat majburiy"),
-  description: z
-    .string()
-    .min(5, "Tavsif kamida 5 ta belgidan iborat bo'lishi kerak"),
+  description: z.string().optional(),
   start_date: z.string().min(1, "Boshlanish sanasi majburiy"),
   completion_date: z.string().optional(),
 });
@@ -89,7 +87,11 @@ export default function EditOrderPage() {
 
   // Populate form when order data is loaded
   useEffect(() => {
-    if (selectedOrder) {
+    if (selectedOrder && products.length > 0) {
+      console.log("Populating form with:", {
+        produced_product: selectedOrder.produced_product,
+        products: products.length
+      });
       reset({
         produced_product: selectedOrder.produced_product || "",
         unit_of_measure: selectedOrder.unit_of_measure,
@@ -104,7 +106,7 @@ export default function EditOrderPage() {
           : "",
       });
     }
-  }, [selectedOrder, reset]);
+  }, [selectedOrder, products, reset]);
 
   const onSubmit = async (data: FormValues) => {
     if (!id) return;
@@ -119,7 +121,7 @@ export default function EditOrderPage() {
           | "IN_PROGRESS"
           | "COMPLETED"
           | "CANCELLED",
-        description: data.description,
+        description: data.description || "",
         start_date: data.start_date,
         completion_date: data.completion_date || null,
       };
@@ -174,18 +176,18 @@ export default function EditOrderPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/production/orders")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           Back
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.editOrder.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -195,7 +197,7 @@ export default function EditOrderPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -204,15 +206,16 @@ export default function EditOrderPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Produced Product Selection */}
             <div className="space-y-2">
               <Label htmlFor="produced_product" className="text-sm font-medium">
                 {t("production.addOrder.product")} *
               </Label>
               <Select
+                key={`product-${selectedOrder?.id || 'new'}`}
                 onValueChange={(val) => setValue("produced_product", val)}
-                value={watchedValues.produced_product || ""}
+                value={watchedValues.produced_product || selectedOrder?.produced_product || ""}
               >
                 <SelectTrigger className={errors.produced_product ? "border-red-500" : ""}>
                   <SelectValue placeholder={t("production.addOrder.selectProduct")} />
@@ -238,8 +241,9 @@ export default function EditOrderPage() {
                 {t("production.addOrder.unitOfMeasure")} *
               </Label>
               <Select
+                key={`unit-${selectedOrder?.id || 'new'}`}
                 onValueChange={(val) => setValue("unit_of_measure", val)}
-                value={watchedValues.unit_of_measure || "KG"}
+                value={watchedValues.unit_of_measure || selectedOrder?.unit_of_measure || "KG"}
               >
                 <SelectTrigger className={errors.unit_of_measure ? "border-red-500" : ""}>
                   <SelectValue placeholder={t("production.addOrder.selectUnit")} />
@@ -280,8 +284,9 @@ export default function EditOrderPage() {
                 {t("production.addOrder.status")} *
               </Label>
               <Select
+                key={`status-${selectedOrder?.id || 'new'}`}
                 onValueChange={(val) => setValue("status", val)}
-                value={watchedValues.status || "PENDING"}
+                value={watchedValues.status || selectedOrder?.status || "PENDING"}
               >
                 <SelectTrigger className={errors.status ? "border-red-500" : ""}>
                   <SelectValue placeholder={t("production.addOrder.selectStatus")} />
@@ -334,7 +339,7 @@ export default function EditOrderPage() {
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              {t("production.addOrder.description")} *
+              {t("production.addOrder.description")}
             </Label>
             <Textarea
               id="description"
@@ -353,7 +358,7 @@ export default function EditOrderPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {loading ? t("production.editOrder.updating") : t("production.editOrder.updateOrder")}
             </Button>
@@ -362,7 +367,7 @@ export default function EditOrderPage() {
               variant="outline"
               onClick={() => navigate("/production/orders")}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("common.cancel")}
             </Button>

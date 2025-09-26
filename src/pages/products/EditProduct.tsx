@@ -28,23 +28,18 @@ export default function EditProductPage() {
     { value: "SEMI_FINISHED_PRODUCT", label: t("products.semiFinishedProduct") },
   ];
 
-  const UNITS = [
-    { value: "dona", label: t("products.piece") },
-    { value: "kg", label: t("products.kilogram") },
-    { value: "m", label: t("products.meter") },
-    { value: "m2", label: t("products.squareMeter") },
-    { value: "m3", label: t("products.cubicMeter") },
-    { value: "litr", label: t("products.liter") },
-  ];
   const [fetching, setFetching] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     code: "",
     type: "FINISHED_PRODUCT",
-    unit: "dona",
     description: "",
     price: "",
     is_active: true,
+    length: "",
+    thickness: "",
+    diameter: "",
+    width: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -57,10 +52,13 @@ export default function EditProductPage() {
         name: product.name || "",
         code: product.code || "",
         type: product.type || "FINISHED_PRODUCT",
-        unit: product.unit || "dona",
         description: product.description || "",
         price: product.price ? String(product.price) : "",
         is_active: product.is_active ?? true,
+        length: product.length ? String(product.length) : "",
+        thickness: product.thickness ? String(product.thickness) : "",
+        diameter: product.diameter ? String(product.diameter) : "",
+        width: product.width ? String(product.width) : "",
       });
     }
     setFetching(false);
@@ -75,29 +73,20 @@ export default function EditProductPage() {
       newErrors.name = t("products.validation.nameMinLength");
     }
 
-    if (!formData.code.trim()) {
-      newErrors.code = t("products.validation.codeRequired");
-    } else if (formData.code.trim().length < 2) {
-      newErrors.code = t("products.validation.codeMinLength");
-    }
-
     if (!formData.type) {
       newErrors.type = t("products.validation.typeRequired");
     }
 
-    if (!formData.unit) {
-      newErrors.unit = t("products.validation.unitRequired");
+    // Optional field validations (only if they have values)
+    if (formData.code.trim() && formData.code.trim().length < 2) {
+      newErrors.code = t("products.validation.codeMinLength");
     }
 
-    if (!formData.description.trim()) {
-      newErrors.description = t("products.validation.descriptionRequired");
-    } else if (formData.description.trim().length < 5) {
+    if (formData.description.trim() && formData.description.trim().length < 5) {
       newErrors.description = t("products.validation.descriptionMinLength");
     }
 
-    if (!formData.price.trim()) {
-      newErrors.price = t("products.validation.priceRequired");
-    } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
+    if (formData.price.trim() && (isNaN(Number(formData.price)) || Number(formData.price) <= 0)) {
       newErrors.price = t("products.validation.pricePositive");
     }
 
@@ -133,15 +122,38 @@ export default function EditProductPage() {
     }
 
     try {
-      const apiData = {
+      const apiData: any = {
         name: formData.name.trim(),
-        code: formData.code.trim(),
         type: formData.type,
-        unit: formData.unit,
-        description: formData.description.trim(),
-        price: Number(formData.price),
         is_active: formData.is_active,
       };
+
+      // Add optional fields only if they have values
+      if (formData.code.trim()) {
+        apiData.code = formData.code.trim();
+      }
+      if (formData.description.trim()) {
+        apiData.description = formData.description.trim();
+      }
+      if (formData.price.trim()) {
+        apiData.price = Number(formData.price);
+      }
+
+      // Add dimension fields only if they have values
+      if (formData.length && formData.length.trim() !== '') {
+        apiData.length = Number(formData.length);
+      }
+      if (formData.thickness && formData.thickness.trim() !== '') {
+        apiData.thickness = Number(formData.thickness);
+      }
+      if (formData.diameter && formData.diameter.trim() !== '') {
+        apiData.diameter = Number(formData.diameter);
+      }
+      if (formData.width && formData.width.trim() !== '') {
+        apiData.width = Number(formData.width);
+      }
+
+      console.log("Sending product update data to backend:", apiData);
       const success = await updateProduct(id, apiData);
       if (success) {
         notifySuccess(t("products.productUpdated"));
@@ -184,18 +196,18 @@ export default function EditProductPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={handleCancel}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           {t("products.back")}
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("products.editProduct")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -205,7 +217,7 @@ export default function EditProductPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -214,7 +226,7 @@ export default function EditProductPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Maxsulot nomi */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
@@ -235,7 +247,7 @@ export default function EditProductPage() {
             {/* Kod */}
             <div className="space-y-2">
               <Label htmlFor="code" className="text-sm font-medium">
-                {t("products.code")} *
+                {t("products.code")} ({t("products.optional")})
               </Label>
               <Input
                 id="code"
@@ -274,35 +286,10 @@ export default function EditProductPage() {
               )}
             </div>
 
-            {/* O'lchov birligi */}
-            <div className="space-y-2">
-              <Label htmlFor="unit" className="text-sm font-medium">
-                {t("products.unit")} *
-              </Label>
-              <Select
-                value={formData.unit}
-                onValueChange={(value) => handleInputChange("unit", value)}
-              >
-                <SelectTrigger className={errors.unit ? "border-red-500" : ""}>
-                  <SelectValue placeholder={t("products.selectUnit")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {UNITS.map((unit) => (
-                    <SelectItem key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.unit && (
-                <p className="text-red-500 text-xs">{errors.unit}</p>
-              )}
-            </div>
-
             {/* Narx */}
             <div className="space-y-2">
               <Label htmlFor="price" className="text-sm font-medium">
-                {t("products.price")} *
+                {t("products.price")} ({t("products.optional")})
               </Label>
               <Input
                 id="price"
@@ -320,10 +307,77 @@ export default function EditProductPage() {
             </div>
           </div>
 
+          {/* Dimension Fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {/* Uzunlik */}
+            <div className="space-y-2">
+              <Label htmlFor="length" className="text-sm font-medium">
+                {t("products.length")} ({t("products.optional")})
+              </Label>
+              <Input
+                id="length"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.length}
+                onChange={(e) => handleInputChange("length", e.target.value)}
+                placeholder={t("products.lengthPlaceholder")}
+              />
+            </div>
+
+            {/* Qalinlik */}
+            <div className="space-y-2">
+              <Label htmlFor="thickness" className="text-sm font-medium">
+                {t("products.thickness")} ({t("products.optional")})
+              </Label>
+              <Input
+                id="thickness"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.thickness}
+                onChange={(e) => handleInputChange("thickness", e.target.value)}
+                placeholder={t("products.thicknessPlaceholder")}
+              />
+            </div>
+
+            {/* Diametr */}
+            <div className="space-y-2">
+              <Label htmlFor="diameter" className="text-sm font-medium">
+                {t("products.diameter")} ({t("products.optional")})
+              </Label>
+              <Input
+                id="diameter"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.diameter}
+                onChange={(e) => handleInputChange("diameter", e.target.value)}
+                placeholder={t("products.diameterPlaceholder")}
+              />
+            </div>
+
+            {/* Kenglik */}
+            <div className="space-y-2">
+              <Label htmlFor="width" className="text-sm font-medium">
+                {t("products.width")} ({t("products.optional")})
+              </Label>
+              <Input
+                id="width"
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.width}
+                onChange={(e) => handleInputChange("width", e.target.value)}
+                placeholder={t("products.widthPlaceholder")}
+              />
+            </div>
+          </div>
+
           {/* Tavsif */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              {t("products.description")} *
+              {t("products.description")} ({t("products.optional")})
             </Label>
             <Textarea
               id="description"
@@ -355,7 +409,7 @@ export default function EditProductPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -369,7 +423,7 @@ export default function EditProductPage() {
               variant="outline"
               onClick={handleCancel}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("products.cancel")}
             </Button>

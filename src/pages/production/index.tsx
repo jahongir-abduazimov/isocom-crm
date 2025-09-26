@@ -120,14 +120,14 @@ export default function OrdersPage() {
 
   return (
     <div className="">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.orders.title")}
           </h1>
         </div>
         <Button
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto"
           onClick={() => navigate("/production/orders/add")}
         >
           <Plus size={20} />
@@ -137,8 +137,8 @@ export default function OrdersPage() {
 
       {/* Filters and Search */}
       <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-        <div className="flex gap-4 items-center">
-          <div className="flex-1">
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <div className="flex-1 w-full">
             <div className="relative">
               <Search
                 size={20}
@@ -152,9 +152,9 @@ export default function OrdersPage() {
               />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+          <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full sm:w-auto">
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="min-w-[140px]">
+              <SelectTrigger className="w-full sm:min-w-[140px]">
                 <SelectValue placeholder={t("production.orders.allStatuses")} />
               </SelectTrigger>
               <SelectContent>
@@ -195,7 +195,7 @@ export default function OrdersPage() {
 
       {/* Orders Cards */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredOrders.map((order) => (
             <div
               key={order.id}

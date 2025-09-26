@@ -131,6 +131,17 @@
     "squareMeter": "Квадратный метр",
     "cubicMeter": "Кубический метр",
     "liter": "Литр",
+    "FINISHED_PRODUCT": "Готовый продукт",
+    "SEMI_FINISHED_PRODUCT": "Полуфабрикат",
+    "length": "Длина (м)",
+    "thickness": "Толщина (см)",
+    "diameter": "Диаметр (см)",
+    "width": "Ширина (см)",
+    "lengthPlaceholder": "Например: 2.5",
+    "thicknessPlaceholder": "Например: 10",
+    "diameterPlaceholder": "Например: 15",
+    "widthPlaceholder": "Например: 20",
+    "optional": "Необязательно",
     "validation": {
       "nameRequired": "Название продукта обязательно",
       "nameMinLength": "Название продукта должно содержать минимум 2 символа",
@@ -245,6 +256,7 @@
     "cubicMeter": "м³",
     "piece": "Штука",
     "liter": "Литр",
+    "optional": "Необязательно",
     "validation": {
       "nameRequired": "Название материала обязательно",
       "nameMinLength": "Название материала должно содержать минимум 2 символа",
@@ -963,6 +975,8 @@
       "passwordSpecial": "минимум один специальный символ",
       "passwordConfirmRequired": "Подтверждение пароля обязательно",
       "passwordMismatch": "Пароли не совпадают",
+      "firstNameRequired": "Имя обязательно",
+      "lastNameRequired": "Фамилия обязательна",
       "roleRequired": "Роль обязательна",
       "shiftRequired": "Смена обязательна"
     }

@@ -234,7 +234,7 @@ export default function StockLevelsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("stockLevels.title")}
           </h1>
         </div>
@@ -313,8 +313,8 @@ export default function StockLevelsPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -328,9 +328,9 @@ export default function StockLevelsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="w-full sm:min-w-[140px]">
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("stockLevels.filterAll")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -344,29 +344,29 @@ export default function StockLevelsPage() {
         </div>
       )}
 
-      {/* Stock Levels Table */}
+      {/* Stock Levels Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className={`overflow-x-auto w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'}`}>
             <table className={`w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'} overflow-x-auto`}>
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("stockLevels.item")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("stockLevels.type")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("stockLevels.quantity")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("stockLevels.status")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("stockLevels.location")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("stockLevels.actions")}
                   </th>
                 </tr>
@@ -376,25 +376,16 @@ export default function StockLevelsPage() {
                   const status = getStockStatus(item.quantity);
                   return (
                     <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                        <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        <div className="max-w-[200px] truncate">
                           {item.material
                             ? getMaterialName(item.material)
                             : item.product
                               ? getProductName(item.product)
                               : t("stockLevels.unknownItem")}
                         </div>
-                        <div className="lg:hidden mt-1">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getItemTypeColor(
-                              item
-                            )}`}
-                          >
-                            {getItemType(item)}
-                          </span>
-                        </div>
                       </td>
-                      <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getItemTypeColor(
                             item
@@ -403,17 +394,12 @@ export default function StockLevelsPage() {
                           {getItemType(item)}
                         </span>
                       </td>
-                      <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {formatQuantity(item.quantity)}
-                          </span>
-                          <span className="text-xs text-gray-500 md:hidden">
-                            {getStatusText(status)}
-                          </span>
-                        </div>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span className="font-medium">
+                          {formatQuantity(item.quantity)}
+                        </span>
                       </td>
-                      <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(status)}
                           <span
@@ -425,7 +411,7 @@ export default function StockLevelsPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                      <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                         <div
                           className="truncate"
                           title={getLocationName(item.location)}
@@ -433,12 +419,12 @@ export default function StockLevelsPage() {
                           {getLocationName(item.location)}
                         </div>
                       </td>
-                      <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex gap-1 lg:gap-2">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex gap-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-xs lg:text-sm px-2 lg:px-3"
+                            className="text-sm px-3"
                             onClick={() =>
                               navigate(`/stock/stock-levels/${item.id}/edit`)
                             }
@@ -448,7 +434,7 @@ export default function StockLevelsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                             onClick={() => handleDeleteItem(item)}
                           >
                             <Trash2 size={14} />
@@ -461,6 +447,97 @@ export default function StockLevelsPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Stock Levels Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredStockLevels.map((item) => {
+            const status = getStockStatus(item.quantity);
+            return (
+              <div key={item.id} className="bg-white rounded-lg shadow-sm border p-4">
+                <div className="space-y-3">
+                  {/* Item Name and Type */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-gray-900 truncate">
+                        {item.material
+                          ? getMaterialName(item.material)
+                          : item.product
+                            ? getProductName(item.product)
+                            : t("stockLevels.unknownItem")}
+                      </h3>
+                      <div className="mt-1">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getItemTypeColor(
+                            item
+                          )}`}
+                        >
+                          {getItemType(item)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quantity and Status */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-xs">{t("stockLevels.quantity")}</h4>
+                      <p className="text-sm text-gray-600">
+                        {formatQuantity(item.quantity)}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-xs">{t("stockLevels.status")}</h4>
+                      <div className="flex items-center gap-1 mt-1">
+                        {getStatusIcon(status)}
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                            status
+                          )}`}
+                        >
+                          {getStatusText(status)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("stockLevels.location")}</h4>
+                    <p className="text-sm text-gray-600 truncate">
+                      {getLocationName(item.location)}
+                    </p>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-2 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs"
+                      onClick={() =>
+                        navigate(`/stock/stock-levels/${item.id}/edit`)
+                      }
+                    >
+                      <Edit size={12} className="mr-1" />
+                      {t("common.edit")}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 text-xs text-red-600 hover:text-red-700"
+                      onClick={() => handleDeleteItem(item)}
+                    >
+                      <Trash2 size={12} className="mr-1" />
+                      {t("common.delete")}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

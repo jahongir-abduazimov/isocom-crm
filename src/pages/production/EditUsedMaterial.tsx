@@ -205,18 +205,18 @@ export default function EditUsedMaterialPage() {
     return (
         <div>
             {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={handleCancel}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 w-fit"
                 >
                     <ArrowLeft size={16} />
                     Back
                 </Button>
                 <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                         {t("production.editUsedMaterial.title")}
                     </h1>
                     <p className="text-gray-600 mt-1 text-sm lg:text-base">

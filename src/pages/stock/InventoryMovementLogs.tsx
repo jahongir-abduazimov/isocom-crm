@@ -193,7 +193,7 @@ export default function InventoryMovementLogsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("inventoryMovements.title")}
           </h1>
         </div>
@@ -279,8 +279,8 @@ export default function InventoryMovementLogsPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -294,9 +294,9 @@ export default function InventoryMovementLogsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="w-full sm:min-w-[140px]">
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("inventoryMovements.filterAll")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -310,32 +310,29 @@ export default function InventoryMovementLogsPage() {
         </div>
       )}
 
-      {/* Movements Table */}
+      {/* Movements Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className={`overflow-x-auto w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'}`}>
             <table className={`w-full ${isOperator ? 'max-w-full' : 'max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]'} overflow-x-auto`}>
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("inventoryMovements.element")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("inventoryMovements.type")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("inventoryMovements.quantity")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("inventoryMovements.fromLocation")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("inventoryMovements.toLocation")}
                   </th>
-                  {/* <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th> */}
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("inventoryMovements.actions")}
                   </th>
                 </tr>
@@ -343,23 +340,14 @@ export default function InventoryMovementLogsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredMovements.map((movement) => (
                   <tr key={movement.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {movement.material
                           ? getMaterialName(movement.material)
                           : getProductName(movement.product)}
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMovementTypeColor(
-                            movement
-                          )}`}
-                        >
-                          {getMovementTypeLabel(movement)}
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMovementTypeColor(
                           movement
@@ -368,15 +356,10 @@ export default function InventoryMovementLogsPage() {
                         {getMovementTypeLabel(movement)}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{movement.quantity}</span>
-                        <span className="text-xs text-gray-500 lg:hidden">
-                          {formatDate(movement.created_at)}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">{movement.quantity}</span>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div
                         className="truncate"
                         title={getLocationName(movement.from_location)}
@@ -384,22 +367,17 @@ export default function InventoryMovementLogsPage() {
                         {getLocationName(movement.from_location)}
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {getLocationName(movement.to_location)}
-                        </span>
-                        <span className="text-xs text-gray-500 xl:hidden">
-                          Qayerdan: {getLocationName(movement.from_location)}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {getLocationName(movement.to_location)}
+                      </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(
                               `/stock/inventory-movement-logs/${movement.id}/edit`
@@ -411,7 +389,7 @@ export default function InventoryMovementLogsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => handleDeleteMovement(movement)}
                         >
                           <Trash2 size={14} />
@@ -423,6 +401,95 @@ export default function InventoryMovementLogsPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Movements Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredMovements.map((movement) => (
+            <div key={movement.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Element Name and Type */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {movement.material
+                        ? getMaterialName(movement.material)
+                        : getProductName(movement.product)}
+                    </h3>
+                    <div className="mt-1">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getMovementTypeColor(
+                          movement
+                        )}`}
+                      >
+                        {getMovementTypeLabel(movement)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quantity and Date */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("inventoryMovements.quantity")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {movement.quantity}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("inventoryMovements.date")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {formatDate(movement.created_at)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Locations */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("inventoryMovements.fromLocation")}</h4>
+                    <p className="text-sm text-gray-600 truncate">
+                      {getLocationName(movement.from_location)}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("inventoryMovements.toLocation")}</h4>
+                    <p className="text-sm text-gray-600 truncate">
+                      {getLocationName(movement.to_location)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      navigate(
+                        `/stock/inventory-movement-logs/${movement.id}/edit`
+                      )
+                    }
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("common.edit")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteMovement(movement)}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("common.delete")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

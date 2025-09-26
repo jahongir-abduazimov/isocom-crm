@@ -13,10 +13,12 @@ import {
   Users,
   Wrench,
   Shield,
+  X,
 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { useAuthStore } from "@/store/auth.store";
 import { useTranslation } from "react-i18next";
+import { Button } from "../ui/button";
 
 const getNavItems = (t: any) => [
   {
@@ -112,7 +114,12 @@ const getNavItems = (t: any) => [
   },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const { user } = useAuthStore();
   const { t } = useTranslation();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({
@@ -149,67 +156,103 @@ export default function Sidebar() {
   });
 
   return (
-    <ScrollArea className="max-w-54 min-w-54 lg:min-w-64 lg:max-w-64 h-[calc(100vh-16px)] bg-primary to-blue-700 text-white flex flex-col shadow-lg rounded-xl m-2">
-      <div className="min-h-16 flex items-center justify-center text-2xl font-extrabold tracking-wide border-b border-white/10">
-        <span className="drop-shadow">{t("common.appName")}</span>
-      </div>
-      <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
-        {filteredNavItems.map((item, index) => {
-          if (item.isCollapsible) {
-            const isExpanded = expandedMenus[item.menuKey!];
-            return (
-              <div key={index}>
-                <button
-                  onClick={() => toggleMenu(item.menuKey!)}
-                  className="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium hover:bg-white/10 hover:scale-[1.03] w-full text-left"
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div
+        className={`
+        fixed lg:static top-0 left-0 z-50 lg:z-auto
+        h-full lg:h-[calc(100vh-16px)]
+        w-66 lg:w-74
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        lg:block
+      `}
+      >
+        <ScrollArea className="h-full bg-primary to-blue-700 text-white flex flex-col shadow-lg lg:rounded-xl lg:m-2">
+          {/* Header with close button for mobile */}
+          <div className="min-h-16 flex items-center justify-between px-4 text-2xl font-extrabold tracking-wide border-b border-white/10">
+            <span className="drop-shadow">{t("common.appName")}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="lg:hidden text-white hover:bg-white/10 p-2"
+            >
+              <X size={20} />
+            </Button>
+          </div>
+
+          <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            {filteredNavItems.map((item, index) => {
+              if (item.isCollapsible) {
+                const isExpanded = expandedMenus[item.menuKey!];
+                return (
+                  <div key={index}>
+                    <button
+                      onClick={() => toggleMenu(item.menuKey!)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium hover:bg-white/10 hover:scale-[1.03] w-full text-left"
+                    >
+                      {item.icon}
+                      {item.label}
+                      {isExpanded ? (
+                        <ChevronUp size={16} className="ml-auto" />
+                      ) : (
+                        <ChevronDown size={16} className="ml-auto" />
+                      )}
+                    </button>
+                    {isExpanded && (
+                      <div className="ml-6 mt-1 space-y-1">
+                        {item.children?.map((child) => (
+                          <NavLink
+                            key={child.path}
+                            to={child.path}
+                            onClick={onClose} // Close sidebar on mobile when navigating
+                            className={({ isActive }) =>
+                              `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
+                                isActive
+                                  ? "bg-white text-primary shadow font-semibold"
+                                  : "hover:bg-white/10 hover:scale-[1.03]"
+                              }`
+                            }
+                          >
+                            {child.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path!}
+                  onClick={onClose} // Close sidebar on mobile when navigating
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${
+                      isActive
+                        ? "bg-white text-primary shadow font-semibold"
+                        : "hover:bg-white/10 hover:scale-[1.03]"
+                    }`
+                  }
                 >
                   {item.icon}
                   {item.label}
-                  {isExpanded ? (
-                    <ChevronUp size={16} className="ml-auto" />
-                  ) : (
-                    <ChevronDown size={16} className="ml-auto" />
-                  )}
-                </button>
-                {isExpanded && (
-                  <div className="ml-6 mt-1 space-y-1">
-                    {item.children?.map((child) => (
-                      <NavLink
-                        key={child.path}
-                        to={child.path}
-                        className={({ isActive }) =>
-                          `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${isActive
-                            ? "bg-white text-primary shadow font-semibold"
-                            : "hover:bg-white/10 hover:scale-[1.03]"
-                          }`
-                        }
-                      >
-                        {child.label}
-                      </NavLink>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path!}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${isActive
-                  ? "bg-white text-primary shadow font-semibold"
-                  : "hover:bg-white/10 hover:scale-[1.03]"
-                }`
-              }
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          );
-        })}
-      </nav>
-    </ScrollArea>
+                </NavLink>
+              );
+            })}
+          </nav>
+        </ScrollArea>
+      </div>
+    </>
   );
 }

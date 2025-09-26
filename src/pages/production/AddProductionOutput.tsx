@@ -90,18 +90,18 @@ export default function AddProductionOutputPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/production/outputs")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           Back
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.addOutput.title")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -111,9 +111,9 @@ export default function AddProductionOutputPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Step Execution Selection */}
             <div className="space-y-2">
               <Label htmlFor="step_execution" className="text-sm font-medium">
@@ -260,7 +260,7 @@ export default function AddProductionOutputPage() {
           <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
             <Button
               type="submit"
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("production.addOutput.createOutput")}
             </Button>
@@ -268,7 +268,7 @@ export default function AddProductionOutputPage() {
               type="button"
               variant="outline"
               onClick={() => navigate("/production/outputs")}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("common.cancel")}
             </Button>

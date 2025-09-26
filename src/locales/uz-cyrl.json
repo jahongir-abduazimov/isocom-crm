@@ -131,6 +131,17 @@
     "squareMeter": "Квадрат метр",
     "cubicMeter": "Куб метр",
     "liter": "Литр",
+    "FINISHED_PRODUCT": "Тайёр махсулот",
+    "SEMI_FINISHED_PRODUCT": "Ярим тайёр махсулот",
+    "length": "Узунлик (м)",
+    "thickness": "Қалинлик (см)",
+    "diameter": "Диаметр (см)",
+    "width": "Кенглик (см)",
+    "lengthPlaceholder": "Масалан: 2.5",
+    "thicknessPlaceholder": "Масалан: 10",
+    "diameterPlaceholder": "Масалан: 15",
+    "widthPlaceholder": "Масалан: 20",
+    "optional": "Ихтиёрий",
     "validation": {
       "nameRequired": "Махсулот номи мажбурий",
       "nameMinLength": "Махсулот номи камида 2 та белгидан иборат бўлиши керак",
@@ -245,6 +256,7 @@
     "cubicMeter": "м³",
     "piece": "Бўлак",
     "liter": "Литр",
+    "optional": "Ихтиёрий",
     "validation": {
       "nameRequired": "Материал номи мажбурий",
       "nameMinLength": "Материал номи камида 2 та белгидан иборат бўлиши керак",
@@ -963,6 +975,8 @@
       "passwordSpecial": "камида битта махсус белги",
       "passwordConfirmRequired": "Паролни тасдиқлаш мажбурий",
       "passwordMismatch": "Пароллар мос келмайди",
+      "firstNameRequired": "Исм мажбурий",
+      "lastNameRequired": "Фамилия мажбурий",
       "roleRequired": "Рол мажбурий",
       "shiftRequired": "Смена мажбурий"
     }

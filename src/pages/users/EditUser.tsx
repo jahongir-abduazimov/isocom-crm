@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Save, Loader2, Mail, Shield } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,6 +61,17 @@ export default function EditUserPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
+    // First name - required
+    if (!formData.first_name.trim()) {
+      newErrors.first_name = t("users.validation.firstNameRequired");
+    }
+
+    // Last name - required
+    if (!formData.last_name.trim()) {
+      newErrors.last_name = t("users.validation.lastNameRequired");
+    }
+
+    // Email - optional, but validate format if provided
     if (
       formData.email.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
@@ -68,6 +79,7 @@ export default function EditUserPage() {
       newErrors.email = t("users.validation.emailInvalid");
     }
 
+    // Phone number - optional, but validate format if provided
     if (
       formData.phone_number.trim() &&
       !/^[0-9+\-\s()]+$/.test(formData.phone_number)
@@ -75,10 +87,12 @@ export default function EditUserPage() {
       newErrors.phone_number = t("users.validation.phoneInvalid");
     }
 
+    // Role - required
     if (!formData.role.trim()) {
       newErrors.role = t("users.validation.roleRequired");
     }
 
+    // Shift - required
     if (!formData.shift.trim()) {
       newErrors.shift = t("users.validation.shiftRequired");
     }
@@ -152,18 +166,18 @@ export default function EditUserPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={handleCancel}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           {t("users.back")}
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("users.editUser")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -173,7 +187,7 @@ export default function EditUserPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -182,11 +196,11 @@ export default function EditUserPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Ism */}
             <div className="space-y-2">
               <Label htmlFor="first_name" className="text-sm font-medium">
-                {t("users.firstName")}
+                {t("users.firstName")} *
               </Label>
               <Input
                 id="first_name"
@@ -205,7 +219,7 @@ export default function EditUserPage() {
             {/* Familiya */}
             <div className="space-y-2">
               <Label htmlFor="last_name" className="text-sm font-medium">
-                {t("users.lastName")}
+                {t("users.lastName")} *
               </Label>
               <Input
                 id="last_name"
@@ -266,7 +280,7 @@ export default function EditUserPage() {
             {/* Role */}
             <div className="space-y-2">
               <Label htmlFor="role" className="text-sm font-medium">
-                {t("users.role")}
+                {t("users.role")} *
               </Label>
               <Select
                 value={formData.role}
@@ -302,7 +316,7 @@ export default function EditUserPage() {
             {/* Shift */}
             <div className="space-y-2">
               <Label htmlFor="shift" className="text-sm font-medium">
-                {t("users.shift")}
+                {t("users.shift")} *
               </Label>
               <Select
                 value={formData.shift}
@@ -324,10 +338,6 @@ export default function EditUserPage() {
 
           {/* Ruxsatlar */}
           <div className="space-y-4 pt-4 border-t">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-              <Shield size={20} />
-              {t("users.permissions")}
-            </h3>
 
             <div className="space-y-4">
               {/* Faol holat */}
@@ -348,25 +358,6 @@ export default function EditUserPage() {
                   }
                 />
               </div>
-
-              {/* Admin ruxsati */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="is_staff" className="text-sm font-medium">
-                    {t("users.adminPermission")}
-                  </Label>
-                  <p className="text-xs text-gray-500">
-                    {t("users.adminPermissionDesc")}
-                  </p>
-                </div>
-                <Switch
-                  id="is_staff"
-                  checked={formData.is_staff}
-                  onCheckedChange={(checked) =>
-                    handleInputChange("is_staff", checked)
-                  }
-                />
-              </div>
             </div>
           </div>
 
@@ -375,7 +366,7 @@ export default function EditUserPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -389,7 +380,7 @@ export default function EditUserPage() {
               variant="outline"
               onClick={handleCancel}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("users.cancel")}
             </Button>

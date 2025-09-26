@@ -163,18 +163,18 @@ export default function AddWorkcenterPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={handleCancel}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           {t("workcenters.back")}
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("workcenters.addWorkcenter")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -184,7 +184,7 @@ export default function AddWorkcenterPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -193,7 +193,7 @@ export default function AddWorkcenterPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Stanok nomi */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
@@ -362,7 +362,7 @@ export default function AddWorkcenterPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -376,7 +376,7 @@ export default function AddWorkcenterPage() {
               variant="outline"
               onClick={handleCancel}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("workcenters.cancel")}
             </Button>

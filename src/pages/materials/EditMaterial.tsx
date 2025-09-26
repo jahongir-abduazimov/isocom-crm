@@ -76,12 +76,6 @@ export default function EditMaterialPage() {
       newErrors.name = t("materials.validation.nameMinLength");
     }
 
-    if (!formData.code.trim()) {
-      newErrors.code = t("materials.validation.codeRequired");
-    } else if (formData.code.trim().length < 2) {
-      newErrors.code = t("materials.validation.codeMinLength");
-    }
-
     if (!formData.type) {
       newErrors.type = t("materials.validation.typeRequired");
     }
@@ -90,15 +84,16 @@ export default function EditMaterialPage() {
       newErrors.unit_of_measure = t("materials.validation.unitRequired");
     }
 
-    if (!formData.description.trim()) {
-      newErrors.description = t("materials.validation.descriptionRequired");
-    } else if (formData.description.trim().length < 5) {
+    // Optional field validations (only if they have values)
+    if (formData.code.trim() && formData.code.trim().length < 2) {
+      newErrors.code = t("materials.validation.codeMinLength");
+    }
+
+    if (formData.description.trim() && formData.description.trim().length < 5) {
       newErrors.description = t("materials.validation.descriptionMinLength");
     }
 
-    if (!formData.price.trim()) {
-      newErrors.price = t("materials.validation.priceRequired");
-    } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
+    if (formData.price.trim() && (isNaN(Number(formData.price)) || Number(formData.price) <= 0)) {
       newErrors.price = t("materials.validation.pricePositive");
     }
 
@@ -134,15 +129,24 @@ export default function EditMaterialPage() {
     }
 
     try {
-      const apiData = {
+      const apiData: any = {
         name: formData.name.trim(),
-        code: formData.code.trim(),
         type: formData.type,
         unit_of_measure: formData.unit_of_measure,
-        description: formData.description.trim(),
-        price: formData.price,
         is_active: formData.is_active,
       };
+
+      // Add optional fields only if they have values
+      if (formData.code.trim()) {
+        apiData.code = formData.code.trim();
+      }
+      if (formData.description.trim()) {
+        apiData.description = formData.description.trim();
+      }
+      if (formData.price.trim()) {
+        apiData.price = formData.price;
+      }
+
       const success = await updateMaterial(id, apiData);
       if (success) {
         notifySuccess(t("materials.materialUpdated"));
@@ -185,18 +189,18 @@ export default function EditMaterialPage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <Button
           variant="outline"
           size="sm"
           onClick={handleCancel}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           {t("materials.back")}
         </Button>
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("materials.editMaterial")}
           </h1>
           <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -206,7 +210,7 @@ export default function EditMaterialPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Message */}
           {error && (
@@ -215,7 +219,7 @@ export default function EditMaterialPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Material nomi */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
@@ -236,7 +240,7 @@ export default function EditMaterialPage() {
             {/* Kod */}
             <div className="space-y-2">
               <Label htmlFor="code" className="text-sm font-medium">
-                {t("materials.code")} *
+                {t("materials.code")} ({t("materials.optional")})
               </Label>
               <Input
                 id="code"
@@ -303,7 +307,7 @@ export default function EditMaterialPage() {
             {/* Narx */}
             <div className="space-y-2">
               <Label htmlFor="price" className="text-sm font-medium">
-                {t("materials.price")} *
+                {t("materials.price")} ({t("materials.optional")})
               </Label>
               <Input
                 id="price"
@@ -324,7 +328,7 @@ export default function EditMaterialPage() {
           {/* Tavsif */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">
-              {t("materials.description")} *
+              {t("materials.description")} ({t("materials.optional")})
             </Label>
             <Textarea
               id="description"
@@ -356,7 +360,7 @@ export default function EditMaterialPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 w-full sm:w-auto"
+              className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -370,7 +374,7 @@ export default function EditMaterialPage() {
               variant="outline"
               onClick={handleCancel}
               disabled={loading}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto sm:min-w-[120px]"
             >
               {t("materials.cancel")}
             </Button>

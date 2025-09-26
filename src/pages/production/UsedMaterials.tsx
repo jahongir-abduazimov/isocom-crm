@@ -122,7 +122,7 @@ export default function UsedMaterialsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.usedMaterials.title")}
           </h1>
         </div>
@@ -204,8 +204,8 @@ export default function UsedMaterialsPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -219,9 +219,9 @@ export default function UsedMaterialsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full sm:w-auto">
               <Select value={filterWorkcenter} onValueChange={setFilterWorkcenter}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("production.usedMaterials.allWorkCenters")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -238,29 +238,29 @@ export default function UsedMaterialsPage() {
         </div>
       )}
 
-      {/* Materials Table */}
+      {/* Materials Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.usedMaterials.materialName")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.usedMaterials.orderId")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.usedMaterials.quantity")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.usedMaterials.available")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.usedMaterials.workCenter")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.usedMaterials.actions")}
                   </th>
                 </tr>
@@ -268,39 +268,25 @@ export default function UsedMaterialsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredMaterials.map((material) => (
                   <tr key={material.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {material.material_name}
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getWorkcenterColor(
-                            material.workcenter_name
-                          )}`}
-                        >
-                          {material.workcenter_name}
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="max-w-[100px] truncate">
                         {material.order}
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {formatQuantity(material.quantity)}
-                        </span>
-                        <span className="text-xs text-gray-500 md:hidden">
-                          {t("production.usedMaterials.availableLabel")}: {material.available_quantity}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {formatQuantity(material.quantity)}
+                      </span>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {material.available_quantity}
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getWorkcenterColor(
                           material.workcenter_name
@@ -309,12 +295,12 @@ export default function UsedMaterialsPage() {
                         {material.workcenter_name}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(`/production/used-materials/${material.id}/edit`)
                           }
@@ -324,7 +310,7 @@ export default function UsedMaterialsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => handleDeleteMaterial(material)}
                         >
                           <Trash2 size={14} />
@@ -336,6 +322,83 @@ export default function UsedMaterialsPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Materials Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredMaterials.map((material) => (
+            <div key={material.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Material Name and Work Center */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {material.material_name}
+                    </h3>
+                    <div className="mt-1">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getWorkcenterColor(
+                          material.workcenter_name
+                        )}`}
+                      >
+                        {material.workcenter_name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Order ID */}
+                <div>
+                  <h4 className="font-medium text-gray-900 text-xs">{t("production.usedMaterials.orderId")}</h4>
+                  <p className="text-sm text-gray-600 truncate">
+                    {material.order}
+                  </p>
+                </div>
+
+                {/* Quantity and Available */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.usedMaterials.quantity")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {formatQuantity(material.quantity)}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.usedMaterials.available")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {material.available_quantity}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      navigate(`/production/used-materials/${material.id}/edit`)
+                    }
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("common.edit")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteMaterial(material)}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("common.delete")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

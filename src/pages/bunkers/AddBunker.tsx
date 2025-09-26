@@ -92,21 +92,21 @@ const AddBunkerPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/bunkers")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-fit"
         >
           <ArrowLeft size={16} />
           {t("common.back")}
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("bunkers.addBunker")}
           </h1>
-          <p className="text-gray-600 mt-2">{t("bunkers.addBunkerDesc")}</p>
+          <p className="text-gray-600 mt-2 text-sm lg:text-base">{t("bunkers.addBunkerDesc")}</p>
         </div>
       </div>
 
@@ -117,7 +117,7 @@ const AddBunkerPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">{t("bunkers.name")} *</Label>
@@ -203,11 +203,11 @@ const AddBunkerPage: React.FC = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-4 pt-6">
+            <div className="flex flex-col sm:flex-row gap-3 pt-6">
               <Button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-full sm:w-auto sm:min-w-[120px]"
               >
                 {loading ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -219,6 +219,7 @@ const AddBunkerPage: React.FC = () => {
                 variant="outline"
                 onClick={() => navigate("/bunkers")}
                 disabled={loading}
+                className="w-full sm:w-auto sm:min-w-[120px]"
               >
                 {t("common.cancel")}
               </Button>

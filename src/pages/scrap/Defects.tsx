@@ -123,7 +123,7 @@ export default function DefectsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             Braklar
           </h1>
         </div>
@@ -196,8 +196,8 @@ export default function DefectsPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -211,12 +211,12 @@ export default function DefectsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Select
                 value={filterScrapType}
                 onValueChange={setFilterScrapType}
               >
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder="Brak turi" />
                 </SelectTrigger>
                 <SelectContent>
@@ -229,7 +229,7 @@ export default function DefectsPage() {
                 </SelectContent>
               </Select>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder="Holat" />
                 </SelectTrigger>
                 <SelectContent>
@@ -242,7 +242,7 @@ export default function DefectsPage() {
                 </SelectContent>
               </Select>
               <Select value={filterReason} onValueChange={setFilterReason}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder="Sabab" />
                 </SelectTrigger>
                 <SelectContent>
@@ -259,29 +259,29 @@ export default function DefectsPage() {
         </div>
       )}
 
-      {/* Scraps Table */}
+      {/* Scraps Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
             <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Brak turi
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Miqdor
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Sabab
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Holat
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Xabar beruvchi
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Xabar berilgan vaqt
                   </th>
                 </tr>
@@ -293,8 +293,8 @@ export default function DefectsPage() {
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => handleRowClick(scrap)}
                   >
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px]">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px]">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
                             scrap.scrap_type
@@ -303,20 +303,13 @@ export default function DefectsPage() {
                           {scrap.scrap_type}
                         </span>
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span className="text-sm font-medium">
-                          {scrap.quantity} {scrap.unit_of_measure}
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {scrap.quantity} {scrap.unit_of_measure}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {scrap.quantity} {scrap.unit_of_measure}
+                      </span>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="flex flex-col gap-1">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
@@ -335,39 +328,108 @@ export default function DefectsPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getStatusColor(
-                            scrap.status
-                          )}`}
-                        >
-                          {scrap.status}
-                        </span>
-                        <span className="text-xs text-gray-500 md:hidden mt-1">
-                          {scrap.recorded_by.full_name}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getStatusColor(
+                          scrap.status
+                        )}`}
+                      >
+                        {scrap.status}
+                      </span>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {scrap.recorded_by.full_name}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {scrap.recorded_by.full_name}
+                      </span>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {formatDate(scrap.created_at)}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {formatDate(scrap.created_at)}
+                      </span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Scraps Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredScraps.map((scrap) => (
+            <div
+              key={scrap.id}
+              className="bg-white rounded-lg shadow-sm border p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => handleRowClick(scrap)}
+            >
+              <div className="space-y-3">
+                {/* Scrap Type and Quantity */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
+                        scrap.scrap_type
+                      )}`}
+                    >
+                      {scrap.scrap_type}
+                    </span>
+                    <div className="mt-2">
+                      <h3 className="text-sm font-medium text-gray-900">
+                        Miqdor: {scrap.quantity} {scrap.unit_of_measure}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status and Reason */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">Holat</h4>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getStatusColor(
+                        scrap.status
+                      )}`}
+                    >
+                      {scrap.status}
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">Sabab</h4>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
+                        scrap.reason
+                      )}`}
+                    >
+                      {scrap.reason}
+                    </span>
+                    {scrap.notes && (
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                        {scrap.notes}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Recorded By and Date */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">Xabar beruvchi</h4>
+                    <p className="text-sm text-gray-600">
+                      {scrap.recorded_by.full_name}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">Xabar berilgan vaqt</h4>
+                    <p className="text-sm text-gray-600">
+                      {formatDate(scrap.created_at)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

@@ -16,6 +16,16 @@ const ProductsPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // Helper function to translate product type
+  const translateProductType = (type: string | undefined) => {
+    if (type === "FINISHED_PRODUCT") {
+      return t("products.FINISHED_PRODUCT");
+    } else if (type === "SEMI_FINISHED_PRODUCT") {
+      return t("products.SEMI_FINISHED_PRODUCT");
+    }
+    return type || "-";
+  };
+
   const filteredProducts = products?.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (p.code && p.code.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -110,32 +120,32 @@ const ProductsPage = () => {
         }}
       />
 
-      {/* Products Table */}
+      {/* Products Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.productName")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.slug")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.code")}
                   </th>
-                  <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.type")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.price")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.status")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("products.actions")}
                   </th>
                 </tr>
@@ -143,24 +153,24 @@ const ProductsPage = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredProducts?.map((product) => (
                   <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {product.name}
                       </div>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.slug || "-"}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.code || "-"}
                     </td>
-                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.type || "-"}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {translateProductType(product.type)}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {product.price ? Number(product.price).toLocaleString() : "-"}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.is_active
                           ? "bg-green-100 text-green-800"
@@ -170,12 +180,12 @@ const ProductsPage = () => {
                         {product.is_active ? t("products.active") : t("products.inactive")}
                       </span>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() => navigate(`/products/${product.id}/edit`)}
                         >
                           <Edit size={14} className="mr-1" />
@@ -184,7 +194,7 @@ const ProductsPage = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700"
+                          className="text-sm px-3 text-red-600 hover:text-red-700"
                           onClick={() => {
                             setDeleteId(product.id || null);
                             setModalOpen(true);
@@ -200,6 +210,81 @@ const ProductsPage = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Products Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredProducts?.map((product) => (
+            <div key={product.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Product Name */}
+                <div>
+                  <h3 className="font-medium text-gray-900 text-sm">{t("products.productName")}</h3>
+                  <p className="text-sm text-gray-600 truncate">{product.name}</p>
+                </div>
+
+                {/* Code and Type */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("products.code")}</h4>
+                    <p className="text-sm text-gray-600">{product.code || "-"}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("products.type")}</h4>
+                    <p className="text-sm text-gray-600">{translateProductType(product.type)}</p>
+                  </div>
+                </div>
+
+                {/* Price and Status */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("products.price")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {product.price ? Number(product.price).toLocaleString() : "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("products.status")}</h4>
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${product.is_active
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                        }`}
+                    >
+                      {product.is_active ? t("products.active") : t("products.inactive")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => navigate(`/products/${product.id}/edit`)}
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("products.editButton")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => {
+                      setDeleteId(product.id || null);
+                      setModalOpen(true);
+                    }}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("products.deleteButtonAction")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

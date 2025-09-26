@@ -78,16 +78,16 @@ const BunkersPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("bunkers.title")}
           </h1>
-          <p className="text-gray-600 mt-2">{t("bunkers.subtitle")}</p>
+          <p className="text-gray-600 mt-2 text-sm lg:text-base">{t("bunkers.subtitle")}</p>
         </div>
         <Button
           onClick={() => navigate("/bunkers/add")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 w-full sm:w-auto"
         >
           <Plus size={20} />
           {t("bunkers.addBunker")}
@@ -108,20 +108,20 @@ const BunkersPage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {bunkers.map((bunker) => (
             <Card key={bunker.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">
                       {bunker.name}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">
                       {bunker.work_center_name}
                     </p>
                   </div>
-                  <Badge variant={bunker.is_filled ? "default" : "secondary"}>
+                  <Badge variant={bunker.is_filled ? "default" : "secondary"} className="ml-2 flex-shrink-0">
                     {bunker.is_filled
                       ? t("bunkers.filled")
                       : t("bunkers.notFilled")}
@@ -129,21 +129,21 @@ const BunkersPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-2 mb-4">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-gray-600">
                       {t("bunkers.capacity")}:
                     </span>
                     <span className="font-medium">{bunker.capacity_kg} kg</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-gray-600">
                       {t("bunkers.workCenter")}:
                     </span>
-                    <span className="font-medium">
+                    <span className="font-medium truncate ml-2">
                       {bunker.work_center_name}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="text-gray-600">
                       {t("bunkers.isFilled")}:
                     </span>
@@ -155,31 +155,34 @@ const BunkersPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/bunkers/${bunker.id}`)}
                     className="flex-1"
                   >
-                    <Eye size={16} className="mr-1" />
+                    <Eye size={14} className="mr-1" />
                     {t("common.view")}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/bunkers/${bunker.id}/edit`)}
-                  >
-                    <Edit size={16} />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteBunker(bunker.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/bunkers/${bunker.id}/edit`)}
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Edit size={14} />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteBunker(bunker.id)}
+                      className="flex-1 sm:flex-none text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

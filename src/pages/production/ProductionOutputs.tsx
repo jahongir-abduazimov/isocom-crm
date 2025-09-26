@@ -123,7 +123,7 @@ export default function ProductionOutputsPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             {t("production.outputs.title")}
           </h1>
         </div>
@@ -204,8 +204,8 @@ export default function ProductionOutputsPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -219,9 +219,9 @@ export default function ProductionOutputsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4 w-full sm:w-auto">
               <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder={t("production.outputs.allQualityStatus")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,38 +236,38 @@ export default function ProductionOutputsPage() {
         </div>
       )}
 
-      {/* Outputs Table */}
+      {/* Outputs Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-            <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.id")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.stepExecution")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.product")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.quantity")}
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.unit")}
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.weight")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.qualityStatus")}
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.notes")}
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.actions")}
                   </th>
                 </tr>
@@ -275,36 +275,29 @@ export default function ProductionOutputsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredOutputs.map((output) => (
                   <tr key={output.id} className="hover:bg-gray-50">
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {output.id.slice(0, 8)}...
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {output.step_execution.slice(0, 8)}...
                     </td>
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px] truncate">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px] truncate">
                         {output.product_name}
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{output.quantity}</span>
-                        <span className="text-xs text-gray-500 lg:hidden">
-                          {STATUS_MAPPINGS.UNIT_OF_MEASURE[
-                            output.unit_of_measure as keyof typeof STATUS_MAPPINGS.UNIT_OF_MEASURE
-                          ] || output.unit_of_measure}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">{output.quantity}</span>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {STATUS_MAPPINGS.UNIT_OF_MEASURE[
                         output.unit_of_measure as keyof typeof STATUS_MAPPINGS.UNIT_OF_MEASURE
                       ] || output.unit_of_measure}
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {output.weight} kg
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getQualityColor(
                           output.quality_status
@@ -315,15 +308,15 @@ export default function ProductionOutputsPage() {
                         ] || output.quality_status}
                       </span>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {output.notes || "-"}
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-1 lg:gap-2">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3"
+                          className="text-sm px-3"
                           onClick={() =>
                             navigate(`/production/outputs/${output.id}/edit`)
                           }
@@ -333,7 +326,7 @@ export default function ProductionOutputsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-xs lg:text-sm px-2 lg:px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-sm px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
                           onClick={() => handleDeleteClick(output)}
                         >
                           <Trash2 size={14} />
@@ -345,6 +338,111 @@ export default function ProductionOutputsPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Outputs Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredOutputs.map((output) => (
+            <div key={output.id} className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="space-y-3">
+                {/* Product Name and Quality Status */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                      {output.product_name}
+                    </h3>
+                    <div className="mt-1">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getQualityColor(
+                          output.quality_status
+                        )}`}
+                      >
+                        {STATUS_MAPPINGS.QUALITY_STATUS[
+                          output.quality_status as keyof typeof STATUS_MAPPINGS.QUALITY_STATUS
+                        ] || output.quality_status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ID and Step Execution */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.id")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {output.id.slice(0, 8)}...
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.stepExecution")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {output.step_execution.slice(0, 8)}...
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quantity, Unit and Weight */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.quantity")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {output.quantity}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.unit")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {STATUS_MAPPINGS.UNIT_OF_MEASURE[
+                        output.unit_of_measure as keyof typeof STATUS_MAPPINGS.UNIT_OF_MEASURE
+                      ] || output.unit_of_measure}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.weight")}</h4>
+                    <p className="text-sm text-gray-600">
+                      {output.weight} kg
+                    </p>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {output.notes && (
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.notes")}</h4>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {output.notes}
+                    </p>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      navigate(`/production/outputs/${output.id}/edit`)
+                    }
+                  >
+                    <Edit size={12} className="mr-1" />
+                    {t("common.edit")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteClick(output)}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    {t("common.delete")}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

@@ -163,19 +163,19 @@ export default function OrderDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigate("/production/orders")}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-fit"
           >
             <ArrowLeft size={16} />
             {t("production.orderDetail.backToOrders")}
           </Button>
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
               {t("production.orderDetail.title")}
             </h1>
             <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -183,14 +183,14 @@ export default function OrderDetailPage() {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() =>
               navigate(`/production/orders/${selectedOrder.id}/edit`)
             }
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto"
           >
             <Edit size={16} />
             {t("production.orderDetail.editOrder")}
@@ -199,7 +199,7 @@ export default function OrderDetailPage() {
             variant="outline"
             size="sm"
             onClick={handleDeleteClick}
-            className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="flex items-center gap-2 w-full sm:w-auto text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <Trash2 size={16} />
             {t("production.orderDetail.delete")}
@@ -208,8 +208,8 @@ export default function OrderDetailPage() {
       </div>
 
       {/* Order Overview */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-start justify-between">

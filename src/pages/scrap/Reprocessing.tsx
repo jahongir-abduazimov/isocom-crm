@@ -124,7 +124,7 @@ export default function ReprocessingPage() {
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             Brak Qayta Ishlashlar
           </h1>
         </div>
@@ -214,8 +214,8 @@ export default function ReprocessingPage() {
       {/* Filters and Search */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search
                   size={20}
@@ -229,12 +229,12 @@ export default function ReprocessingPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 lg:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Select
                 value={filterScrapType}
                 onValueChange={setFilterScrapType}
               >
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder="Brak turi" />
                 </SelectTrigger>
                 <SelectContent>
@@ -249,7 +249,7 @@ export default function ReprocessingPage() {
                 </SelectContent>
               </Select>
               <Select value={filterReason} onValueChange={setFilterReason}>
-                <SelectTrigger className="min-w-[140px]">
+                <SelectTrigger className="w-full sm:min-w-[140px]">
                   <SelectValue placeholder="Sabab" />
                 </SelectTrigger>
                 <SelectContent>
@@ -267,26 +267,26 @@ export default function ReprocessingPage() {
         </div>
       )}
 
-      {/* Recyclings Table */}
+      {/* Recyclings Table - Desktop */}
       {!loading && !error && (
-        <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div className="hidden lg:block bg-white rounded-lg shadow-sm border overflow-hidden">
           <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
             <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Brak turi
                   </th>
-                  <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Qayta Ishlandi
                   </th>
-                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Sabab
                   </th>
-                  <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Qayta Ishlagan
                   </th>
-                  <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Qayta Ishlandi vaqt
                   </th>
                 </tr>
@@ -298,8 +298,8 @@ export default function ReprocessingPage() {
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                     onClick={() => handleRowClick(recycling)}
                   >
-                    <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
-                      <div className="max-w-[120px] lg:max-w-[200px]">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="max-w-[200px]">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
                             recycling.scrap_details?.scrap_type || ""
@@ -308,14 +308,8 @@ export default function ReprocessingPage() {
                           {recycling.scrap_details?.scrap_type_display || "Noma'lum"}
                         </span>
                       </div>
-                      <div className="lg:hidden mt-1">
-                        <span className="text-sm font-medium">
-                          {recycling.recycled_quantity}{" "}
-                          {recycling.scrap_details?.unit_of_measure || ""}
-                        </span>
-                      </div>
                     </td>
-                    <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex flex-col">
                         <span className="font-medium">
                           {recycling.recycled_quantity}{" "}
@@ -327,7 +321,7 @@ export default function ReprocessingPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs">
                       <div className="flex flex-col gap-1">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
@@ -346,28 +340,92 @@ export default function ReprocessingPage() {
                         )}
                       </div>
                     </td>
-                    <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {recycling.recycled_by_name || "Noma'lum"}
-                        </span>
-                        <span className="text-xs text-gray-500 md:hidden mt-1">
-                          {formatDate(recycling.recycled_at)}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {recycling.recycled_by_name || "Noma'lum"}
+                      </span>
                     </td>
-                    <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {formatDate(recycling.recycled_at)}
-                        </span>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span className="font-medium">
+                        {formatDate(recycling.recycled_at)}
+                      </span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Recyclings Cards - Mobile */}
+      {!loading && !error && (
+        <div className="lg:hidden space-y-4">
+          {filteredRecyclings.map((recycling) => (
+            <div
+              key={recycling.id}
+              className="bg-white rounded-lg shadow-sm border p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => handleRowClick(recycling)}
+            >
+              <div className="space-y-3">
+                {/* Scrap Type and Quantity */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <span
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
+                        recycling.scrap_details?.scrap_type || ""
+                      )}`}
+                    >
+                      {recycling.scrap_details?.scrap_type_display || "Noma'lum"}
+                    </span>
+                    <div className="mt-2">
+                      <h3 className="text-sm font-medium text-gray-900">
+                        Qayta ishlangan: {recycling.recycled_quantity}{" "}
+                        {recycling.scrap_details?.unit_of_measure || ""}
+                      </h3>
+                      <p className="text-xs text-gray-500">
+                        Asl: {recycling.scrap_details?.quantity || "0"}{" "}
+                        {recycling.scrap_details?.unit_of_measure || ""}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reason */}
+                <div>
+                  <h4 className="font-medium text-gray-900 text-xs">Sabab</h4>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
+                      recycling.scrap_details?.reason || ""
+                    )}`}
+                  >
+                    {recycling.scrap_details?.reason_display || "Noma'lum"}
+                  </span>
+                  {recycling.notes && (
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {recycling.notes}
+                    </p>
+                  )}
+                </div>
+
+                {/* Recycled By and Date */}
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">Qayta ishlagan</h4>
+                    <p className="text-sm text-gray-600">
+                      {recycling.recycled_by_name || "Noma'lum"}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900 text-xs">Qayta ishlangan vaqt</h4>
+                    <p className="text-sm text-gray-600">
+                      {formatDate(recycling.recycled_at)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
