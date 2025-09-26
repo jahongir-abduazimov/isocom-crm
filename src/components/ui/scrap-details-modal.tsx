@@ -104,7 +104,7 @@ export default function ScrapDetailsModal({
                     scrap.scrap_type
                   )}`}
                 >
-                  {scrap.scrap_type_display}
+                  {scrap.scrap_type}
                 </span>
               </div>
               <div>
@@ -124,7 +124,7 @@ export default function ScrapDetailsModal({
                     scrap.status
                   )}`}
                 >
-                  {scrap.status_display}
+                  {scrap.status}
                 </span>
               </div>
             </div>
@@ -145,15 +145,15 @@ export default function ScrapDetailsModal({
                     scrap.reason
                   )}`}
                 >
-                  {scrap.reason_display}
+                  {scrap.reason}
                 </span>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Material ID
+                  Og'irlik
                 </label>
                 <p className="mt-1 text-sm text-gray-900 font-mono">
-                  {scrap.material}
+                  {scrap.weight} {scrap.unit_of_measure}
                 </p>
               </div>
               <div className="md:col-span-2">
@@ -175,26 +175,10 @@ export default function ScrapDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Ishlab Chiqarish Bosqichi
+                  Bosqich ID
                 </label>
                 <p className="mt-1 text-sm text-gray-900 font-mono">
-                  {scrap.production_step}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Mahsulot
-                </label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {scrap.product ? scrap.product : "Mahsulot ko'rsatilmagan"}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Narx
-                </label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {scrap.cost ? `${scrap.cost} so'm` : "Narx ko'rsatilmagan"}
+                  {scrap.step_execution}
                 </p>
               </div>
             </div>
@@ -208,23 +192,13 @@ export default function ScrapDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Xabar Beruvchi
+                  Yozuvchi
                 </label>
                 <p className="mt-1 text-sm text-gray-900">
-                  {scrap.reported_by_name}
+                  {scrap.recorded_by.full_name}
                 </p>
                 <p className="text-xs text-gray-500 font-mono">
-                  {scrap.reported_by}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Tasdiqlovchi
-                </label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {scrap.confirmed_by
-                    ? scrap.confirmed_by
-                    : "Hali tasdiqlanmagan"}
+                  {scrap.recorded_by.username}
                 </p>
               </div>
             </div>
@@ -236,24 +210,6 @@ export default function ScrapDetailsModal({
               Vaqt Belgilari
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Xabar Berilgan Vaqt
-                </label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {formatDate(scrap.reported_at)}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Tasdiqlangan Vaqt
-                </label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {scrap.confirmed_at
-                    ? formatDate(scrap.confirmed_at)
-                    : "Hali tasdiqlanmagan"}
-                </p>
-              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Yaratilgan Vaqt

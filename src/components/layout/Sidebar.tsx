@@ -19,68 +19,95 @@ import { useAuthStore } from "@/store/auth.store";
 import { useTranslation } from "react-i18next";
 
 const getNavItems = (t: any) => [
-  { path: "/", label: t('navigation.dashboard'), icon: <BarChart3 size={20} /> },
   {
-    label: t('navigation.products'),
+    path: "/",
+    label: t("navigation.dashboard"),
+    icon: <BarChart3 size={20} />,
+  },
+  {
+    label: t("navigation.products"),
     icon: <Box size={20} />,
     isCollapsible: true,
     menuKey: "products",
     children: [
-      { path: "/products", label: t('navigation.products') },
-      { path: "/products-components", label: t('navigation.productComponents') },
+      { path: "/products", label: t("navigation.products") },
+      {
+        path: "/products-components",
+        label: t("navigation.productComponents"),
+      },
     ],
   },
-  { path: "/materials", label: t('navigation.materials'), icon: <Layers size={20} /> },
-  { path: "/workcenters", label: t('navigation.workcenters'), icon: <Settings size={20} /> },
-  { path: "/users", label: t('navigation.users'), icon: <Users size={20} /> },
-  { path: "/worker", label: t('navigation.operatorPanel'), icon: <Wrench size={20} /> },
   {
-    label: t('navigation.warehouse'),
+    path: "/materials",
+    label: t("navigation.materials"),
+    icon: <Layers size={20} />,
+  },
+  {
+    path: "/workcenters",
+    label: t("navigation.workcenters"),
+    icon: <Settings size={20} />,
+  },
+  { path: "/users", label: t("navigation.users"), icon: <Users size={20} /> },
+  {
+    path: "/worker",
+    label: t("navigation.operatorPanel"),
+    icon: <Wrench size={20} />,
+  },
+  {
+    path: "/bunkers",
+    label: t("navigation.bunkers"),
+    icon: <Package size={20} />,
+  },
+  {
+    label: t("navigation.warehouse"),
     icon: <Warehouse size={20} />,
     isCollapsible: true,
     menuKey: "warehouse",
     children: [
-      { path: "/warehouse/locations", label: t('navigation.locations') },
-      { path: "/warehouse/warehouses", label: t('navigation.warehouses') },
+      { path: "/warehouse/locations", label: t("navigation.locations") },
+      { path: "/warehouse/warehouses", label: t("navigation.warehouses") },
     ],
   },
   {
-    label: t('navigation.production'),
+    label: t("navigation.production"),
     icon: <Factory size={20} />,
     isCollapsible: true,
     menuKey: "production",
     children: [
-      { path: "/production/orders", label: t('navigation.orders') },
-      { path: "/production/outputs", label: t('navigation.productionOutputs') },
+      { path: "/production/orders", label: t("navigation.orders") },
+      { path: "/production/outputs", label: t("navigation.productionOutputs") },
       {
         path: "/production/step-executions",
-        label: t('navigation.stepExecutions'),
+        label: t("navigation.stepExecutions"),
       },
-      { path: "/production/steps", label: t('navigation.productionSteps') },
-      { path: "/production/used-materials", label: t('navigation.usedMaterials') },
+      { path: "/production/steps", label: t("navigation.productionSteps") },
+      {
+        path: "/production/used-materials",
+        label: t("navigation.usedMaterials"),
+      },
     ],
   },
   {
-    label: t('navigation.stock'),
+    label: t("navigation.stock"),
     icon: <Package size={20} />,
     isCollapsible: true,
     menuKey: "stock",
     children: [
       {
         path: "/stock/inventory-movement-logs",
-        label: t('navigation.inventoryMovements'),
+        label: t("navigation.inventoryMovements"),
       },
-      { path: "/stock/stock-levels", label: t('navigation.stockLevels') },
+      { path: "/stock/stock-levels", label: t("navigation.stockLevels") },
     ],
   },
   {
-    label: t('navigation.scrap'),
+    label: t("navigation.scrap"),
     icon: <Shield size={20} />,
     isCollapsible: true,
     menuKey: "scrap",
     children: [
-      { path: "/scrap/reprocessing", label: t('navigation.reprocessing') },
-      { path: "/scrap/defects", label: t('navigation.defects') },
+      { path: "/scrap/reprocessing", label: t("navigation.reprocessing") },
+      { path: "/scrap/defects", label: t("navigation.defects") },
     ],
   },
 ];
@@ -94,6 +121,7 @@ export default function Sidebar() {
     production: false,
     stock: false,
     scrap: false,
+    bunkers: false,
   });
 
   const toggleMenu = (menuKey: string) => {
@@ -113,7 +141,7 @@ export default function Sidebar() {
 
   // Superadmin rollari uchun Operator panelini olib tashlash
   const navItems = getNavItems(t);
-  const filteredNavItems = navItems.filter(item => {
+  const filteredNavItems = navItems.filter((item) => {
     if (item.path === "/worker") {
       return false; // Operator panelini olib tashlash
     }
@@ -123,7 +151,7 @@ export default function Sidebar() {
   return (
     <ScrollArea className="max-w-54 min-w-54 lg:min-w-64 lg:max-w-64 h-[calc(100vh-16px)] bg-primary to-blue-700 text-white flex flex-col shadow-lg rounded-xl m-2">
       <div className="min-h-16 flex items-center justify-center text-2xl font-extrabold tracking-wide border-b border-white/10">
-        <span className="drop-shadow">{t('common.appName')}</span>
+        <span className="drop-shadow">{t("common.appName")}</span>
       </div>
       <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
         {filteredNavItems.map((item, index) => {

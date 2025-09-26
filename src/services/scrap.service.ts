@@ -2,24 +2,19 @@ import request from "@/components/config";
 
 export interface Scrap {
     id: string;
-    production_step: string;
+    step_execution: string;
     scrap_type: "HARD" | "SOFT";
-    scrap_type_display: string;
     quantity: string;
+    weight: string;
     unit_of_measure: string;
     reason: string;
-    reason_display: string;
-    status: "PENDING" | "CONFIRMED" | "RECYCLED" | "WRITTEN_OFF";
-    status_display: string;
-    material: string;
-    product: string | null;
-    cost: string | null;
-    reported_by: string;
-    reported_by_name: string;
-    confirmed_by: string | null;
+    status: "PENDING" | "IN_PROCESS" | "COMPLETED";
+    recorded_by: {
+        id: string;
+        username: string;
+        full_name: string;
+    };
     notes: string;
-    reported_at: string;
-    confirmed_at: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -31,9 +26,22 @@ export interface ScrapResponse {
     results: Scrap[];
 }
 
+export interface ScrapFilters {
+    step_execution?: string;
+    scrap_type?: "HARD" | "SOFT";
+    status?: "PENDING" | "IN_PROCESS" | "COMPLETED";
+    recorded_by?: string;
+}
+
 export class ScrapService {
-    static async getScraps(): Promise<ScrapResponse> {
-        const response = await request.get<ScrapResponse>("/scraps/");
+    static async getScraps(filters?: ScrapFilters): Promise<ScrapResponse> {
+        const params = new URLSearchParams();
+        if (filters?.step_execution) params.append('step_execution', filters.step_execution);
+        if (filters?.scrap_type) params.append('scrap_type', filters.scrap_type);
+        if (filters?.status) params.append('status', filters.status);
+        if (filters?.recorded_by) params.append('recorded_by', filters.recorded_by);
+
+        const response = await request.get<ScrapResponse>(`/scraps/?${params.toString()}`);
         return response.data;
     }
 

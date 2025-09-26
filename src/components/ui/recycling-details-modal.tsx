@@ -344,7 +344,7 @@ export default function RecyclingDetailsModal({
                 <p className="mt-1 text-sm text-gray-900">
                   {recycling.scrap_details.confirmed_by
                     ? userNames[recycling.scrap_details.confirmed_by] ||
-                      recycling.scrap_details.confirmed_by
+                    recycling.scrap_details.confirmed_by
                     : "Hali tasdiqlanmagan"}
                 </p>
                 {recycling.scrap_details.confirmed_by && (

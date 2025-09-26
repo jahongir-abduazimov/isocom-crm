@@ -14,6 +14,9 @@ const pathLabels: Record<string, string> = {
     "/worker/bunkers": "Ekstruder Baklar",
     "/worker/bunkers/list": "Baklar ro'yxati",
     "/worker/bunkers/end-shift": "Smena tugatish",
+    "/bunkers": "Baklar",
+    "/bunkers/add": "Bak qo'shish",
+    "/bunkers/containers": "Konteynerlar",
 };
 
 export default function Breadcrumb() {

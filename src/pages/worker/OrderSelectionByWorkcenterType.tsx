@@ -92,7 +92,7 @@ export default function OrderSelectionByWorkcenterTypePage() {
   const filteredOrders =
     allOrders?.filter((order) => {
       const matchesSearch =
-        order.produced_product_name
+        order.produced_product__name
           ?.toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         order.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -141,7 +141,7 @@ export default function OrderSelectionByWorkcenterTypePage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate("/worker")}
+            onClick={() => navigate("/worker/workcenter-selection")}
             className="flex items-center gap-2"
           >
             <ArrowLeft size={16} />

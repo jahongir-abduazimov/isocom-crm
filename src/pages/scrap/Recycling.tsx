@@ -32,8 +32,8 @@ export default function RecyclingPage() {
     clearError,
   } = useRecyclingStore();
 
-  const { workcenters, fetchWorkcenters } = useWorkcentersStore();
-  const { users, fetchUsers } = useUsersStore();
+  const { fetchWorkcenters } = useWorkcentersStore();
+  const { fetchUsers } = useUsersStore();
 
   const [startDrobilkaModalOpen, setStartDrobilkaModalOpen] = useState(false);
   const [completeDrobilkaModalOpen, setCompleteDrobilkaModalOpen] =
@@ -367,9 +367,9 @@ export default function RecyclingPage() {
       <StartDrobilkaModal
         open={startDrobilkaModalOpen}
         onClose={() => setStartDrobilkaModalOpen(false)}
-        currentBatch={currentBatch}
-        workcenters={workcenters.filter((w) => w.type === "BRAK_MAYDALAGICH")}
-        operators={users.filter((u) => u.is_operator)}
+        drobilkaType="HARD"
+        availableQuantity={parseFloat(currentBatch?.total_input || "0")}
+        recyclingBatchId={currentBatch?.id}
         onSuccess={() => {
           setStartDrobilkaModalOpen(false);
           fetchDrobilkaProcesses();
@@ -383,7 +383,7 @@ export default function RecyclingPage() {
           setCompleteDrobilkaModalOpen(false);
           setSelectedDrobilka(null);
         }}
-        process={selectedDrobilka}
+        drobilkaProcess={selectedDrobilka}
         onSuccess={() => {
           setCompleteDrobilkaModalOpen(false);
           setSelectedDrobilka(null);

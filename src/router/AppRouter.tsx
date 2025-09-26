@@ -75,6 +75,13 @@ import BunkersDashboardPage from "@/pages/worker/bunkers";
 import BunkerListPage from "@/pages/worker/bunkers/BunkerList";
 import EndShiftBunkerPage from "@/pages/worker/bunkers/EndShiftBunker";
 
+// New Bunker System pages
+import ContainerListPage from "@/pages/worker/bunkers/ContainerList";
+import AddContainerPage from "@/pages/worker/bunkers/AddContainer";
+import EditContainerPage from "@/pages/worker/bunkers/EditContainer";
+import FillBunkerPage from "@/pages/worker/bunkers/FillBunker";
+import BunkerStatusPage from "@/pages/worker/bunkers/BunkerStatus";
+
 // Worker Reprocessing page
 import WorkerReprocessingPage from "@/pages/worker/Reprocessing";
 
@@ -85,6 +92,14 @@ import QRCodesPage from "@/pages/worker/QRCodes";
 // Scrap pages
 import DefectsPage from "@/pages/scrap/Defects";
 import ReprocessingPage from "@/pages/scrap/Reprocessing";
+
+// Bunkers pages
+import BunkersPage from "@/pages/bunkers";
+import AddBunkerPage from "@/pages/bunkers/AddBunker";
+import EditBunkerPage from "@/pages/bunkers/EditBunker";
+import BunkerDetailPage from "@/pages/bunkers/BunkerDetail";
+import AddContainerPageAdmin from "@/pages/bunkers/AddContainer";
+import EditContainerPageAdmin from "@/pages/bunkers/EditContainer";
 
 // import QCPage from "@/pages/qc/QCPage";
 // import PackagingPage from "@/pages/packaging/PackagingPage";
@@ -121,6 +136,13 @@ export default function App() {
           <Route path="/worker/bunkers" element={<BunkersDashboardPage />} />
           <Route path="/worker/bunkers/list" element={<BunkerListPage />} />
           <Route path="/worker/bunkers/:bunkerId/end-shift" element={<EndShiftBunkerPage />} />
+
+          {/* New Bunker System Routes */}
+          <Route path="/worker/bunkers/:bunkerId/containers" element={<ContainerListPage />} />
+          <Route path="/worker/bunkers/:bunkerId/containers/add" element={<AddContainerPage />} />
+          <Route path="/worker/bunkers/:bunkerId/containers/:containerId/edit" element={<EditContainerPage />} />
+          <Route path="/worker/bunkers/:bunkerId/fill" element={<FillBunkerPage />} />
+          <Route path="/worker/bunkers/:bunkerId/status" element={<BunkerStatusPage />} />
 
           {/* Worker Production Output Routes */}
           <Route path="/worker/production-outputs" element={<WorkerProductionOutputsPage />} />
@@ -190,6 +212,14 @@ export default function App() {
           {/* Scrap Routes */}
           <Route path="/scrap/defects" element={<DefectsPage />} />
           <Route path="/scrap/reprocessing" element={<ReprocessingPage />} />
+
+          {/* Bunkers Routes */}
+          <Route path="/bunkers" element={<BunkersPage />} />
+          <Route path="/bunkers/add" element={<AddBunkerPage />} />
+          <Route path="/bunkers/:id" element={<BunkerDetailPage />} />
+          <Route path="/bunkers/:id/edit" element={<EditBunkerPage />} />
+          <Route path="/bunkers/:bunkerId/containers/add" element={<AddContainerPageAdmin />} />
+          <Route path="/bunkers/:bunkerId/containers/:containerId/edit" element={<EditContainerPageAdmin />} />
         </Route>
       </Routes>
     </BrowserRouter>

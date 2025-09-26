@@ -119,22 +119,14 @@ const EndShiftBunker: React.FC = () => {
         fill_percentage: number;
       } = {
         ...data,
-        current_level_kg:
-          typeof data.current_level_kg === "string"
-            ? parseFloat(data.current_level_kg)
-            : (data.current_level_kg as number) || 0,
-        available_capacity_kg:
-          typeof data.available_capacity_kg === "string"
-            ? parseFloat(data.available_capacity_kg)
-            : (data.available_capacity_kg as number) || 0,
-        capacity_kg:
-          typeof data.capacity_kg === "string"
-            ? parseFloat(data.capacity_kg)
-            : (data.capacity_kg as number) || 0,
-        fill_percentage:
-          typeof data.fill_percentage === "string"
-            ? parseFloat(data.fill_percentage)
-            : (data.fill_percentage as number) || 0,
+        current_level_kg: parseFloat(data.bunker_remaining_kg) || 0,
+        available_capacity_kg: parseFloat(data.bunker_capacity_kg) - parseFloat(data.bunker_remaining_kg) || 0,
+        capacity_kg: parseFloat(data.bunker_capacity_kg) || 0,
+        fill_percentage: (parseFloat(data.bunker_remaining_kg) / parseFloat(data.bunker_capacity_kg)) * 100 || 0,
+        work_center: "", // BunkerFillSession doesn't have work_center
+        is_full: parseFloat(data.bunker_remaining_kg) >= parseFloat(data.bunker_capacity_kg),
+        recent_fills: [], // BunkerFillSession doesn't have recent_fills
+        last_updated: data.filled_at,
       };
 
       setBunkerStatus(processedData);
@@ -161,19 +153,17 @@ const EndShiftBunker: React.FC = () => {
       }
 
       // Load materials from workcenter stock
-      if (data.work_center) {
-        setMaterialsLoading(true);
-        try {
-          const stockData = await bunkerService.fetchWorkcenterStock(
-            data.work_center
-          );
-          setMaterials(stockData.materials || []);
-        } catch (error) {
-          console.error("Error loading materials:", error);
-          setMaterials([]);
-        } finally {
-          setMaterialsLoading(false);
-        }
+      // Note: BunkerFillSession doesn't have work_center, so we'll skip this for now
+      // or use a default work center if needed
+      setMaterialsLoading(true);
+      try {
+        // You might need to get the work center from somewhere else or use a default
+        setMaterials([]);
+      } catch (error) {
+        console.error("Error loading materials:", error);
+        setMaterials([]);
+      } finally {
+        setMaterialsLoading(false);
       }
     } catch (error) {
       console.error("Error loading bunker data:", error);

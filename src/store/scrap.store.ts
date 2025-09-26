@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { ScrapService, type Scrap, type ScrapResponse } from "@/services/scrap.service";
+import { ScrapService, type Scrap, type ScrapFilters } from "@/services/scrap.service";
 
 interface ScrapState {
     scraps: Scrap[];
     loading: boolean;
     error: string | null;
     totalCount: number;
-    fetchScraps: () => Promise<void>;
+    fetchScraps: (filters?: ScrapFilters) => Promise<void>;
     getScrapById: (id: string) => Promise<Scrap | null>;
     clearError: () => void;
 }
@@ -17,13 +17,15 @@ export const useScrapStore = create<ScrapState>((set) => ({
     error: null,
     totalCount: 0,
 
-    fetchScraps: async () => {
+    fetchScraps: async (filters?: ScrapFilters) => {
         set({ loading: true, error: null });
         try {
-            const response: ScrapResponse = await ScrapService.getScraps();
+            console.log("Fetching scraps with filters:", filters);
+            const response = await ScrapService.getScraps(filters);
+            console.log("Scraps received:", response);
             set({
-                scraps: response.results,
-                totalCount: response.count,
+                scraps: response.results || [],
+                totalCount: response.count || 0,
                 loading: false,
             });
         } catch (error) {

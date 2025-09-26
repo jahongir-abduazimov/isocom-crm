@@ -28,20 +28,25 @@ export default function ReprocessingPage() {
   }, [fetchRecyclings]);
 
   const filteredRecyclings = recyclings.filter((recycling) => {
+    // Check if scrap_details exists before accessing its properties
+    if (!recycling.scrap_details) {
+      return false; // Skip items without scrap_details
+    }
+
     const matchesSearch =
-      recycling.scrap_details.scrap_type_display
+      (recycling.scrap_details.scrap_type_display || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      recycling.scrap_details.reason_display
+      (recycling.scrap_details.reason_display || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      recycling.recycled_by_name
+      (recycling.recycled_by_name || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      recycling.scrap_details.notes
+      (recycling.scrap_details.notes || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      recycling.notes.toLowerCase().includes(searchTerm.toLowerCase());
+      (recycling.notes || "").toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesScrapTypeFilter =
       filterScrapType === "all" ||
@@ -92,11 +97,17 @@ export default function ReprocessingPage() {
   // Get unique values for filter options
   const uniqueScrapTypes = [
     ...new Set(
-      recyclings.map((recycling) => recycling.scrap_details.scrap_type)
+      recyclings
+        .filter((recycling) => recycling.scrap_details)
+        .map((recycling) => recycling.scrap_details.scrap_type)
     ),
   ];
   const uniqueReasons = [
-    ...new Set(recyclings.map((recycling) => recycling.scrap_details.reason)),
+    ...new Set(
+      recyclings
+        .filter((recycling) => recycling.scrap_details)
+        .map((recycling) => recycling.scrap_details.reason)
+    ),
   ];
 
   const handleRowClick = (recycling: Recycling) => {
@@ -146,7 +157,7 @@ export default function ReprocessingPage() {
                 <p className="text-xl lg:text-2xl font-bold text-red-600">
                   {
                     recyclings.filter(
-                      (r) => r.scrap_details.scrap_type === "HARD"
+                      (r) => r.scrap_details && r.scrap_details.scrap_type === "HARD"
                     ).length
                   }
                 </p>
@@ -165,7 +176,7 @@ export default function ReprocessingPage() {
                 <p className="text-xl lg:text-2xl font-bold text-orange-600">
                   {
                     recyclings.filter(
-                      (r) => r.scrap_details.scrap_type === "SOFT"
+                      (r) => r.scrap_details && r.scrap_details.scrap_type === "SOFT"
                     ).length
                   }
                 </p>
@@ -183,6 +194,7 @@ export default function ReprocessingPage() {
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
                   {recyclings
+                    .filter((r) => r.recycled_quantity)
                     .reduce(
                       (sum, r) => sum + parseFloat(r.recycled_quantity),
                       0
@@ -230,8 +242,8 @@ export default function ReprocessingPage() {
                   {uniqueScrapTypes.map((type) => (
                     <SelectItem key={type} value={type}>
                       {recyclings.find(
-                        (r) => r.scrap_details.scrap_type === type
-                      )?.scrap_details.scrap_type_display || type}
+                        (r) => r.scrap_details && r.scrap_details.scrap_type === type
+                      )?.scrap_details?.scrap_type_display || type}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -244,8 +256,8 @@ export default function ReprocessingPage() {
                   <SelectItem value="all">Barcha sabablar</SelectItem>
                   {uniqueReasons.map((reason) => (
                     <SelectItem key={reason} value={reason}>
-                      {recyclings.find((r) => r.scrap_details.reason === reason)
-                        ?.scrap_details.reason_display || reason}
+                      {recyclings.find((r) => r.scrap_details && r.scrap_details.reason === reason)
+                        ?.scrap_details?.reason_display || reason}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -290,16 +302,16 @@ export default function ReprocessingPage() {
                       <div className="max-w-[120px] lg:max-w-[200px]">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
-                            recycling.scrap_details.scrap_type
+                            recycling.scrap_details?.scrap_type || ""
                           )}`}
                         >
-                          {recycling.scrap_details.scrap_type_display}
+                          {recycling.scrap_details?.scrap_type_display || "Noma'lum"}
                         </span>
                       </div>
                       <div className="lg:hidden mt-1">
                         <span className="text-sm font-medium">
                           {recycling.recycled_quantity}{" "}
-                          {recycling.scrap_details.unit_of_measure}
+                          {recycling.scrap_details?.unit_of_measure || ""}
                         </span>
                       </div>
                     </td>
@@ -307,11 +319,11 @@ export default function ReprocessingPage() {
                       <div className="flex flex-col">
                         <span className="font-medium">
                           {recycling.recycled_quantity}{" "}
-                          {recycling.scrap_details.unit_of_measure}
+                          {recycling.scrap_details?.unit_of_measure || ""}
                         </span>
                         <span className="text-xs text-gray-500">
-                          Asl: {recycling.scrap_details.quantity}{" "}
-                          {recycling.scrap_details.unit_of_measure}
+                          Asl: {recycling.scrap_details?.quantity || "0"}{" "}
+                          {recycling.scrap_details?.unit_of_measure || ""}
                         </span>
                       </div>
                     </td>
@@ -319,10 +331,10 @@ export default function ReprocessingPage() {
                       <div className="flex flex-col gap-1">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
-                            recycling.scrap_details.reason
+                            recycling.scrap_details?.reason || ""
                           )}`}
                         >
-                          {recycling.scrap_details.reason_display}
+                          {recycling.scrap_details?.reason_display || "Noma'lum"}
                         </span>
                         {recycling.notes && (
                           <div

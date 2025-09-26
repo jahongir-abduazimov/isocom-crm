@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
   Search,
-  Eye,
-  RefreshCw,
   CheckCircle,
   AlertCircle,
   Clock,
   Package,
+  Play,
+  Settings,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,13 @@ import {
 } from "@/components/ui/select";
 import { useScrapStore } from "@/store/scrap.store";
 import { useRecyclingStore } from "@/store/recycling.store";
-import { type Scrap } from "@/services/scrap.service";
-import { type Recycling } from "@/services/recycling.service";
-import ScrapDetailsModal from "@/components/ui/scrap-details-modal";
-import RecyclingDetailsModal from "@/components/ui/recycling-details-modal";
+import { useWorkcentersStore } from "@/store/workcenters.store";
+import { useUsersStore } from "@/store/users.store";
+import { type DrobilkaProcess } from "@/services/recycling.service";
+import StartRecyclingBatchModal from "@/components/ui/start-recycling-batch-modal";
+import StartDrobilkaModal from "@/components/ui/start-drobilka-modal";
+import CompleteDrobilkaModal from "@/components/ui/complete-drobilka-modal";
+import CompleteRecyclingBatchModal from "@/components/ui/complete-recycling-batch-modal";
 
 export default function OperatorReprocessingPage() {
   const {
@@ -32,45 +35,58 @@ export default function OperatorReprocessingPage() {
     fetchScraps,
   } = useScrapStore();
   const {
-    recyclings,
-    loading: recyclingsLoading,
-    error: recyclingsError,
-    fetchRecyclings,
+    currentBatch,
+    drobilkaProcesses,
+    loading: recyclingLoading,
+    error: recyclingError,
+    fetchDrobilkaProcesses,
+    getCurrentTotals,
   } = useRecyclingStore();
+  const { fetchWorkcenters } = useWorkcentersStore();
+  const { fetchUsers } = useUsersStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterScrapType, setFilterScrapType] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [filterReason, setFilterReason] = useState("all");
-  const [activeTab, setActiveTab] = useState<"pending" | "reprocessed">(
-    "pending"
-  );
+  const [activeTab, setActiveTab] = useState<"overview" | "scraps" | "processes">("overview");
 
-  const [selectedScrap, setSelectedScrap] = useState<Scrap | null>(null);
-  const [selectedRecycling, setSelectedRecycling] = useState<Recycling | null>(
-    null
-  );
-  const [scrapModalOpen, setScrapModalOpen] = useState(false);
-  const [recyclingModalOpen, setRecyclingModalOpen] = useState(false);
+  // Modal states
+  const [startBatchModalOpen, setStartBatchModalOpen] = useState(false);
+  const [startDrobilkaModalOpen, setStartDrobilkaModalOpen] = useState(false);
+  const [completeDrobilkaModalOpen, setCompleteDrobilkaModalOpen] = useState(false);
+  const [completeBatchModalOpen, setCompleteBatchModalOpen] = useState(false);
+  const [selectedDrobilkaType, setSelectedDrobilkaType] = useState<"HARD" | "SOFT">("HARD");
+  const [selectedDrobilkaProcess, setSelectedDrobilkaProcess] = useState<DrobilkaProcess | null>(null);
 
   useEffect(() => {
-    fetchScraps();
-    fetchRecyclings();
-  }, [fetchScraps, fetchRecyclings]);
+    const loadData = async () => {
+      try {
+        console.log("Loading initial data...");
+        await Promise.all([
+          fetchScraps(),
+          fetchDrobilkaProcesses(),
+          getCurrentTotals(),
+          fetchWorkcenters(),
+          fetchUsers({ is_active: true })
+        ]);
+        console.log("Initial data loaded successfully");
+      } catch (error) {
+        console.error("Error loading initial data:", error);
+      }
+    };
 
-  // Filter scraps for reprocessing (only PENDING and CONFIRMED)
-  const availableScraps = scraps.filter(
-    (scrap) => scrap.status === "PENDING" || scrap.status === "CONFIRMED"
-  );
+    loadData();
+  }, [fetchScraps, fetchDrobilkaProcesses, getCurrentTotals, fetchWorkcenters, fetchUsers]);
+
+  // Filter scraps for reprocessing (only PENDING status)
+  const availableScraps = Array.isArray(scraps) ? scraps.filter(scrap => scrap.status === "PENDING") : [];
 
   const filteredScraps = availableScraps.filter((scrap) => {
     const matchesSearch =
-      scrap.scrap_type_display
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      scrap.reason_display.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      scrap.reported_by_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      scrap.notes.toLowerCase().includes(searchTerm.toLowerCase());
+      scrap.scrap_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scrap.reason?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scrap.recorded_by?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scrap.notes?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesScrapTypeFilter =
       filterScrapType === "all" || scrap.scrap_type === filterScrapType;
@@ -78,42 +94,19 @@ export default function OperatorReprocessingPage() {
     const matchesStatusFilter =
       filterStatus === "all" || scrap.status === filterStatus;
 
-    const matchesReasonFilter =
-      filterReason === "all" || scrap.reason === filterReason;
-
-    return (
-      matchesSearch &&
-      matchesScrapTypeFilter &&
-      matchesStatusFilter &&
-      matchesReasonFilter
-    );
+    return matchesSearch && matchesScrapTypeFilter && matchesStatusFilter;
   });
 
-  const filteredRecyclings = recyclings.filter((recycling) => {
-    const matchesSearch =
-      recycling.scrap_details.scrap_type_display
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      recycling.scrap_details.reason_display
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      recycling.recycled_by_name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      recycling.scrap_details.notes
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      recycling.notes.toLowerCase().includes(searchTerm.toLowerCase());
+  // Get available quantities for drobilka operations
+  const hardScraps = availableScraps.filter(scrap => scrap.scrap_type === "HARD");
+  const softScraps = availableScraps.filter(scrap => scrap.scrap_type === "SOFT");
 
-    const matchesScrapTypeFilter =
-      filterScrapType === "all" ||
-      recycling.scrap_details.scrap_type === filterScrapType;
+  const totalHardQuantity = hardScraps.reduce((sum, scrap) => sum + parseFloat(scrap.quantity || "0"), 0);
+  const totalSoftQuantity = softScraps.reduce((sum, scrap) => sum + parseFloat(scrap.quantity || "0"), 0);
 
-    const matchesReasonFilter =
-      filterReason === "all" || recycling.scrap_details.reason === filterReason;
-
-    return matchesSearch && matchesScrapTypeFilter && matchesReasonFilter;
-  });
+  // Get active drobilka processes
+  const activeDrobilkaProcesses = Array.isArray(drobilkaProcesses) ? drobilkaProcesses.filter(process => !process.completed_at) : [];
+  const completedDrobilkaProcesses = Array.isArray(drobilkaProcesses) ? drobilkaProcesses.filter(process => process.completed_at) : [];
 
   const getScrapTypeColor = (scrapType: string) => {
     switch (scrapType) {
@@ -130,27 +123,10 @@ export default function OperatorReprocessingPage() {
     switch (status) {
       case "PENDING":
         return "bg-yellow-100 text-yellow-800";
-      case "CONFIRMED":
-        return "bg-green-100 text-green-800";
-      case "RECYCLED":
+      case "IN_PROCESS":
         return "bg-blue-100 text-blue-800";
-      case "WRITTEN_OFF":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const getReasonColor = (reason: string) => {
-    switch (reason) {
-      case "MATERIAL_DEFECT":
-        return "bg-red-100 text-red-800";
-      case "MACHINE_ERROR":
-        return "bg-orange-100 text-orange-800";
-      case "OPERATOR_ERROR":
-        return "bg-purple-100 text-purple-800";
-      case "QUALITY_ISSUE":
-        return "bg-yellow-100 text-yellow-800";
+      case "COMPLETED":
+        return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -167,49 +143,58 @@ export default function OperatorReprocessingPage() {
   };
 
   // Get unique values for filter options
-  const uniqueScrapTypes = [
-    ...new Set([
-      ...availableScraps.map((scrap) => scrap.scrap_type),
-      ...recyclings.map((r) => r.scrap_details.scrap_type),
-    ]),
-  ];
-  const uniqueStatuses = [
-    ...new Set(availableScraps.map((scrap) => scrap.status)),
-  ];
-  const uniqueReasons = [
-    ...new Set([
-      ...availableScraps.map((scrap) => scrap.reason),
-      ...recyclings.map((r) => r.scrap_details.reason),
-    ]),
-  ];
+  const uniqueScrapTypes = [...new Set(availableScraps.map((scrap) => scrap.scrap_type).filter(Boolean))];
+  const uniqueStatuses = [...new Set(availableScraps.map((scrap) => scrap.status).filter(Boolean))];
 
-  const handleScrapRowClick = (scrap: Scrap) => {
-    setSelectedScrap(scrap);
-    setScrapModalOpen(true);
+  // Handlers
+  const handleStartBatch = () => {
+    setStartBatchModalOpen(true);
   };
 
-  const handleRecyclingRowClick = (recycling: Recycling) => {
-    setSelectedRecycling(recycling);
-    setRecyclingModalOpen(true);
+  const handleStartDrobilka = (type: "HARD" | "SOFT") => {
+    setSelectedDrobilkaType(type);
+    setStartDrobilkaModalOpen(true);
   };
 
-  const handleCloseScrapModal = () => {
-    setScrapModalOpen(false);
-    setSelectedScrap(null);
+  const handleCompleteDrobilka = (process: DrobilkaProcess) => {
+    setSelectedDrobilkaProcess(process);
+    setCompleteDrobilkaModalOpen(true);
   };
 
-  const handleCloseRecyclingModal = () => {
-    setRecyclingModalOpen(false);
-    setSelectedRecycling(null);
+  const handleCompleteBatch = () => {
+    setCompleteBatchModalOpen(true);
   };
 
-  const handleReprocessScrap = (scrap: Scrap) => {
-    // TODO: Implement reprocessing functionality
-    console.log("Reprocess scrap:", scrap);
+  const handleModalSuccess = async () => {
+    try {
+      await Promise.all([
+        fetchScraps(),
+        fetchDrobilkaProcesses(),
+        getCurrentTotals()
+      ]);
+    } catch (error) {
+      console.error("Error refreshing data after modal success:", error);
+    }
   };
 
-  const loading = scrapsLoading || recyclingsLoading;
-  const error = scrapsError || recyclingsError;
+  const loading = scrapsLoading || recyclingLoading;
+  const error = scrapsError || recyclingError;
+
+  // Debug information
+  console.log("Reprocessing page state:", {
+    scrapsLoading,
+    recyclingLoading,
+    scrapsError,
+    recyclingError,
+    scraps: scraps,
+    scrapsType: typeof scraps,
+    scrapsIsArray: Array.isArray(scraps),
+    scrapsLength: Array.isArray(scraps) ? scraps.length : "not array",
+    drobilkaProcesses: drobilkaProcesses,
+    drobilkaProcessesType: typeof drobilkaProcesses,
+    drobilkaProcessesIsArray: Array.isArray(drobilkaProcesses),
+    currentBatch: currentBatch?.id || "none"
+  });
 
   return (
     <div>
@@ -222,6 +207,20 @@ export default function OperatorReprocessingPage() {
             Braklarni ko'rish, qayta ishlash jarayonini boshqarish va
             natijalarni kuzatish
           </p>
+        </div>
+        <div className="flex gap-2">
+          {!currentBatch && (
+            <Button onClick={handleStartBatch} disabled={loading || availableScraps.length === 0}>
+              <Play className="w-4 h-4 mr-2" />
+              Partiyani Boshlash
+            </Button>
+          )}
+          {currentBatch && currentBatch.status === "IN_PROCESS" && (
+            <Button onClick={handleCompleteBatch} variant="outline">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Partiyani Yakunlash
+            </Button>
+          )}
         </div>
       </div>
 
@@ -246,16 +245,26 @@ export default function OperatorReprocessingPage() {
           <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Kutilmoqda</p>
+                <p className="text-sm font-medium text-gray-600">Qattiq Braklar</p>
+                <p className="text-xl lg:text-2xl font-bold text-red-600">
+                  {totalHardQuantity.toFixed(1)} KG
+                </p>
+              </div>
+              <div className="p-2 lg:p-3 bg-red-100 rounded-full">
+                <Package size={20} className="text-red-600 lg:w-6 lg:h-6" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Yumshoq Braklar</p>
                 <p className="text-xl lg:text-2xl font-bold text-orange-600">
-                  {availableScraps.filter((s) => s.status === "PENDING").length}
+                  {totalSoftQuantity.toFixed(1)} KG
                 </p>
               </div>
               <div className="p-2 lg:p-3 bg-orange-100 rounded-full">
-                <AlertCircle
-                  size={20}
-                  className="text-orange-600 lg:w-6 lg:h-6"
-                />
+                <Package size={20} className="text-orange-600 lg:w-6 lg:h-6" />
               </div>
             </div>
           </div>
@@ -263,36 +272,59 @@ export default function OperatorReprocessingPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Tasdiqlangan
-                </p>
-                <p className="text-xl lg:text-2xl font-bold text-green-600">
-                  {
-                    availableScraps.filter((s) => s.status === "CONFIRMED")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="p-2 lg:p-3 bg-green-100 rounded-full">
-                <CheckCircle
-                  size={20}
-                  className="text-green-600 lg:w-6 lg:h-6"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border p-4 lg:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Qayta Ishlangan
+                  Aktiv Jarayonlar
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-blue-600">
-                  {recyclings.length}
+                  {activeDrobilkaProcesses.length}
                 </p>
               </div>
               <div className="p-2 lg:p-3 bg-blue-100 rounded-full">
-                <RefreshCw size={20} className="text-blue-600 lg:w-6 lg:h-6" />
+                <Settings size={20} className="text-blue-600 lg:w-6 lg:h-6" />
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Current Batch Status */}
+      {currentBatch && (
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Joriy Qayta Ishlash Partiyasi
+              </h3>
+              <p className="text-sm text-gray-600">
+                Partiya: {currentBatch.batch_number} |
+                Boshlangan: {formatDate(currentBatch.started_at)} |
+                Holat: <span className={`font-medium ${currentBatch.status === "IN_PROCESS" ? "text-blue-600" : "text-green-600"}`}>
+                  {currentBatch.status === "IN_PROCESS" ? "Jarayonda" : "Yakunlangan"}
+                </span>
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {currentBatch.status === "IN_PROCESS" && (
+                <>
+                  <Button
+                    onClick={() => handleStartDrobilka("HARD")}
+                    disabled={totalHardQuantity <= 0}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Hard Drobilka
+                  </Button>
+                  <Button
+                    onClick={() => handleStartDrobilka("SOFT")}
+                    disabled={totalSoftQuantity <= 0}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Soft Drobilka
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -303,27 +335,39 @@ export default function OperatorReprocessingPage() {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8 px-6">
             <button
-              onClick={() => setActiveTab("pending")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "pending"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              onClick={() => setActiveTab("overview")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "overview"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
             >
               <div className="flex items-center gap-2">
                 <Package size={16} />
-                Qayta Ishlash Uchun Tayyor ({availableScraps.length})
+                Umumiy Ko'rinish
               </div>
             </button>
             <button
-              onClick={() => setActiveTab("reprocessed")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "reprocessed"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              onClick={() => setActiveTab("scraps")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "scraps"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
             >
               <div className="flex items-center gap-2">
-                <RefreshCw size={16} />
-                Qayta Ishlangan ({recyclings.length})
+                <AlertCircle size={16} />
+                Braklar ({availableScraps.length})
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab("processes")}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "processes"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+            >
+              <div className="flex items-center gap-2">
+                <Settings size={16} />
+                Drobilka Jarayonlari ({activeDrobilkaProcesses.length})
               </div>
             </button>
           </nav>
@@ -331,7 +375,7 @@ export default function OperatorReprocessingPage() {
       </div>
 
       {/* Filters and Search */}
-      {!loading && !error && (
+      {!loading && !error && activeTab !== "overview" && (
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
           <div className="flex gap-4 items-center">
             <div className="flex-1">
@@ -342,9 +386,9 @@ export default function OperatorReprocessingPage() {
                 />
                 <Input
                   placeholder={
-                    activeTab === "pending"
-                      ? "Qayta ishlash uchun tayyor braklar bo'yicha qidiruv..."
-                      : "Qayta ishlangan braklar bo'yicha qidiruv..."
+                    activeTab === "scraps"
+                      ? "Braklar bo'yicha qidiruv..."
+                      : "Drobilka jarayonlari bo'yicha qidiruv..."
                   }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -373,7 +417,7 @@ export default function OperatorReprocessingPage() {
                   ))}
                 </SelectContent>
               </Select>
-              {activeTab === "pending" && (
+              {activeTab === "scraps" && (
                 <Select value={filterStatus} onValueChange={setFilterStatus}>
                   <SelectTrigger className="min-w-[140px]">
                     <SelectValue placeholder="Holat" />
@@ -384,35 +428,16 @@ export default function OperatorReprocessingPage() {
                       <SelectItem key={status} value={status}>
                         {status === "PENDING"
                           ? "Kutilmoqda"
-                          : status === "CONFIRMED"
-                            ? "Tasdiqlangan"
-                            : status}
+                          : status === "IN_PROCESS"
+                            ? "Jarayonda"
+                            : status === "COMPLETED"
+                              ? "Yakunlangan"
+                              : status}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               )}
-              <Select value={filterReason} onValueChange={setFilterReason}>
-                <SelectTrigger className="min-w-[140px]">
-                  <SelectValue placeholder="Sabab" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Barcha sabablar</SelectItem>
-                  {uniqueReasons.map((reason) => (
-                    <SelectItem key={reason} value={reason}>
-                      {reason === "MATERIAL_DEFECT"
-                        ? "Material nuqsoni"
-                        : reason === "MACHINE_ERROR"
-                          ? "Mashina xatosi"
-                          : reason === "OPERATOR_ERROR"
-                            ? "Operator xatosi"
-                            : reason === "QUALITY_ISSUE"
-                              ? "Sifat muammosi"
-                              : reason}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </div>
@@ -421,8 +446,55 @@ export default function OperatorReprocessingPage() {
       {/* Content based on active tab */}
       {!loading && !error && (
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-          {activeTab === "pending" ? (
-            // Pending scraps table
+          {activeTab === "overview" ? (
+            // Overview Tab
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Qayta Ishlash Jarayoni
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-red-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-red-900 mb-2">1. Qattiq Braklar</h4>
+                  <p className="text-sm text-red-700 mb-2">
+                    {totalHardQuantity.toFixed(1)} KG mavjud
+                  </p>
+                  <p className="text-xs text-red-600">
+                    Hard drobilkada maydalanadi
+                  </p>
+                </div>
+                <div className="bg-orange-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-orange-900 mb-2">2. Yumshoq Braklar</h4>
+                  <p className="text-sm text-orange-700 mb-2">
+                    {totalSoftQuantity.toFixed(1)} KG mavjud
+                  </p>
+                  <p className="text-xs text-orange-600">
+                    Maydalangan qattiq braklar qo'shiladi
+                  </p>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">3. Soft Drobilka</h4>
+                  <p className="text-sm text-blue-700 mb-2">
+                    Barcha yumshoq braklar
+                  </p>
+                  <p className="text-xs text-blue-600">
+                    VT granulasi olinadi
+                  </p>
+                </div>
+              </div>
+
+              {!currentBatch && (
+                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-yellow-600" />
+                    <p className="text-sm text-yellow-800">
+                      Qayta ishlash jarayonini boshlash uchun "Partiyani Boshlash" tugmasini bosing.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : activeTab === "scraps" ? (
+            // Scraps table
             <div className="overflow-x-auto w-full">
               <table className="w-full overflow-x-auto">
                 <thead className="bg-gray-50 border-b">
@@ -440,10 +512,10 @@ export default function OperatorReprocessingPage() {
                       Holat
                     </th>
                     <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Xabar beruvchi
+                      Qayd etgan
                     </th>
-                    <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Amallar
+                    <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vaqt
                     </th>
                   </tr>
                 </thead>
@@ -460,30 +532,26 @@ export default function OperatorReprocessingPage() {
                               scrap.scrap_type
                             )}`}
                           >
-                            {scrap.scrap_type_display}
+                            {scrap.scrap_type === "HARD" ? "Qattiq" : "Yumshoq"}
                           </span>
                         </div>
                         <div className="lg:hidden mt-1">
                           <span className="text-sm font-medium">
-                            {scrap.quantity} {scrap.unit_of_measure}
+                            {scrap.quantity || "0"} {scrap.unit_of_measure || "KG"}
                           </span>
                         </div>
                       </td>
                       <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {scrap.quantity} {scrap.unit_of_measure}
+                            {scrap.quantity || "0"} {scrap.unit_of_measure || "KG"}
                           </span>
                         </div>
                       </td>
                       <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
                         <div className="flex flex-col gap-1">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
-                              scrap.reason
-                            )}`}
-                          >
-                            {scrap.reason_display}
+                          <span className="text-xs text-gray-700">
+                            {scrap.reason || "Noma'lum"}
                           </span>
                           {scrap.notes && (
                             <div
@@ -502,39 +570,26 @@ export default function OperatorReprocessingPage() {
                               scrap.status
                             )}`}
                           >
-                            {scrap.status_display}
+                            {scrap.status === "PENDING" ? "Kutilmoqda" :
+                              scrap.status === "IN_PROCESS" ? "Jarayonda" : "Yakunlangan"}
                           </span>
                           <span className="text-xs text-gray-500 md:hidden mt-1">
-                            {scrap.reported_by_name}
+                            {scrap.recorded_by?.full_name || "Noma'lum"}
                           </span>
                         </div>
                       </td>
                       <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {scrap.reported_by_name}
+                            {scrap.recorded_by?.full_name || "Noma'lum"}
                           </span>
                         </div>
                       </td>
-                      <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleScrapRowClick(scrap)}
-                            className="text-xs"
-                          >
-                            <Eye size={12} className="mr-1" />
-                            Ko'rish
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleReprocessScrap(scrap)}
-                            className="text-xs"
-                          >
-                            <RefreshCw size={12} className="mr-1" />
-                            Qayta Ishlash
-                          </Button>
+                      <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {formatDate(scrap.created_at || new Date().toISOString())}
+                          </span>
                         </div>
                       </td>
                     </tr>
@@ -543,98 +598,165 @@ export default function OperatorReprocessingPage() {
               </table>
             </div>
           ) : (
-            // Reprocessed recyclings table
-            <div className="overflow-x-auto w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)]">
-              <table className="w-full max-w-[calc(100vw-290px)] lg:max-w-[calc(100vw-350px)] overflow-x-auto">
+            // Drobilka processes table
+            <div className="overflow-x-auto w-full">
+              <table className="w-full overflow-x-auto">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Brak turi
+                      Drobilka Turi
                     </th>
                     <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Qayta Ishlandi
+                      Stanok
                     </th>
                     <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sabab
+                      Miqdorlar
                     </th>
                     <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Qayta Ishlagan
+                      Mas'ul Operator
                     </th>
                     <th className="hidden md:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Qayta Ishlandi vaqt
+                      Holat
+                    </th>
+                    <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Amallar
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredRecyclings.map((recycling) => (
+                  {activeDrobilkaProcesses.map((process) => (
                     <tr
-                      key={recycling.id}
-                      className="hover:bg-gray-50 cursor-pointer transition-colors"
-                      onClick={() => handleRecyclingRowClick(recycling)}
+                      key={process.id}
+                      className="hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
                         <div className="max-w-[120px] lg:max-w-[200px]">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
-                              recycling.scrap_details.scrap_type
+                              process.drobilka_type
                             )}`}
                           >
-                            {recycling.scrap_details.scrap_type_display}
+                            {process.drobilka_type_display}
                           </span>
                         </div>
                         <div className="lg:hidden mt-1">
                           <span className="text-sm font-medium">
-                            {recycling.recycled_quantity}{" "}
-                            {recycling.scrap_details.unit_of_measure}
+                            {process.input_quantity} KG
                           </span>
                         </div>
                       </td>
                       <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {recycling.recycled_quantity}{" "}
-                            {recycling.scrap_details.unit_of_measure}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            Asl: {recycling.scrap_details.quantity}{" "}
-                            {recycling.scrap_details.unit_of_measure}
+                            {process.work_center_name}
                           </span>
                         </div>
                       </td>
                       <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
                         <div className="flex flex-col gap-1">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full w-fit ${getReasonColor(
-                              recycling.scrap_details.reason
-                            )}`}
-                          >
-                            {recycling.scrap_details.reason_display}
+                          <span className="text-xs text-gray-700">
+                            Kirish: {process.input_quantity} KG
                           </span>
-                          {recycling.notes && (
-                            <div
-                              className="truncate text-xs text-gray-500"
-                              title={recycling.notes}
-                            >
-                              {recycling.notes}
-                            </div>
-                          )}
+                          <span className="text-xs text-gray-700">
+                            Chiqish: {process.output_quantity || "Jarayonda"} KG
+                          </span>
                         </div>
                       </td>
                       <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex flex-col">
                           <span className="font-medium">
-                            {recycling.recycled_by_name || "Noma'lum"}
+                            {process.lead_operator_name}
                           </span>
                           <span className="text-xs text-gray-500 md:hidden mt-1">
-                            {formatDate(recycling.recycled_at)}
+                            {process.operators_details.length} operator
                           </span>
                         </div>
                       </td>
                       <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex flex-col">
-                          <span className="font-medium">
-                            {formatDate(recycling.recycled_at)}
+                          <span className="text-xs text-blue-600 font-medium">
+                            Jarayonda
                           </span>
+                          <span className="text-xs text-gray-500">
+                            {formatDate(process.started_at)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleCompleteDrobilka(process)}
+                            className="text-xs"
+                          >
+                            <CheckCircle size={12} className="mr-1" />
+                            Yakunlash
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {completedDrobilkaProcesses.map((process) => (
+                    <tr
+                      key={process.id}
+                      className="hover:bg-gray-50 transition-colors bg-green-50"
+                    >
+                      <td className="px-3 lg:px-6 py-4 text-sm text-gray-900">
+                        <div className="max-w-[120px] lg:max-w-[200px]">
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getScrapTypeColor(
+                              process.drobilka_type
+                            )}`}
+                          >
+                            {process.drobilka_type_display}
+                          </span>
+                        </div>
+                        <div className="lg:hidden mt-1">
+                          <span className="text-sm font-medium">
+                            {process.output_quantity} KG
+                          </span>
+                        </div>
+                      </td>
+                      <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {process.work_center_name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-900 max-w-xs">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs text-gray-700">
+                            Kirish: {process.input_quantity} KG
+                          </span>
+                          <span className="text-xs text-green-700 font-medium">
+                            Chiqish: {process.output_quantity} KG
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {process.lead_operator_name}
+                          </span>
+                          <span className="text-xs text-gray-500 md:hidden mt-1">
+                            {process.operators_details.length} operator
+                          </span>
+                        </div>
+                      </td>
+                      <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-green-600 font-medium">
+                            Yakunlangan
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {formatDate(process.completed_at!)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex gap-2">
+                          <CheckCircle size={16} className="text-green-600" />
                         </div>
                       </td>
                     </tr>
@@ -659,9 +781,16 @@ export default function OperatorReprocessingPage() {
         <div className="text-center py-12">
           <p className="text-red-500 text-lg">Xatolik: {error}</p>
           <button
-            onClick={() => {
-              fetchScraps();
-              fetchRecyclings();
+            onClick={async () => {
+              try {
+                await Promise.all([
+                  fetchScraps(),
+                  fetchDrobilkaProcesses(),
+                  getCurrentTotals()
+                ]);
+              } catch (error) {
+                console.error("Error retrying data fetch:", error);
+              }
             }}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
@@ -672,17 +801,17 @@ export default function OperatorReprocessingPage() {
 
       {!loading && !error && (
         <>
-          {activeTab === "pending" && filteredScraps.length === 0 && (
+          {activeTab === "scraps" && filteredScraps.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
                 Qayta ishlash uchun tayyor braklar topilmadi.
               </p>
             </div>
           )}
-          {activeTab === "reprocessed" && filteredRecyclings.length === 0 && (
+          {activeTab === "processes" && activeDrobilkaProcesses.length === 0 && completedDrobilkaProcesses.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
-                Qayta ishlangan braklar topilmadi.
+                Drobilka jarayonlari topilmadi.
               </p>
             </div>
           )}
@@ -690,15 +819,33 @@ export default function OperatorReprocessingPage() {
       )}
 
       {/* Modals */}
-      <ScrapDetailsModal
-        open={scrapModalOpen}
-        onClose={handleCloseScrapModal}
-        scrap={selectedScrap}
+      <StartRecyclingBatchModal
+        open={startBatchModalOpen}
+        onClose={() => setStartBatchModalOpen(false)}
+        onSuccess={handleModalSuccess}
       />
-      <RecyclingDetailsModal
-        open={recyclingModalOpen}
-        onClose={handleCloseRecyclingModal}
-        recycling={selectedRecycling}
+
+      <StartDrobilkaModal
+        open={startDrobilkaModalOpen}
+        onClose={() => setStartDrobilkaModalOpen(false)}
+        onSuccess={handleModalSuccess}
+        drobilkaType={selectedDrobilkaType}
+        availableQuantity={selectedDrobilkaType === "HARD" ? totalHardQuantity : totalSoftQuantity}
+        recyclingBatchId={currentBatch?.id}
+      />
+
+      <CompleteDrobilkaModal
+        open={completeDrobilkaModalOpen}
+        onClose={() => setCompleteDrobilkaModalOpen(false)}
+        onSuccess={handleModalSuccess}
+        drobilkaProcess={selectedDrobilkaProcess}
+      />
+
+      <CompleteRecyclingBatchModal
+        open={completeBatchModalOpen}
+        onClose={() => setCompleteBatchModalOpen(false)}
+        onSuccess={handleModalSuccess}
+        batch={currentBatch}
       />
     </div>
   );

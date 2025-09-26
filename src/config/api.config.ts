@@ -80,11 +80,26 @@ export const API_CONFIG = {
     WORKER_MATERIALS: "/worker/used-materials/materials/",
     WORKER_PRODUCTS: "/worker/used-materials/products/",
 
-    // Bunker API endpoints
-    BUNKERS: "/extruder/bunkers/",
-    BUNKER_BY_ID: (id: string) => `/extruder/bunkers/${id}/`,
-    BUNKER_STATUS: (id: string) => `/extruder/bunkers/${id}`,
-    BUNKER_FILL: (id: string) => `/extruder/bunkers/${id}/fill_bunker/`,
+    // Bunker API endpoints - New System
+    BUNKERS: "/bunker/bunkers/",
+    BUNKER_BY_ID: (id: string) => `/bunker/bunkers/${id}/`,
+    BUNKER_STATUS: (id: string) => `/bunker/fill-sessions/bunker_status/?bunker_id=${id}`,
+
+    // Container endpoints
+    CONTAINERS: "/bunker/containers/",
+    CONTAINER_BY_ID: (id: string) => `/bunker/containers/${id}/`,
+
+    // Fill session endpoints
+    FILL_SESSIONS: "/bunker/fill-sessions/",
+    FILL_SESSION_BY_ID: (id: string) => `/bunker/fill-sessions/${id}/`,
+    FILL_BUNKER: "/bunker/fill-sessions/fill_bunker/",
+    PROCESS_REMAINING_MATERIALS: (id: string) => `/bunker/fill-sessions/${id}/process_remaining_materials/`,
+
+    // Legacy Bunker API endpoints (for backward compatibility)
+    LEGACY_BUNKERS: "/extruder/bunkers/",
+    LEGACY_BUNKER_BY_ID: (id: string) => `/extruder/bunkers/${id}/`,
+    LEGACY_BUNKER_STATUS: (id: string) => `/extruder/bunkers/${id}`,
+    LEGACY_BUNKER_FILL: (id: string) => `/extruder/bunkers/${id}/fill_bunker/`,
     BUNKER_SHIFT_STATUS: (id: string) => `/extruder/bunkers/${id}/shift_status/`,
     BUNKER_START_SHIFT: (id: string) => `/extruder/bunkers/${id}/start_shift/`,
     BUNKER_END_SHIFT: (id: string) => `/extruder/bunkers/${id}/end_shift/`,

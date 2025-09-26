@@ -27,11 +27,11 @@ export default function DefectsPage() {
 
   const filteredScraps = scraps.filter((scrap) => {
     const matchesSearch =
-      scrap.scrap_type_display
+      scrap.scrap_type
         .toLowerCase()
         .includes(searchTerm.toLowerCase()) ||
-      scrap.reason_display.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      scrap.reported_by_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scrap.reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      scrap.recorded_by.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       scrap.notes.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesScrapTypeFilter =
@@ -167,7 +167,7 @@ export default function DefectsPage() {
                   Tasdiqlangan
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-green-600">
-                  {scraps.filter((s) => s.status === "CONFIRMED").length}
+                  {scraps.filter((s) => s.status === "COMPLETED").length}
                 </p>
               </div>
               <div className="p-2 lg:p-3 bg-green-100 rounded-full">
@@ -182,7 +182,7 @@ export default function DefectsPage() {
                   Qayta ishlangan
                 </p>
                 <p className="text-xl lg:text-2xl font-bold text-blue-600">
-                  {scraps.filter((s) => s.status === "RECYCLED").length}
+                  {scraps.filter((s) => s.status === "IN_PROCESS").length}
                 </p>
               </div>
               <div className="p-2 lg:p-3 bg-blue-100 rounded-full">
@@ -223,8 +223,7 @@ export default function DefectsPage() {
                   <SelectItem value="all">Barcha turlar</SelectItem>
                   {uniqueScrapTypes.map((type) => (
                     <SelectItem key={type} value={type}>
-                      {scraps.find((s) => s.scrap_type === type)
-                        ?.scrap_type_display || type}
+                      {type}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -237,8 +236,7 @@ export default function DefectsPage() {
                   <SelectItem value="all">Barcha holatlar</SelectItem>
                   {uniqueStatuses.map((status) => (
                     <SelectItem key={status} value={status}>
-                      {scraps.find((s) => s.status === status)
-                        ?.status_display || status}
+                      {status}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -251,8 +249,7 @@ export default function DefectsPage() {
                   <SelectItem value="all">Barcha sabablar</SelectItem>
                   {uniqueReasons.map((reason) => (
                     <SelectItem key={reason} value={reason}>
-                      {scraps.find((s) => s.reason === reason)
-                        ?.reason_display || reason}
+                      {reason}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -303,7 +300,7 @@ export default function DefectsPage() {
                             scrap.scrap_type
                           )}`}
                         >
-                          {scrap.scrap_type_display}
+                          {scrap.scrap_type}
                         </span>
                       </div>
                       <div className="lg:hidden mt-1">
@@ -326,7 +323,7 @@ export default function DefectsPage() {
                             scrap.reason
                           )}`}
                         >
-                          {scrap.reason_display}
+                          {scrap.reason}
                         </span>
                         {scrap.notes && (
                           <div
@@ -345,24 +342,24 @@ export default function DefectsPage() {
                             scrap.status
                           )}`}
                         >
-                          {scrap.status_display}
+                          {scrap.status}
                         </span>
                         <span className="text-xs text-gray-500 md:hidden mt-1">
-                          {scrap.reported_by_name}
+                          {scrap.recorded_by.full_name}
                         </span>
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex flex-col">
                         <span className="font-medium">
-                          {scrap.reported_by_name}
+                          {scrap.recorded_by.full_name}
                         </span>
                       </div>
                     </td>
                     <td className="hidden xl:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex flex-col">
                         <span className="font-medium">
-                          {formatDate(scrap.reported_at)}
+                          {formatDate(scrap.created_at)}
                         </span>
                       </div>
                     </td>
@@ -385,7 +382,7 @@ export default function DefectsPage() {
         <div className="text-center py-12">
           <p className="text-red-500 text-lg">Xatolik: {error}</p>
           <button
-            onClick={fetchScraps}
+            onClick={() => fetchScraps()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Qayta urinish
