@@ -108,8 +108,11 @@ const getNavItems = (t: any) => [
     isCollapsible: true,
     menuKey: "scrap",
     children: [
-      { path: "/scrap/reprocessing", label: t("navigation.reprocessing") },
-      { path: "/scrap/defects", label: t("navigation.defects") },
+      { path: "/scrap", label: "Brak Tizimi" },
+      { path: "/scrap/scrap-list", label: "Brak Ro'yxati" },
+      { path: "/scrap/scrap-dashboard", label: "Brak Dashboard" },
+      { path: "/scrap/recycling-workflow", label: "Qayta Ishlash" },
+      { path: "/scrap/reprocessing", label: "Eski Qayta Ishlash" },
     ],
   },
 ];
@@ -216,10 +219,9 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                             to={child.path}
                             onClick={onClose} // Close sidebar on mobile when navigating
                             className={({ isActive }) =>
-                              `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${
-                                isActive
-                                  ? "bg-white text-primary shadow font-semibold"
-                                  : "hover:bg-white/10 hover:scale-[1.03]"
+                              `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium ${isActive
+                                ? "bg-white text-primary shadow font-semibold"
+                                : "hover:bg-white/10 hover:scale-[1.03]"
                               }`
                             }
                           >
@@ -238,10 +240,9 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                   to={item.path!}
                   onClick={onClose} // Close sidebar on mobile when navigating
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${
-                      isActive
-                        ? "bg-white text-primary shadow font-semibold"
-                        : "hover:bg-white/10 hover:scale-[1.03]"
+                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 text-base font-medium ${isActive
+                      ? "bg-white text-primary shadow font-semibold"
+                      : "hover:bg-white/10 hover:scale-[1.03]"
                     }`
                   }
                 >

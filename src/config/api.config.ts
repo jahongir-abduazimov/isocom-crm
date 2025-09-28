@@ -69,7 +69,7 @@ export const API_CONFIG = {
     WORKER_ORDERS_BY_WORKCENTER_TYPE: (workcenterType: string) => `/worker/used-materials/orders_by_workcenter_type/?workcenter_type=${workcenterType}`,
     WORKER_PRODUCTION_STEPS_BY_WORKCENTER_TYPE: (workcenterType: string) => `/worker/used-materials/production_steps_by_workcenter_type/?workcenter_type=${workcenterType}`,
     WORKER_GET_OR_CREATE_STEP_EXECUTION: (orderId: string, workcenterType: string) => `/worker/used-materials/get_or_create_step_execution/?order_id=${orderId}&workcenter_type=${workcenterType}`,
-    WORKER_BULK_CREATE_BY_WORKCENTER_TYPE: "/worker/used-materials/bulk_create_by_workcenter_type/",
+    WORKER_BULK_CREATE_BY_WORKCENTER_TYPE: "/worker/used-materials/bulk_create_by_workcenter/",
     WORKER_WORKCENTER_STOCK: (workcenterId: string) => `/worker/used-materials/workcenter_stock/?workcenter_id=${workcenterId}`,
 
     // Legacy Worker API endpoints (for backward compatibility)

@@ -27,8 +27,8 @@ interface StartDrobilkaModalProps {
   onClose: () => void;
   onSuccess: () => void;
   drobilkaType: "HARD" | "SOFT";
-  availableQuantity: number;
-  recyclingBatchId?: string;
+  recyclingBatch?: string;
+  availableQuantity?: number;
 }
 
 export default function StartDrobilkaModal({
@@ -36,8 +36,8 @@ export default function StartDrobilkaModal({
   onClose,
   onSuccess,
   drobilkaType,
-  availableQuantity,
-  recyclingBatchId,
+  recyclingBatch,
+  availableQuantity = 0,
 }: StartDrobilkaModalProps) {
   const { startDrobilka, loading, error } = useRecyclingStore();
   const { workcenters, fetchWorkcenters } = useWorkcentersStore();
@@ -46,23 +46,28 @@ export default function StartDrobilkaModal({
   const [workCenter, setWorkCenter] = useState("");
   const [inputQuantity, setInputQuantity] = useState("");
   const [selectedOperators, setSelectedOperators] = useState<string[]>([]);
+  const [leadOperator, setLeadOperator] = useState("");
   const [notes, setNotes] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Filter workcenters for BRAK_MAYDALAGICH type
   const drobilkaWorkcenters = workcenters.filter(
     (wc) => wc.type === "BRAK_MAYDALAGICH" && wc.is_active
   );
 
-  // Filter operators (assuming workers/operators are in users)
+  // Filter operators (workers va operatorlar)
   const availableOperators = users.filter(
-    (user) => user.role === "WORKER" || user.is_operator
+    (user) => (user.role === "WORKER" || user.is_operator) && user.is_active
   );
 
   useEffect(() => {
     if (open) {
       fetchWorkcenters();
       fetchUsers({ is_active: true });
-      setInputQuantity(availableQuantity.toString());
+      if (availableQuantity > 0) {
+        setInputQuantity(availableQuantity.toString());
+      }
+      setFormErrors({});
     }
   }, [open, availableQuantity, fetchWorkcenters, fetchUsers]);
 
@@ -77,18 +82,55 @@ export default function StartDrobilkaModal({
     });
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+
+    if (!workCenter) {
+      errors.workCenter = "Drobilka stanogi tanlanishi shart";
+    }
+
+    if (!inputQuantity || parseFloat(inputQuantity) <= 0) {
+      errors.inputQuantity = "Kirish miqdori 0 dan katta bo'lishi kerak";
+    }
+
+    if (availableQuantity > 0 && parseFloat(inputQuantity) > availableQuantity) {
+      errors.inputQuantity = `Miqdor ${availableQuantity} dan katta bo'lmasligi kerak`;
+    }
+
+    if (selectedOperators.length < 2) {
+      errors.operators = "Kamida 2 ta operator tanlanishi shart";
+    }
+
+    if (selectedOperators.length > 3) {
+      errors.operators = "Maksimal 3 ta operator tanlash mumkin";
+    }
+
+    if (!leadOperator) {
+      errors.leadOperator = "Bosh operator tanlanishi shart";
+    }
+
+    if (!recyclingBatch) {
+      errors.recyclingBatch = "Qayta ishlash partiyasi tanlanishi shart";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleStartDrobilka = async () => {
-    if (!workCenter || !inputQuantity || selectedOperators.length < 2) {
+    if (!validateForm()) {
       return;
     }
 
     try {
       const success = await startDrobilka({
-        recycling_batch: recyclingBatchId || "",
+        recycling_batch: recyclingBatch || "",
         drobilka_type: drobilkaType,
         work_center: workCenter,
-        input_quantity: inputQuantity,
+        input_quantity: Math.abs(parseFloat(inputQuantity)), // Ensure positive quantity
         operators: selectedOperators,
+        lead_operator: leadOperator,
+        notes: notes.trim() || undefined,
       });
 
       if (success) {
@@ -104,11 +146,13 @@ export default function StartDrobilkaModal({
     setWorkCenter("");
     setInputQuantity("");
     setSelectedOperators([]);
+    setLeadOperator("");
     setNotes("");
+    setFormErrors({});
     onClose();
   };
 
-  const isValidQuantity = parseFloat(inputQuantity) <= availableQuantity && parseFloat(inputQuantity) > 0;
+  const isValidQuantity = !inputQuantity || (parseFloat(inputQuantity) > 0 && (availableQuantity === 0 || parseFloat(inputQuantity) <= availableQuantity));
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -121,26 +165,28 @@ export default function StartDrobilkaModal({
 
         <div className="space-y-6">
           {/* Available Quantity Info */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <Package className="w-6 h-6 text-gray-600" />
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Mavjud {drobilkaType === "HARD" ? "qattiq" : "yumshoq"} brak miqdori
-                </p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {availableQuantity.toFixed(2)} KG
-                </p>
+          {availableQuantity > 0 && (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <Package className="w-6 h-6 text-gray-600" />
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Mavjud {drobilkaType === "HARD" ? "qattiq" : "yumshoq"} brak miqdori
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {availableQuantity.toFixed(2)} KG
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Work Center Selection */}
             <div>
               <Label htmlFor="workCenter">Drobilka Stanok</Label>
               <Select value={workCenter} onValueChange={setWorkCenter}>
-                <SelectTrigger>
+                <SelectTrigger className={formErrors.workCenter ? "border-red-500" : ""}>
                   <SelectValue placeholder="Stanok tanlang" />
                 </SelectTrigger>
                 <SelectContent>
@@ -154,6 +200,9 @@ export default function StartDrobilkaModal({
                   ))}
                 </SelectContent>
               </Select>
+              {formErrors.workCenter && (
+                <p className="text-sm text-red-600 mt-1">{formErrors.workCenter}</p>
+              )}
               {drobilkaWorkcenters.length === 0 && (
                 <p className="text-sm text-red-600 mt-1">
                   BRAK_MAYDALAGICH turidagi stanoklar topilmadi
@@ -169,14 +218,18 @@ export default function StartDrobilkaModal({
                 type="number"
                 step="0.01"
                 min="0"
-                max={availableQuantity}
+                max={availableQuantity || undefined}
                 value={inputQuantity}
                 onChange={(e) => setInputQuantity(e.target.value)}
                 placeholder="0.00"
+                className={formErrors.inputQuantity ? "border-red-500" : ""}
               />
-              {!isValidQuantity && inputQuantity && (
+              {formErrors.inputQuantity && (
+                <p className="text-sm text-red-600 mt-1">{formErrors.inputQuantity}</p>
+              )}
+              {!formErrors.inputQuantity && !isValidQuantity && inputQuantity && (
                 <p className="text-sm text-red-600 mt-1">
-                  Miqdor 0 dan katta va {availableQuantity} dan kichik bo'lishi kerak
+                  Miqdor 0 dan katta bo'lishi kerak{availableQuantity > 0 ? ` va ${availableQuantity} dan kichik` : ""}
                 </p>
               )}
             </div>
@@ -189,7 +242,8 @@ export default function StartDrobilkaModal({
               {availableOperators.map((operator) => (
                 <div
                   key={operator.id}
-                  className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50"
+                  className={`flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 ${formErrors.operators ? "border-red-200" : ""
+                    }`}
                 >
                   <Checkbox
                     id={operator.id}
@@ -207,7 +261,10 @@ export default function StartDrobilkaModal({
                 </div>
               ))}
             </div>
-            {selectedOperators.length < 2 && (
+            {formErrors.operators && (
+              <p className="text-sm text-red-600 mt-1">{formErrors.operators}</p>
+            )}
+            {!formErrors.operators && selectedOperators.length < 2 && selectedOperators.length > 0 && (
               <p className="text-sm text-red-600 mt-1">
                 Kamida 2 ta operator tanlashingiz kerak
               </p>
@@ -215,6 +272,39 @@ export default function StartDrobilkaModal({
             {selectedOperators.length > 0 && (
               <p className="text-sm text-gray-600 mt-2">
                 Tanlangan operatorlar: {selectedOperators.length}/3
+              </p>
+            )}
+            {availableOperators.length === 0 && (
+              <p className="text-sm text-red-600 mt-1">
+                Mavjud operatorlar topilmadi
+              </p>
+            )}
+          </div>
+
+          {/* Lead Operator Selection */}
+          <div>
+            <Label htmlFor="leadOperator">Bosh Operator</Label>
+            <Select value={leadOperator} onValueChange={setLeadOperator}>
+              <SelectTrigger className={formErrors.leadOperator ? "border-red-500" : ""}>
+                <SelectValue placeholder="Bosh operator tanlang" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableOperators.map((operator) => (
+                  <SelectItem key={operator.id} value={operator.id}>
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      {operator.full_name} (@{operator.username})
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {formErrors.leadOperator && (
+              <p className="text-sm text-red-600 mt-1">{formErrors.leadOperator}</p>
+            )}
+            {availableOperators.length === 0 && (
+              <p className="text-sm text-red-600 mt-1">
+                Mavjud operatorlar topilmadi
               </p>
             )}
           </div>
@@ -248,8 +338,11 @@ export default function StartDrobilkaModal({
               disabled={
                 loading ||
                 !workCenter ||
+                !inputQuantity ||
                 !isValidQuantity ||
-                selectedOperators.length < 2
+                selectedOperators.length < 2 ||
+                !leadOperator ||
+                !recyclingBatch
               }
               className="min-w-[120px]"
             >

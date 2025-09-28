@@ -298,7 +298,7 @@ const BunkerStatus: React.FC = () => {
           <CardContent>
             <div className="space-y-4">
               {currentFillSession.materials &&
-              currentFillSession.materials.length > 0 ? (
+                currentFillSession.materials.length > 0 ? (
                 currentFillSession.materials.map((material, index) => (
                   <div
                     key={index}
@@ -336,7 +336,7 @@ const BunkerStatus: React.FC = () => {
             {/* Material Percentages */}
             {currentFillSession.material_percentages &&
               Object.keys(currentFillSession.material_percentages).length >
-                0 && (
+              0 && (
                 <div className="mt-6 pt-4 border-t">
                   <h4 className="font-semibold mb-3">Material Ulushlari</h4>
                   <div className="space-y-2">
@@ -403,7 +403,7 @@ const BunkerStatus: React.FC = () => {
             {currentFillSession.daily_material_summary &&
               currentFillSession.daily_material_summary.operators &&
               currentFillSession.daily_material_summary.operators.length >
-                0 && (
+              0 && (
                 <div className="mt-6 pt-4 border-t">
                   <h4 className="font-semibold mb-3">Operatorlar</h4>
                   <div className="space-y-2">

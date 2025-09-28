@@ -1,5 +1,82 @@
 import request from "@/components/config";
 
+// Qayta ishlash partiyasi (Recycling Batch) - dokumentatsiyaga muvofiq
+export interface RecyclingBatch {
+    id: string;
+    batch_number: string;
+    started_at: string;
+    started_by: {
+        id: string;
+        username: string;
+        full_name: string;
+    };
+    status: "IN_PROGRESS" | "COMPLETED";
+    status_display: string;
+    completed_at?: string;
+    total_hard_scrap: number;
+    total_soft_scrap: number;
+    final_vt_quantity?: number;
+    notes?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+// Joriy to'plangan braklar miqdorlari
+export interface CurrentTotals {
+    hard_scrap: number;
+    soft_scrap: number;
+    unit_of_measure: string;
+}
+
+// Drobilka jarayoni
+export interface DrobilkaProcess {
+    id: string;
+    recycling_batch: string;
+    recycling_batch_number: string;
+    drobilka_type: "HARD" | "SOFT";
+    drobilka_type_display: string;
+    work_center: string;
+    work_center_name: string;
+    input_quantity: number;
+    output_quantity?: number;
+    operators: string[];
+    operators_details: Array<{
+        id: string;
+        name: string;
+        username: string;
+    }>;
+    lead_operator: string;
+    lead_operator_name: string;
+    started_at: string;
+    completed_at?: string;
+    notes?: string;
+    efficiency_percentage?: number;
+}
+
+// Drobilka boshlash so'rovi
+export interface StartDrobilkaRequest {
+    recycling_batch: string;
+    drobilka_type: "HARD" | "SOFT";
+    work_center: string;
+    input_quantity: number;
+    operators: string[];
+    lead_operator: string;
+    notes?: string;
+}
+
+// Drobilka yakunlash so'rovi
+export interface CompleteDrobilkaRequest {
+    output_quantity: number;
+    notes?: string;
+}
+
+// Qayta ishlash yakunlash so'rovi
+export interface CompleteRecyclingRequest {
+    final_vt_quantity: number;
+    notes?: string;
+}
+
+// Legacy interfaces (eski tizim uchun saqlanadi)
 export interface ScrapDetails {
     id: string;
     production_step: string;
@@ -45,66 +122,9 @@ export interface RecyclingResponse {
     results: Recycling[];
 }
 
-// New interfaces for batch management and drobilka operations
-export interface RecyclingBatch {
-    id: string;
-    batch_number: string;
-    started_at: string;
-    started_by: {
-        id: string;
-        username: string;
-        full_name: string;
-    };
-    status: "IN_PROCESS" | "COMPLETED";
-    completed_at?: string;
-    total_input?: string;
-    total_output?: string;
-    notes?: string;
-}
-
-export interface CurrentTotals {
-    hard_scrap_total: string;
-    soft_scrap_total: string;
-    unit_of_measure: string;
-}
-
-export interface DrobilkaProcess {
-    id: string;
-    recycling_batch: string;
-    drobilka_type: "HARD" | "SOFT";
-    drobilka_type_display: string;
-    work_center: string;
-    work_center_name: string;
-    input_quantity: string;
-    output_quantity: string | null;
-    operators: string[];
-    operators_details: Array<{
-        id: string;
-        name: string;
-        username: string;
-    }>;
-    lead_operator: string;
-    lead_operator_name: string;
-    started_at: string;
-    completed_at: string | null;
-    notes?: string;
-}
-
-export interface StartDrobilkaRequest {
-    recycling_batch: string;
-    drobilka_type: "HARD" | "SOFT";
-    work_center: string;
-    input_quantity: string;
-    operators: string[];
-}
-
-export interface CompleteDrobilkaRequest {
-    output_quantity: string;
-    completed_at: string;
-    notes?: string;
-}
 
 export class RecyclingService {
+    // Legacy methods (eski tizim uchun saqlanadi)
     static async getRecyclings(): Promise<RecyclingResponse> {
         const response = await request.get<RecyclingResponse>("/recycling/");
         return response.data;
@@ -115,7 +135,7 @@ export class RecyclingService {
         return response.data;
     }
 
-    // New methods for batch management
+    // Yangi qayta ishlash tizimi - dokumentatsiyaga muvofiq
     static async startRecyclingBatch(): Promise<RecyclingBatch> {
         const response = await request.post<RecyclingBatch>("/recycling/start_recycling/");
         return response.data;
@@ -126,12 +146,22 @@ export class RecyclingService {
         return response.data;
     }
 
-    static async completeRecyclingBatch(batchId: string): Promise<RecyclingBatch> {
-        const response = await request.post<RecyclingBatch>(`/recycling/${batchId}/complete_recycling/`);
+    static async completeRecyclingBatch(batchId: string, data: CompleteRecyclingRequest): Promise<RecyclingBatch> {
+        const response = await request.post<RecyclingBatch>(`/recycling/${batchId}/complete_recycling/`, data);
         return response.data;
     }
 
-    // Drobilka operations
+    static async getRecyclingBatches(): Promise<RecyclingBatch[]> {
+        const response = await request.get<RecyclingBatch[]>("/recycling/");
+        return response.data;
+    }
+
+    static async getRecyclingBatchById(id: string): Promise<RecyclingBatch> {
+        const response = await request.get<RecyclingBatch>(`/recycling/${id}/`);
+        return response.data;
+    }
+
+    // Drobilka operatsiyalari
     static async startDrobilka(data: StartDrobilkaRequest): Promise<DrobilkaProcess> {
         const response = await request.post<DrobilkaProcess>("/drobilka/", data);
         return response.data;
@@ -143,12 +173,36 @@ export class RecyclingService {
     }
 
     static async getDrobilkaProcesses(): Promise<DrobilkaProcess[]> {
-        const response = await request.get<DrobilkaProcess[]>("/drobilka/");
-        return response.data;
+        const response = await request.get("/drobilka/");
+        // Handle different response formats
+        if (Array.isArray(response.data)) {
+            return response.data;
+        } else if (response.data && Array.isArray(response.data.results)) {
+            return response.data.results;
+        } else {
+            return [];
+        }
     }
 
     static async getDrobilkaProcessById(id: string): Promise<DrobilkaProcess> {
         const response = await request.get<DrobilkaProcess>(`/drobilka/${id}/`);
+        return response.data;
+    }
+
+    // Drobilka jarayonini o'chirish
+    static async deleteDrobilkaProcess(id: string): Promise<void> {
+        await request.delete(`/drobilka/${id}/`);
+    }
+
+    // Qayta ishlash samaradorligini hisoblash
+    static async getRecyclingEfficiency(batchId: string): Promise<{
+        total_input: number;
+        total_output: number;
+        efficiency_percentage: number;
+        loss_percentage: number;
+        processing_time?: string;
+    }> {
+        const response = await request.get(`/recycling/${batchId}/efficiency/`);
         return response.data;
     }
 }

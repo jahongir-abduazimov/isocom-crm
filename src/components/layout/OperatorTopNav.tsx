@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Wrench, FileText, Users, Shield, QrCode } from "lucide-react";
+import { Wrench, FileText, Users, QrCode, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { useTranslation } from "react-i18next";
@@ -40,7 +40,7 @@ export default function OperatorTopNav() {
             <span className="sm:hidden">{t('operator.logsShort')}</span>
           </NavLink>
           <NavLink
-            to="/reprocessing"
+            to="/scrap"
             className={({ isActive }) =>
               `flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 rounded-lg transition-all duration-200 text-xs sm:text-sm font-medium ${isActive
                 ? "bg-primary text-white shadow font-semibold"
@@ -48,9 +48,9 @@ export default function OperatorTopNav() {
               }`
             }
           >
-            <Shield size={14} className="sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">{t('operator.scrap')}</span>
-            <span className="sm:hidden">{t('operator.scrap')}</span>
+            <RefreshCw size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Brak Tizimi</span>
+            <span className="sm:hidden">Brak</span>
           </NavLink>
           <NavLink
             to="/worker/qr-codes"

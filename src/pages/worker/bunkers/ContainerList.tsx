@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   Loader2,
   AlertCircle,
-//   Package,
   ArrowLeft,
   Plus,
   Edit,
@@ -12,7 +11,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useBunkerStore } from "@/store/bunker.store";
 // import type { Container } from "@/services/bunker.service";
 
@@ -175,69 +173,6 @@ const ContainerList: React.FC = () => {
                       {container.max_capacity_kg} kg
                     </p>
                   </div>
-                  <div>
-                    <p className="text-gray-500">Joriy sig'im</p>
-                    <p className="font-semibold">
-                      {container.current_capacity_kg} kg
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Holat</p>
-                    <Badge
-                      variant={
-                        parseFloat(container.current_capacity_kg) > 0
-                          ? "default"
-                          : "secondary"
-                      }
-                      className="text-xs"
-                    >
-                      {parseFloat(container.current_capacity_kg) > 0
-                        ? "To'ldirilgan"
-                        : "Bo'sh"}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500">Foydalanish foizi</span>
-                    <span className="font-semibold">
-                      {(
-                        (parseFloat(container.current_capacity_kg) /
-                          parseFloat(container.max_capacity_kg)) *
-                        100
-                      ).toFixed(1)}
-                      %
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{
-                        width: `${Math.min(
-                          (parseFloat(container.current_capacity_kg) /
-                            parseFloat(container.max_capacity_kg)) *
-                            100,
-                          100
-                        )}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      navigate(
-                        `/worker/bunkers/${bunkerId}/containers/${container.id}`
-                      )
-                    }
-                    className="w-full"
-                  >
-                    Batafsil ko'rish
-                  </Button>
                 </div>
               </CardContent>
             </Card>

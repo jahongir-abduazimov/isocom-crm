@@ -30,17 +30,36 @@ export default function CompleteDrobilkaModal({
 
     const [outputQuantity, setOutputQuantity] = useState("");
     const [notes, setNotes] = useState("");
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+    const validateForm = () => {
+        const errors: Record<string, string> = {};
+
+        if (!outputQuantity || parseFloat(outputQuantity) <= 0) {
+            errors.outputQuantity = "Chiqish miqdori 0 dan katta bo'lishi kerak";
+        }
+
+        if (drobilkaProcess && parseFloat(outputQuantity) > drobilkaProcess.input_quantity) {
+            errors.outputQuantity = `Miqdor ${drobilkaProcess.input_quantity} dan katta bo'lmasligi kerak`;
+        }
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
 
     const handleCompleteDrobilka = async () => {
-        if (!drobilkaProcess || !outputQuantity) {
+        if (!drobilkaProcess) {
+            return;
+        }
+
+        if (!validateForm()) {
             return;
         }
 
         try {
             const success = await completeDrobilka(drobilkaProcess.id, {
-                output_quantity: outputQuantity,
-                completed_at: new Date().toISOString(),
-                notes,
+                output_quantity: parseFloat(outputQuantity),
+                notes: notes.trim() || undefined,
             });
 
             if (success) {
@@ -55,6 +74,7 @@ export default function CompleteDrobilkaModal({
     const handleClose = () => {
         setOutputQuantity("");
         setNotes("");
+        setFormErrors({});
         onClose();
     };
 
@@ -62,8 +82,8 @@ export default function CompleteDrobilkaModal({
         return null;
     }
 
-    const inputQuantity = parseFloat(drobilkaProcess.input_quantity);
-    const isValidOutput = parseFloat(outputQuantity) <= inputQuantity && parseFloat(outputQuantity) > 0;
+    const inputQuantity = drobilkaProcess.input_quantity;
+    const isValidOutput = !outputQuantity || (parseFloat(outputQuantity) > 0 && parseFloat(outputQuantity) <= inputQuantity);
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
@@ -100,6 +120,12 @@ export default function CompleteDrobilkaModal({
                                 </p>
                             </div>
                             <div>
+                                <p className="text-sm font-medium text-gray-600">Boshlangan Vaqt</p>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {new Date(drobilkaProcess.started_at).toLocaleString('uz-UZ')}
+                                </p>
+                            </div>
+                            <div>
                                 <p className="text-sm font-medium text-gray-600">Mas'ul Operator</p>
                                 <p className="text-lg font-semibold text-gray-900">
                                     {drobilkaProcess.lead_operator_name}
@@ -111,7 +137,7 @@ export default function CompleteDrobilkaModal({
                     {/* Operators List */}
                     <div className="bg-blue-50 rounded-lg p-4">
                         <h3 className="text-lg font-semibold text-blue-900 mb-3">
-                            Ishchi Operatorlar
+                            Operatorlar ({drobilkaProcess.operators_details.length} ta)
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                             {drobilkaProcess.operators_details.map((operator) => (
@@ -139,13 +165,16 @@ export default function CompleteDrobilkaModal({
                                 value={outputQuantity}
                                 onChange={(e) => setOutputQuantity(e.target.value)}
                                 placeholder="0.00"
-                                className="pr-12"
+                                className={`pr-12 ${formErrors.outputQuantity ? "border-red-500" : ""}`}
                             />
                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                                 <Package className="w-4 h-4 text-gray-400" />
                             </div>
                         </div>
-                        {!isValidOutput && outputQuantity && (
+                        {formErrors.outputQuantity && (
+                            <p className="text-sm text-red-600 mt-1">{formErrors.outputQuantity}</p>
+                        )}
+                        {!formErrors.outputQuantity && !isValidOutput && outputQuantity && (
                             <p className="text-sm text-red-600 mt-1">
                                 Miqdor 0 dan katta va {inputQuantity} dan kichik bo'lishi kerak
                             </p>
@@ -153,6 +182,11 @@ export default function CompleteDrobilkaModal({
                         <p className="text-sm text-gray-600 mt-1">
                             Maksimal miqdor: {inputQuantity} KG
                         </p>
+                        {outputQuantity && isValidOutput && (
+                            <p className="text-sm text-green-600 mt-1">
+                                Samaradorlik: {((parseFloat(outputQuantity) / inputQuantity) * 100).toFixed(1)}%
+                            </p>
+                        )}
                     </div>
 
                     {/* Notes */}
@@ -181,7 +215,7 @@ export default function CompleteDrobilkaModal({
                         </Button>
                         <Button
                             onClick={handleCompleteDrobilka}
-                            disabled={loading || !isValidOutput}
+                            disabled={loading || !outputQuantity || !isValidOutput}
                             className="min-w-[120px]"
                         >
                             {loading ? (

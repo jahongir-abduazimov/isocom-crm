@@ -123,10 +123,12 @@ export default function OperatorReprocessingPage() {
     switch (status) {
       case "PENDING":
         return "bg-yellow-100 text-yellow-800";
-      case "IN_PROCESS":
+      case "IN_DROBIL":
         return "bg-blue-100 text-blue-800";
-      case "COMPLETED":
+      case "RECYCLED":
         return "bg-green-100 text-green-800";
+      case "MOVED":
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -215,7 +217,7 @@ export default function OperatorReprocessingPage() {
               Partiyani Boshlash
             </Button>
           )}
-          {currentBatch && currentBatch.status === "IN_PROCESS" && (
+          {currentBatch && currentBatch.status === "IN_PROGRESS" && (
             <Button onClick={handleCompleteBatch} variant="outline">
               <CheckCircle className="w-4 h-4 mr-2" />
               Partiyani Yakunlash
@@ -297,13 +299,13 @@ export default function OperatorReprocessingPage() {
               <p className="text-sm text-gray-600">
                 Partiya: {currentBatch.batch_number} |
                 Boshlangan: {formatDate(currentBatch.started_at)} |
-                Holat: <span className={`font-medium ${currentBatch.status === "IN_PROCESS" ? "text-blue-600" : "text-green-600"}`}>
-                  {currentBatch.status === "IN_PROCESS" ? "Jarayonda" : "Yakunlangan"}
+                Holat: <span className={`font-medium ${currentBatch.status === "IN_PROGRESS" ? "text-blue-600" : "text-green-600"}`}>
+                  {currentBatch.status === "IN_PROGRESS" ? "Jarayonda" : "Yakunlangan"}
                 </span>
               </p>
             </div>
             <div className="flex gap-2">
-              {currentBatch.status === "IN_PROCESS" && (
+              {currentBatch.status === "IN_PROGRESS" && (
                 <>
                   <Button
                     onClick={() => handleStartDrobilka("HARD")}
@@ -428,11 +430,13 @@ export default function OperatorReprocessingPage() {
                       <SelectItem key={status} value={status}>
                         {status === "PENDING"
                           ? "Kutilmoqda"
-                          : status === "IN_PROCESS"
-                            ? "Jarayonda"
-                            : status === "COMPLETED"
-                              ? "Yakunlangan"
-                              : status}
+                          : status === "IN_DROBIL"
+                            ? "Drobilkada"
+                            : status === "RECYCLED"
+                              ? "Qayta ishlangan"
+                              : status === "MOVED"
+                                ? "Ko'chirilgan"
+                                : status}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -571,7 +575,9 @@ export default function OperatorReprocessingPage() {
                             )}`}
                           >
                             {scrap.status === "PENDING" ? "Kutilmoqda" :
-                              scrap.status === "IN_PROCESS" ? "Jarayonda" : "Yakunlangan"}
+                              scrap.status === "IN_DROBIL" ? "Drobilkada" :
+                                scrap.status === "RECYCLED" ? "Qayta ishlangan" :
+                                  scrap.status === "MOVED" ? "Ko'chirilgan" : "Noma'lum"}
                           </span>
                           <span className="text-xs text-gray-500 md:hidden mt-1">
                             {scrap.recorded_by?.full_name || "Noma'lum"}
@@ -831,7 +837,7 @@ export default function OperatorReprocessingPage() {
         onSuccess={handleModalSuccess}
         drobilkaType={selectedDrobilkaType}
         availableQuantity={selectedDrobilkaType === "HARD" ? totalHardQuantity : totalSoftQuantity}
-        recyclingBatchId={currentBatch?.id}
+        recyclingBatch={currentBatch?.id}
       />
 
       <CompleteDrobilkaModal
@@ -845,7 +851,7 @@ export default function OperatorReprocessingPage() {
         open={completeBatchModalOpen}
         onClose={() => setCompleteBatchModalOpen(false)}
         onSuccess={handleModalSuccess}
-        batch={currentBatch}
+        recyclingBatch={currentBatch}
       />
     </div>
   );

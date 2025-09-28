@@ -89,9 +89,12 @@ import WorkerReprocessingPage from "@/pages/worker/Reprocessing";
 // Worker QR Codes page
 import QRCodesPage from "@/pages/worker/QRCodes";
 
-// Scrap pages
-import DefectsPage from "@/pages/scrap/Defects";
-import ReprocessingPage from "@/pages/scrap/Reprocessing";
+// Scrap pages - New System
+import ScrapIndexPage from "@/pages/scrap";
+import ScrapListPage from "@/pages/scrap/ScrapList";
+import ScrapDashboardPage from "@/pages/scrap/ScrapDashboard";
+import RecyclingWorkflowPage from "@/pages/scrap/RecyclingWorkflow";
+
 
 // Bunkers pages
 import BunkersPage from "@/pages/bunkers";
@@ -209,9 +212,12 @@ export default function App() {
           <Route path="/users/add" element={<OperatorProtectedRoute><AddUserPage /></OperatorProtectedRoute>} />
           <Route path="/users/:id/edit" element={<OperatorProtectedRoute><EditUserPage /></OperatorProtectedRoute>} />
 
-          {/* Scrap Routes */}
-          <Route path="/scrap/defects" element={<DefectsPage />} />
-          <Route path="/scrap/reprocessing" element={<ReprocessingPage />} />
+          {/* Scrap Routes - New System */}
+          <Route path="/scrap" element={<ScrapIndexPage />} />
+          <Route path="/scrap/scrap-list" element={<ScrapListPage />} />
+          <Route path="/scrap/scrap-dashboard" element={<ScrapDashboardPage />} />
+          <Route path="/scrap/recycling-workflow" element={<RecyclingWorkflowPage />} />
+
 
           {/* Bunkers Routes */}
           <Route path="/bunkers" element={<BunkersPage />} />

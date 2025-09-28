@@ -75,7 +75,7 @@ interface BunkerState {
   }) => Promise<void>;
   updateContainer: (
     containerId: string,
-    containerData: Partial<Container>
+    containerData: Partial<Container> & { bunker?: string }
   ) => Promise<void>;
   deleteContainer: (containerId: string) => Promise<void>;
 

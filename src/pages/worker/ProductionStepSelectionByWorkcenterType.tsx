@@ -39,28 +39,28 @@ export default function ProductionStepSelectionByWorkcenterTypePage() {
         }
     }, [workcenterType, fetchProductionStepsByWorkcenterType, setCurrentStep]);
 
-  const getWorkcenterTypeLabel = (type: string) => {
-    switch (type?.toUpperCase()) {
-      case "EXTRUDER":
-        return "Extruder";
-      case "DEGASSING_AREA":
-        return "Degassing Area";
-      case "LAMINATOR":
-        return "Laminator";
-      case "BRONIROVSHIK":
-        return "Bronirovshik";
-      case "DUPLICATOR":
-        return "Duplicator";
-      case "PACKAGING":
-        return "Packaging";
-      case "QUALITY_CONTROL":
-        return "Quality Control";
-      case "BRAK_MAYDALAGICH":
-        return "Brak maydalagich";
-      default:
-        return type || "Workcenter";
-    }
-  };
+    const getWorkcenterTypeLabel = (type: string) => {
+        switch (type?.toUpperCase()) {
+            case "EXTRUDER":
+                return "Extruder";
+            case "DEGASSING_AREA":
+                return "Degassing Area";
+            case "LAMINATOR":
+                return "Laminator";
+            case "BRONIROVSHIK":
+                return "Bronirovshik";
+            case "DUPLICATOR":
+                return "Duplicator";
+            case "PACKAGING":
+                return "Packaging";
+            case "QUALITY_CONTROL":
+                return "Quality Control";
+            case "BRAK_MAYDALAGICH":
+                return "Brak maydalagich";
+            default:
+                return type || "Workcenter";
+        }
+    };
 
     const getStepTypeIcon = (stepType: string) => {
         switch (stepType?.toUpperCase()) {

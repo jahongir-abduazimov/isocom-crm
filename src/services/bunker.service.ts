@@ -384,7 +384,7 @@ class BunkerService {
     }
   }
 
-  async updateContainer(containerId: string, containerData: Partial<Container>): Promise<Container> {
+  async updateContainer(containerId: string, containerData: Partial<Container> & { bunker?: string }): Promise<Container> {
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CONTAINER_BY_ID(containerId)}`,

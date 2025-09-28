@@ -384,10 +384,10 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
 
   // New Workflow Bulk Create
   submitBulkCreateByWorkcenterType: async () => {
-    const { selectedOrder, selectedStep, selectedItems, selectedWorkcenterType } = get();
+    const { selectedOrder, selectedStep, selectedItems, selectedWorkcenterId } = get();
     const { selectedOperator } = useAuthStore.getState();
 
-    if (!selectedOperator || !selectedOrder || !selectedStep || !selectedWorkcenterType || selectedItems.length === 0) {
+    if (!selectedOperator || !selectedOrder || !selectedStep || !selectedWorkcenterId || selectedItems.length === 0) {
       return { success: false, error: "Missing required data" };
     }
 
@@ -398,11 +398,11 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
         order_id: selectedOrder.id,
         production_step_id: selectedStep.id,
         operator_id: selectedOperator.id,
-        workcenter_type: selectedWorkcenterType,
+        workcenter_id: selectedWorkcenterId,
         items: selectedItems.map((item) => ({
           material_id: item.type === "material" ? item.id : undefined,
           product_id: item.type === "product" ? item.id : undefined,
-          quantity: item.quantity,
+          quantity: item.quantity.toString(),
           unit_of_measure: item.unit_of_measure || "PIECE",
         })),
       };
@@ -437,7 +437,7 @@ export const useWorkerStore = create<WorkerState>((set, get) => ({
         items: selectedItems.map((item) => ({
           material_id: item.type === "material" ? item.id : undefined,
           product_id: item.type === "product" ? item.id : undefined,
-          quantity: item.quantity,
+          quantity: item.quantity.toString(),
           unit_of_measure: item.unit_of_measure || "PIECE",
         })),
       };

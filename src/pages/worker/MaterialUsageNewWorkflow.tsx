@@ -138,11 +138,11 @@ export default function MaterialUsageNewWorkflowPage() {
     }
   };
 
-//   const handleLoadStock = () => {
-//     if (workcenterId) {
-//       fetchWorkcenterStock(workcenterId);
-//     }
-//   };
+    // const handleLoadStock = () => {
+    //   if (workcenterId) {
+    //     fetchWorkcenterStock(workcenterId);
+    //   }
+    // };
 
   if (submitting) {
     return (

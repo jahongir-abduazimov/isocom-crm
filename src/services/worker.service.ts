@@ -85,7 +85,7 @@ export interface WorkcenterStock {
 export interface BulkCreateItem {
     material_id?: string;
     product_id?: string;
-    quantity: number;
+    quantity: string;
     unit_of_measure: string;
 }
 
@@ -101,7 +101,7 @@ export interface BulkCreateByWorkcenterTypeRequest {
     order_id: string;
     production_step_id: string;
     operator_id: string;
-    workcenter_type: string;
+    workcenter_id: string;
     items: BulkCreateItem[];
 }
 

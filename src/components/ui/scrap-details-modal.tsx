@@ -195,10 +195,10 @@ export default function ScrapDetailsModal({
                   Yozuvchi
                 </label>
                 <p className="mt-1 text-sm text-gray-900">
-                  {scrap.recorded_by.full_name}
+                  {scrap.recorded_by?.full_name || "Noma'lum"}
                 </p>
                 <p className="text-xs text-gray-500 font-mono">
-                  {scrap.recorded_by.username}
+                  {scrap.recorded_by?.username || "Noma'lum"}
                 </p>
               </div>
             </div>

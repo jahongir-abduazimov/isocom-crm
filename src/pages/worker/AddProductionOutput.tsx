@@ -53,11 +53,6 @@ export default function WorkerAddProductionOutputPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Selected step execution and order details
-  const [selectedStepExecution, setSelectedStepExecution] =
-    useState<ProductionStepExecution | null>(null);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [loadingOrder, setLoadingOrder] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -86,19 +81,6 @@ export default function WorkerAddProductionOutputPage() {
     fetchInitialData();
   }, []);
 
-  // Function to fetch order details
-  const fetchOrderDetails = async (orderId: string) => {
-    try {
-      setLoadingOrder(true);
-      const order = await ProductionService.getOrderById(orderId);
-      setSelectedOrder(order);
-    } catch (err) {
-      console.error("Error fetching order details:", err);
-      setSelectedOrder(null);
-    } finally {
-      setLoadingOrder(false);
-    }
-  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -106,17 +88,9 @@ export default function WorkerAddProductionOutputPage() {
       [field]: value,
     }));
 
-    // When step execution is selected, find and store the full details
+    // When step execution is selected, we can add validation here if needed
     if (field === "step_execution") {
-      const stepExecution = stepExecutions.find((step) => step.id === value);
-      setSelectedStepExecution(stepExecution || null);
-
-      // Fetch order details if step execution is found
-      if (stepExecution) {
-        fetchOrderDetails(stepExecution.order);
-      } else {
-        setSelectedOrder(null);
-      }
+      // Step execution selection logic can be added here if needed
     }
   };
 
@@ -126,8 +100,6 @@ export default function WorkerAddProductionOutputPage() {
       order_id: orderId,
       step_execution: "", // Reset step execution when order changes
     }));
-    setSelectedStepExecution(null);
-    setSelectedOrder(null);
     setError(null);
   };
 
@@ -404,122 +376,6 @@ export default function WorkerAddProductionOutputPage() {
             </div>
           </div>
 
-          {/* Order Information Display */}
-          {selectedStepExecution && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-blue-900 mb-3">
-                Tanlangan qadam va buyurtma ma'lumotlari
-              </h3>
-
-              {/* Order Information */}
-              {loadingOrder ? (
-                <div className="mb-3 p-3 bg-blue-100 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                    <span className="text-sm text-blue-700">
-                      Buyurtma ma'lumotlari yuklanmoqda...
-                    </span>
-                  </div>
-                </div>
-              ) : selectedOrder ? (
-                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <h4 className="text-sm font-semibold text-green-900 mb-2">
-                    Buyurtma ma'lumotlari
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">
-                        Buyurtma nomi:
-                      </div>
-                      <div className="text-sm text-green-700">
-                        {selectedOrder.description || "Belgilanmagan"}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">
-                        Buyurtma ID:
-                      </div>
-                      <div className="text-sm text-green-700 font-mono">
-                        {selectedOrder.id.substring(0, 8)}...
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">
-                        Mahsulot:
-                      </div>
-                      <div className="text-sm text-green-700">
-                        {selectedOrder.produced_product_name || "Belgilanmagan"}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">
-                        Miqdor:
-                      </div>
-                      <div className="text-sm text-green-700">
-                        {selectedOrder.produced_quantity}{" "}
-                        {selectedOrder.unit_of_measure}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-green-800 mb-1">
-                        Holat:
-                      </div>
-                      <div className="text-sm text-green-700">
-                        {STATUS_MAPPINGS.ORDER_STATUS[
-                          selectedOrder.status as keyof typeof STATUS_MAPPINGS.ORDER_STATUS
-                        ] || selectedOrder.status}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              {/* Step Execution Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">
-                    Qadam nomi:
-                  </div>
-                  <div className="text-sm text-blue-700">
-                    {selectedStepExecution.production_step_name}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">
-                    Holat:
-                  </div>
-                  <div className="text-sm text-blue-700">
-                    {STATUS_MAPPINGS.STEP_STATUS[
-                      selectedStepExecution.status
-                    ] || selectedStepExecution.status}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">
-                    Buyurtma:
-                  </div>
-                  <div className="text-sm text-blue-700">
-                    {selectedOrder
-                      ? selectedOrder.description || "Belgilanmagan"
-                      : "Yuklanmoqda..."}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-blue-800 mb-1">
-                    Tayinlangan operator:
-                  </div>
-                  <div className="text-sm text-blue-700">
-                    {selectedStepExecution.operators_names &&
-                      selectedStepExecution.operators_names.length > 0 &&
-                      selectedStepExecution.operators_names[0].trim()
-                      ? selectedStepExecution.operators_names[0]
-                      : "Tayinlanmagan"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes" className="text-sm font-medium">
@@ -581,21 +437,6 @@ export default function WorkerAddProductionOutputPage() {
             </Button>
           </div>
         </form>
-      </div>
-
-      {/* Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <div className="flex items-start gap-2">
-          <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <h4 className="text-sm font-medium text-blue-900 mb-1">Ma'lumot</h4>
-            <p className="text-sm text-blue-700">
-              Barcha majburiy maydonlarni to'ldiring. Qadam, mahsulot va o'lchov
-              birligini ro'yxatdan tanlang. Operator tanlangan bo'lishi kerak.
-              Sifat holati avtomatik ravishda "Kutilmoqda" ga o'rnatiladi.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
