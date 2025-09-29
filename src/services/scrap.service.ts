@@ -1,4 +1,4 @@
-import request from "@/components/config";
+import request from "@/components/config/index";
 
 // Brak (Scrap) tizimi - dokumentatsiyaga muvofiq yangilangan
 export interface Scrap {

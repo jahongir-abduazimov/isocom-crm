@@ -1,4 +1,4 @@
-import request from "@/components/config";
+import request from "@/components/config/index";
 
 // Qayta ishlash partiyasi (Recycling Batch) - dokumentatsiyaga muvofiq
 export interface RecyclingBatch {

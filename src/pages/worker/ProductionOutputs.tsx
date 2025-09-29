@@ -390,6 +390,9 @@ export default function WorkerProductionOutputsPage() {
                 <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Og'irlik
                 </th>
+                <th className="hidden lg:table-cell px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Karton/Spul
+                </th>
                 <th className="px-3 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Sifat holati
                 </th>
@@ -427,7 +430,28 @@ export default function WorkerProductionOutputsPage() {
                     </span>
                   </td>
                   <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {output.weight} kg
+                    <div className="flex flex-col">
+                      <span className="font-medium">{output.weight} kg</span>
+                      {output.uses_spool && output.gross_weight && output.tare_weight && (
+                        <span className="text-xs text-gray-500">
+                          Jami: {output.gross_weight}kg, Karton: {output.tare_weight}kg
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="hidden lg:table-cell px-3 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {output.uses_spool ? (
+                      <div className="flex flex-col">
+                        <span className="text-xs text-green-600 font-medium">✓ Karton/Spul</span>
+                        {output.spool_count && (
+                          <span className="text-xs text-gray-500">
+                            Soni: {output.spool_count}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-400">-</span>
+                    )}
                   </td>
                   <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
                     <span
@@ -494,6 +518,9 @@ export default function WorkerProductionOutputsPage() {
               Yangi natija qo'shish uchun "Yangi natija" tugmasini bosing. Sifat
               holati: O'tgan (yashil), O'tmagan (qizil), Kutilmoqda (sariq).
               Tahrirlash va o'chirish uchun har bir qatorning oxiridagi tugmalardan foydalaning.
+              <br /><br />
+              <strong>Karton/Spul haqida:</strong> Agar mahsulot karton yoki spulda bo'lsa,
+              "Karton/Spul" ustuni ko'rsatiladi. Bu yerda karton/spul soni va og'irligi ko'rinadi.
             </p>
           </div>
         </div>

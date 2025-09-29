@@ -262,6 +262,9 @@ export default function ProductionOutputsPage() {
                     {t("production.outputs.weight")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("production.outputs.spool")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t("production.outputs.qualityStatus")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -295,7 +298,28 @@ export default function ProductionOutputsPage() {
                       ] || output.unit_of_measure}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {output.weight} kg
+                      <div className="flex flex-col">
+                        <span className="font-medium">{output.weight} kg</span>
+                        {output.uses_spool && output.gross_weight && output.tare_weight && (
+                          <span className="text-xs text-gray-500">
+                            Gross: {output.gross_weight}kg, Tare: {output.tare_weight}kg
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {output.uses_spool ? (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-green-600 font-medium">✓ Spool</span>
+                          {output.spool_count && (
+                            <span className="text-xs text-gray-500">
+                              Count: {output.spool_count}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
@@ -384,7 +408,7 @@ export default function ProductionOutputsPage() {
                 </div>
 
                 {/* Quantity, Unit and Weight */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.quantity")}</h4>
                     <p className="text-sm text-gray-600">
@@ -399,12 +423,37 @@ export default function ProductionOutputsPage() {
                       ] || output.unit_of_measure}
                     </p>
                   </div>
+                </div>
+
+                {/* Weight and Spool Information */}
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.weight")}</h4>
-                    <p className="text-sm text-gray-600">
-                      {output.weight} kg
-                    </p>
+                    <div className="text-sm text-gray-600">
+                      <div className="font-medium">{output.weight} kg</div>
+                      {output.uses_spool && output.gross_weight && output.tare_weight && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Gross: {output.gross_weight}kg, Tare: {output.tare_weight}kg
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  {output.uses_spool && (
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-xs">{t("production.outputs.spool")}</h4>
+                      <div className="text-sm text-gray-600">
+                        <div className="flex items-center gap-1">
+                          <span className="text-green-600">✓</span>
+                          <span>Spool ishlatilgan</span>
+                        </div>
+                        {output.spool_count && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            Count: {output.spool_count}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Notes */}

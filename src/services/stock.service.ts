@@ -2,7 +2,7 @@ import API_CONFIG, {
   STATUS_MAPPINGS,
   DEFAULT_VALUES,
 } from "@/config/api.config";
-import request from "@/components/config";
+import request from "@/components/config/index";
 
 export interface InventoryMovement {
   id: string;

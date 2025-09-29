@@ -1,4 +1,4 @@
-import request from "@/components/config";
+import request from "@/components/config/index";
 import type { Location } from "@/store/locations.store";
 
 export interface LocationsApiResponse {

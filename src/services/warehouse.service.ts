@@ -1,4 +1,4 @@
-import request from "@/components/config";
+import request from "@/components/config/index";
 
 // Updated interface to match actual API response
 export interface Warehouse {

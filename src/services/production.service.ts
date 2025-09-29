@@ -1,4 +1,4 @@
-import request from "@/components/config";
+import request from "@/components/config/index";
 import type {
   ProductionOrder,
   OrdersApiResponse,
@@ -41,6 +41,10 @@ export interface ProductionOutput {
   unit_of_measure: string;
   quantity: string;
   weight: string;
+  gross_weight?: string | null;
+  tare_weight?: string | null;
+  uses_spool: boolean;
+  spool_count?: number | null;
   quality_status: string;
   operator?: string | null;
   operator_name?: string;
@@ -48,6 +52,8 @@ export interface ProductionOutput {
   order_id?: string | null;
   order_description?: string;
   order_product_name?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ProductionOutputsApiResponse {

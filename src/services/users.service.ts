@@ -1,5 +1,5 @@
 import API_CONFIG, { DEFAULT_VALUES } from "@/config/api.config";
-import request from "@/components/config";
+import request from "@/components/config/index";
 
 export interface User {
   id: string;

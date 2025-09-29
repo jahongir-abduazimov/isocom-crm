@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -24,15 +25,31 @@ import {
 import { notifySuccess, notifyError } from "@/lib/notification";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Form validation schema
+// Form validation schema with spool functionality
 const formSchema = z.object({
   step_execution: z.string().min(1, "Qadam bajarilishi majburiy"),
   product: z.string().min(1, "Maxsulot tanlash majburiy"),
   unit_of_measure: z.string().min(1, "O'lchov birligi majburiy"),
   quantity: z.string().min(1, "Miqdor majburiy"),
-  weight: z.string().min(1, "Og'irlik majburiy"),
+  weight: z.string().optional(),
+  gross_weight: z.string().optional(),
+  tare_weight: z.string().optional(),
+  uses_spool: z.boolean(),
   quality_status: z.string().min(1, "Sifat holati majburiy"),
   notes: z.string().optional(),
+}).refine((data) => {
+  // If uses_spool is true, tare_weight is required
+  if (data.uses_spool && !data.tare_weight) {
+    return false;
+  }
+  // Either weight or gross_weight must be provided
+  if (!data.weight && !data.gross_weight) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Spool ishlatilsa tare_weight majburiy, yoki weight/gross_weight berilishi kerak",
+  path: ["tare_weight"]
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -47,6 +64,7 @@ export default function AddProductionOutputPage() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -56,10 +74,17 @@ export default function AddProductionOutputPage() {
       unit_of_measure: "KG",
       quantity: "",
       weight: "",
+      gross_weight: "",
+      tare_weight: "",
+      uses_spool: false,
       quality_status: "PASSED",
       notes: "",
     },
   });
+
+  // Watch form values for conditional rendering
+  const watchedValues = watch();
+  const unitOfMeasure = watch("unit_of_measure");
 
   // Fetch data when component mounts
   useEffect(() => {
@@ -74,9 +99,14 @@ export default function AddProductionOutputPage() {
         product: data.product,
         unit_of_measure: data.unit_of_measure,
         quantity: data.quantity,
-        weight: data.weight,
+        weight: data.weight || "",
+        gross_weight: data.gross_weight || null,
+        tare_weight: data.tare_weight || null,
+        uses_spool: data.uses_spool,
         quality_status: data.quality_status,
         notes: data.notes || "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       await ProductionService.createProductionOutput(outputData);
@@ -175,10 +205,10 @@ export default function AddProductionOutputPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="KG">{t("production.addOutput.kilogram")}</SelectItem>
+                  <SelectItem value="PIECE">{t("production.addOutput.piece")}</SelectItem>
                   <SelectItem value="METER">{t("production.addOutput.meter")}</SelectItem>
                   <SelectItem value="METER_SQUARE">{t("production.addOutput.squareMeter")}</SelectItem>
                   <SelectItem value="METER_CUBIC">{t("production.addOutput.cubicMeter")}</SelectItem>
-                  <SelectItem value="PIECE">{t("production.addOutput.piece")}</SelectItem>
                   <SelectItem value="LITER">{t("production.addOutput.liter")}</SelectItem>
                 </SelectContent>
               </Select>
@@ -226,21 +256,125 @@ export default function AddProductionOutputPage() {
               )}
             </div>
 
-            {/* Weight */}
+            {/* Spool Usage Checkbox */}
             <div className="space-y-2">
-              <Label htmlFor="weight" className="text-sm font-medium">
-                {t("production.addOutput.weight")} *
-              </Label>
-              <Input
-                id="weight"
-                placeholder={t("production.addOutput.enterWeight")}
-                className={errors.weight ? "border-red-500" : ""}
-                {...register("weight")}
-              />
-              {errors.weight && (
-                <p className="text-red-500 text-xs">{errors.weight.message}</p>
-              )}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="uses_spool"
+                  checked={watchedValues.uses_spool}
+                  onCheckedChange={(checked) => {
+                    setValue("uses_spool", checked as boolean);
+                  }}
+                />
+                <Label htmlFor="uses_spool" className="text-sm font-medium">
+                  Mahsulot karton/spulda (tare bilan)
+                </Label>
+              </div>
+              <p className="text-xs text-gray-500">
+                Agar mahsulot karton yoki spul ichida bo'lsa, bu qutichani belgilang
+              </p>
             </div>
+
+            {/* Weight Fields - Conditional based on spool usage */}
+            {!watchedValues.uses_spool ? (
+              <div className="space-y-2">
+                <Label htmlFor="weight" className="text-sm font-medium">
+                  Mahsulot og'irligi (kg) *
+                </Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.001"
+                  placeholder="Mahsulotning toza og'irligini kiriting"
+                  className={errors.weight ? "border-red-500" : ""}
+                  {...register("weight")}
+                />
+                <p className="text-xs text-gray-500">
+                  Faqat mahsulotning o'zi (karton/spul hisobga olinmaydi)</p>
+                {errors.weight && (
+                  <p className="text-red-500 text-xs">{errors.weight.message}</p>
+                )}
+              </div>
+            ) : (
+              <>
+                {/* Tare Weight - Required when using spool */}
+                <div className="space-y-2">
+                  <Label htmlFor="tare_weight" className="text-sm font-medium">
+                    Karton/Spul og'irligi (kg) *
+                  </Label>
+                  <Input
+                    id="tare_weight"
+                    type="number"
+                    step="0.001"
+                    placeholder="Karton yoki spulning og'irligini kiriting"
+                    className={errors.tare_weight ? "border-red-500" : ""}
+                    {...register("tare_weight")}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Faqat karton yoki spulning og'irligi (mahsulot hisobga olinmaydi)
+                  </p>
+                  {errors.tare_weight && (
+                    <p className="text-red-500 text-xs">{errors.tare_weight.message}</p>
+                  )}
+                </div>
+
+                {/* Gross Weight - Optional, if provided NET weight will be calculated */}
+                <div className="space-y-2">
+                  <Label htmlFor="gross_weight" className="text-sm font-medium">
+                    Jami og'irlik (kg)
+                  </Label>
+                  <Input
+                    id="gross_weight"
+                    type="number"
+                    step="0.001"
+                    placeholder="Mahsulot + karton/spul jami og'irligi"
+                    className={errors.gross_weight ? "border-red-500" : ""}
+                    {...register("gross_weight")}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Agar jami og'irlikni kiritasiz, toza mahsulot og'irligi avtomatik hisoblanadi
+                  </p>
+                  {errors.gross_weight && (
+                    <p className="text-red-500 text-xs">{errors.gross_weight.message}</p>
+                  )}
+                </div>
+
+                {/* NET Weight - Only show if gross_weight is not provided */}
+                {!watchedValues.gross_weight && (
+                  <div className="space-y-2">
+                    <Label htmlFor="weight" className="text-sm font-medium">
+                      Toza mahsulot og'irligi (kg) *
+                    </Label>
+                    <Input
+                      id="weight"
+                      type="number"
+                      step="0.001"
+                      placeholder="Faqat mahsulotning toza og'irligi"
+                      className={errors.weight ? "border-red-500" : ""}
+                      {...register("weight")}
+                    />
+                    <p className="text-xs text-gray-500">
+                      Faqat mahsulotning o'zi (karton/spul hisobga olinmaydi)
+                    </p>
+                    {errors.weight && (
+                      <p className="text-red-500 text-xs">{errors.weight.message}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Spool Count Info for PIECE UOM */}
+                {unitOfMeasure === "PIECE" && (
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <p className="text-sm text-blue-800">
+                      <strong>DONA mahsulot uchun:</strong>
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Agar mahsulot DONA bo'lsa, karton/spul soni avtomatik hisoblanadi
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           {/* Notes */}

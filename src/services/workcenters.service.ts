@@ -1,4 +1,4 @@
-import request from "@/components/config";
+import request from "@/components/config/index";
 import type { Workcenter } from "@/store/workcenters.store";
 
 export interface WorkcentersApiResponse {

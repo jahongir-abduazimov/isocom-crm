@@ -11,7 +11,7 @@ import {
 } from "@/services/stock.service";
 import { LocationsService } from "@/services/locations.service";
 import { notifySuccess, notifyError } from "@/lib/notification";
-import request from "@/components/config";
+import request from "@/components/config/index";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface User {
