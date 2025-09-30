@@ -3,6 +3,7 @@ import { LogOut, Menu } from "lucide-react";
 import { Button } from "../ui/button";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../ui/language-switcher";
+import PWAInstallButton from "../ui/pwa-install-button";
 
 interface HeaderProps {
   onMenuToggle?: () => void;
@@ -44,6 +45,10 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         <div className="sm:hidden">
           <LanguageSwitcher />
         </div>
+
+        {/* PWA Install Button */}
+        <PWAInstallButton />
+
         <Button
           onClick={handleLogout}
           variant="outline"

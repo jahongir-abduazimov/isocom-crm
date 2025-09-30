@@ -22,6 +22,15 @@
     "updated": "Обновлено",
     "back": "Назад"
   },
+  "pwa": {
+    "install": "Установить",
+    "installShort": "Установить",
+    "installed": "Установлено",
+    "installedShort": "Установлено",
+    "installPrompt": "Установите приложение для быстрого доступа",
+    "updateAvailable": "Доступно обновление",
+    "updatePrompt": "Перезагрузите страницу для установки обновления"
+  },
   "navigation": {
     "dashboard": "Панель управления",
     "products": "Продукты",

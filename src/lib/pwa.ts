@@ -1,131 +1,151 @@
 import { Workbox } from 'workbox-window';
 
-// PWA Update Manager
-export class PWAUpdateManager {
-    private wb: Workbox | null = null;
-
-    constructor() {
-        if ('serviceWorker' in navigator) {
-            this.wb = new Workbox('/sw.js');
-            this.setupEventListeners();
-        }
-    }
-
-    private setupEventListeners() {
-        if (!this.wb) return;
-
-        // Listen for the controlling service worker changing
-        this.wb.addEventListener('controlling', () => {
-            // At this point, reloading will ensure that the current
-            // tab is loaded under the control of the new service worker.
-            // Depending on your web app, you may want to prompt the user
-            // to reload, or you may want to reload automatically.
-            window.location.reload();
-        });
-
-        // Listen for the waiting service worker
-        this.wb.addEventListener('waiting', () => {
-            // A new service worker is waiting to become the active service worker.
-            // You may want to prompt the user to refresh the page to get the
-            // latest version of the app, or you may want to reload automatically.
-            this.showUpdateAvailable();
-        });
-
-        // Register the service worker
-        this.wb.register().catch((error) => {
-            console.error('Service worker registration failed:', error);
-        });
-    }
-
-    private showUpdateAvailable() {
-        // You can customize this notification based on your UI framework
-        if (confirm('A new version of the app is available. Would you like to update?')) {
-            this.wb?.messageSkipWaiting();
-        }
-    }
-
-    // Method to manually check for updates
-    public async checkForUpdates() {
-        if (this.wb) {
-            await this.wb.update();
-        }
-    }
-
-    // Method to skip waiting and activate the new service worker
-    public skipWaiting() {
-        this.wb?.messageSkipWaiting();
+declare global {
+    interface Window {
+        deferredPrompt: any;
+        workbox: Workbox;
     }
 }
 
-// PWA Installation Manager
-export class PWAInstallManager {
+class PWAManager {
     private deferredPrompt: any = null;
+    private isInstalled = false;
+    private isInstallable = false;
 
     constructor() {
-        this.setupInstallPrompt();
+        this.init();
     }
 
-    private setupInstallPrompt() {
+    private init() {
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            this.isInstalled = true;
+        }
+
+        // Listen for beforeinstallprompt
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Stash the event so it can be triggered later
             this.deferredPrompt = e;
-            // Show install button or notification
-            this.showInstallPrompt();
+            this.isInstallable = true;
+            this.dispatchInstallableEvent();
         });
 
-        // Listen for the app being installed
+        // Listen for appinstalled
         window.addEventListener('appinstalled', () => {
-            console.log('PWA was installed');
+            this.isInstalled = true;
+            this.isInstallable = false;
             this.deferredPrompt = null;
+            this.dispatchInstalledEvent();
         });
+
+        // Register service worker
+        this.registerServiceWorker();
     }
 
-    private showInstallPrompt() {
-        // You can customize this based on your UI
-        // For now, we'll just log that the install prompt is available
-        console.log('PWA install prompt is available');
-    }
+    private async registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            try {
+                const workbox = new Workbox('/sw.js');
 
-    // Method to trigger the install prompt
-    public async promptInstall() {
-        if (this.deferredPrompt) {
-            // Show the install prompt
-            this.deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            const { outcome } = await this.deferredPrompt.userChoice;
-            console.log(`User response to the install prompt: ${outcome}`);
-            // Clear the deferredPrompt
-            this.deferredPrompt = null;
+                workbox.addEventListener('controlling', () => {
+                    window.location.reload();
+                });
+
+                await workbox.register();
+                window.workbox = workbox;
+            } catch (error) {
+                console.log('Service worker registration failed:', error);
+            }
         }
     }
 
-    // Check if the app is already installed
-    public isInstalled(): boolean {
-        return window.matchMedia('(display-mode: standalone)').matches ||
-            (window.navigator as any).standalone === true;
+    public async install(): Promise<boolean> {
+        if (!this.deferredPrompt || this.isInstalled) {
+            return false;
+        }
+
+        try {
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                this.isInstalled = true;
+                this.isInstallable = false;
+                this.deferredPrompt = null;
+                this.dispatchInstalledEvent();
+                return true;
+            }
+        } catch (error) {
+            console.error('Installation failed:', error);
+        }
+
+        return false;
+    }
+
+    public canInstall(): boolean {
+        return this.isInstallable && !this.isInstalled;
+    }
+
+    public isAppInstalled(): boolean {
+        return this.isInstalled;
+    }
+
+    private dispatchInstallableEvent() {
+        window.dispatchEvent(new CustomEvent('pwa-installable'));
+    }
+
+    private dispatchInstalledEvent() {
+        window.dispatchEvent(new CustomEvent('pwa-installed'));
+    }
+
+    public async checkForUpdates() {
+        if (window.workbox) {
+            window.workbox.addEventListener('waiting', () => {
+                if (confirm('New version available! Reload to update?')) {
+                    window.workbox.messageSkipWaiting();
+                }
+            });
+        }
     }
 }
 
-// Utility functions
-export const isOnline = (): boolean => navigator.onLine;
+// Export singleton instance
+export const pwaManager = new PWAManager();
 
-export const isOffline = (): boolean => !navigator.onLine;
+// Hook for React components
+export function usePWA() {
+    const [canInstall, setCanInstall] = useState(false);
+    const [isInstalled, setIsInstalled] = useState(false);
 
-// Network status listener
-export const setupNetworkStatusListener = (onOnline: () => void, onOffline: () => void) => {
-    window.addEventListener('online', onOnline);
-    window.addEventListener('offline', onOffline);
-};
+    useEffect(() => {
+        setCanInstall(pwaManager.canInstall());
+        setIsInstalled(pwaManager.isAppInstalled());
 
-// Initialize PWA managers
-export const initializePWA = () => {
-    const updateManager = new PWAUpdateManager();
-    const installManager = new PWAInstallManager();
+        const handleInstallable = () => setCanInstall(true);
+        const handleInstalled = () => {
+            setCanInstall(false);
+            setIsInstalled(true);
+        };
+
+        window.addEventListener('pwa-installable', handleInstallable);
+        window.addEventListener('pwa-installed', handleInstalled);
+
+        return () => {
+            window.removeEventListener('pwa-installable', handleInstallable);
+            window.removeEventListener('pwa-installed', handleInstalled);
+        };
+    }, []);
+
+    const install = async () => {
+        return await pwaManager.install();
+    };
 
     return {
-        updateManager,
-        installManager
+        canInstall,
+        isInstalled,
+        install,
     };
-};
+}
+
+// Import React hooks
+import { useState, useEffect } from 'react';

@@ -6,7 +6,6 @@ import OperatorTopNav from "@/components/layout/OperatorTopNav";
 import OperatorSelectionModal from "@/components/ui/operator-selection-modal";
 import { useAuthStore } from "@/store/auth.store";
 import QuickAccessMenu from "../ui/quick-access-menu";
-import { PWAInstallPrompt } from "@/components/ui/pwa-install-prompt";
 
 export default function MainLayout() {
   const {
@@ -50,8 +49,6 @@ export default function MainLayout() {
           onClose={() => setShowOperatorModal(false)}
         />
 
-        {/* PWA Install Prompt */}
-        <PWAInstallPrompt />
       </>
     );
   }
@@ -78,8 +75,6 @@ export default function MainLayout() {
         </main>
       </div>
 
-      {/* PWA Install Prompt */}
-      <PWAInstallPrompt />
     </div>
   );
 }

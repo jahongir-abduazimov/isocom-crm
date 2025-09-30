@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth.store";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/ui/language-switcher";
+import PWAInstallButton from "@/components/ui/pwa-install-button";
 
 export default function OperatorTopNav() {
   const { selectedOperator, setShowOperatorModal } = useAuthStore();
@@ -70,6 +71,9 @@ export default function OperatorTopNav() {
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Language Switcher */}
         <LanguageSwitcher />
+
+        {/* PWA Install Button */}
+        <PWAInstallButton />
 
         {/* Operator Selection Button */}
         <Button
