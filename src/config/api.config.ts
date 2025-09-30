@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://192.168.0.108:8001/api",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || "https://d5f986cd2d4e.ngrok-free.app/api",
   ENDPOINTS: {
     // Orders
     ORDERS: "/orders/",
