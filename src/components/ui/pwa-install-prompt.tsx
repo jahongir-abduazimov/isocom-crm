@@ -27,8 +27,16 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ className = 
         const handleOnline = () => setIsOnlineStatus(true);
         const handleOffline = () => setIsOnlineStatus(false);
 
+        // Listen for service worker updates
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                setShowUpdatePrompt(true);
+            });
+        }
+
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
             setShowInstallPrompt(false);
             setIsInstalled(true);
         });
@@ -36,6 +44,13 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({ className = 
         // Network status listeners
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
+
+        // Force show install prompt for testing
+        setTimeout(() => {
+            if (!installManager.isInstalled()) {
+                setShowInstallPrompt(true);
+            }
+        }, 3000);
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
