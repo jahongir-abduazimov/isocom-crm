@@ -22,15 +22,6 @@
     "updated": "Янгиланган",
     "back": "Ортга"
   },
-  "pwa": {
-    "install": "Юклаб олиш",
-    "installShort": "Юклаш",
-    "installed": "Ўрнатилган",
-    "installedShort": "Ўрнатилди",
-    "installPrompt": "Иловани ўрнатинг ва тезрок кириш имкониятига эга бўлинг",
-    "updateAvailable": "Янгиланиш мавжуд",
-    "updatePrompt": "Янгиланишни ўрнатиш учун саҳифани қайта юкланг"
-  },
   "navigation": {
     "dashboard": "Бошқарув панели",
     "products": "Махсулотлар",

@@ -1,151 +1,70 @@
 import { Workbox } from 'workbox-window';
 
-declare global {
-    interface Window {
-        deferredPrompt: any;
-        workbox: Workbox;
-    }
-}
+let wb: Workbox | null = null;
 
-class PWAManager {
-    private deferredPrompt: any = null;
-    private isInstalled = false;
-    private isInstallable = false;
+export const registerSW = async () => {
+    if ('serviceWorker' in navigator) {
+        wb = new Workbox('/sw.js');
 
-    constructor() {
-        this.init();
-    }
-
-    private init() {
-        // Check if already installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            this.isInstalled = true;
-        }
-
-        // Listen for beforeinstallprompt
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            this.deferredPrompt = e;
-            this.isInstallable = true;
-            this.dispatchInstallableEvent();
+        wb.addEventListener('controlling', () => {
+            // New service worker is controlling the page
+            console.log('New service worker is controlling the page');
+            // You can show a notification to the user here
         });
 
-        // Listen for appinstalled
-        window.addEventListener('appinstalled', () => {
-            this.isInstalled = true;
-            this.isInstallable = false;
-            this.deferredPrompt = null;
-            this.dispatchInstalledEvent();
-        });
-
-        // Register service worker
-        this.registerServiceWorker();
-    }
-
-    private async registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            try {
-                const workbox = new Workbox('/sw.js');
-
-                workbox.addEventListener('controlling', () => {
-                    window.location.reload();
-                });
-
-                await workbox.register();
-                window.workbox = workbox;
-            } catch (error) {
-                console.log('Service worker registration failed:', error);
+        wb.addEventListener('waiting', () => {
+            // New service worker is waiting
+            console.log('New service worker is waiting');
+            // You can show an update notification here
+            if (confirm('New version available! Reload to update?')) {
+                wb?.messageSkipWaiting();
             }
-        }
-    }
+        });
 
-    public async install(): Promise<boolean> {
-        if (!this.deferredPrompt || this.isInstalled) {
-            return false;
-        }
+        wb.addEventListener('activated', (event) => {
+            // Service worker is activated
+            console.log('Service worker activated');
+            if (event.isUpdate) {
+                window.location.reload();
+            }
+        });
 
         try {
-            this.deferredPrompt.prompt();
-            const { outcome } = await this.deferredPrompt.userChoice;
-
-            if (outcome === 'accepted') {
-                this.isInstalled = true;
-                this.isInstallable = false;
-                this.deferredPrompt = null;
-                this.dispatchInstalledEvent();
-                return true;
-            }
+            await wb.register();
+            console.log('Service worker registered successfully');
         } catch (error) {
-            console.error('Installation failed:', error);
-        }
-
-        return false;
-    }
-
-    public canInstall(): boolean {
-        return this.isInstallable && !this.isInstalled;
-    }
-
-    public isAppInstalled(): boolean {
-        return this.isInstalled;
-    }
-
-    private dispatchInstallableEvent() {
-        window.dispatchEvent(new CustomEvent('pwa-installable'));
-    }
-
-    private dispatchInstalledEvent() {
-        window.dispatchEvent(new CustomEvent('pwa-installed'));
-    }
-
-    public async checkForUpdates() {
-        if (window.workbox) {
-            window.workbox.addEventListener('waiting', () => {
-                if (confirm('New version available! Reload to update?')) {
-                    window.workbox.messageSkipWaiting();
-                }
-            });
+            console.error('Service worker registration failed:', error);
         }
     }
-}
+};
 
-// Export singleton instance
-export const pwaManager = new PWAManager();
+export const unregisterSW = async () => {
+    if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(registration => registration.unregister()));
+    }
+};
 
-// Hook for React components
-export function usePWA() {
-    const [canInstall, setCanInstall] = useState(false);
-    const [isInstalled, setIsInstalled] = useState(false);
+export const checkForUpdates = () => {
+    if (wb) {
+        wb.update();
+    }
+};
 
-    useEffect(() => {
-        setCanInstall(pwaManager.canInstall());
-        setIsInstalled(pwaManager.isAppInstalled());
+export const isOnline = () => navigator.onLine;
 
-        const handleInstallable = () => setCanInstall(true);
-        const handleInstalled = () => {
-            setCanInstall(false);
-            setIsInstalled(true);
-        };
+export const addOnlineListener = (callback: () => void) => {
+    window.addEventListener('online', callback);
+};
 
-        window.addEventListener('pwa-installable', handleInstallable);
-        window.addEventListener('pwa-installed', handleInstalled);
+export const addOfflineListener = (callback: () => void) => {
+    window.addEventListener('offline', callback);
+};
 
-        return () => {
-            window.removeEventListener('pwa-installable', handleInstallable);
-            window.removeEventListener('pwa-installed', handleInstalled);
-        };
-    }, []);
+export const removeOnlineListener = (callback: () => void) => {
+    window.removeEventListener('online', callback);
+};
 
-    const install = async () => {
-        return await pwaManager.install();
-    };
-
-    return {
-        canInstall,
-        isInstalled,
-        install,
-    };
-}
-
-// Import React hooks
-import { useState, useEffect } from 'react';
+export const removeOfflineListener = (callback: () => void) => {
+    window.removeEventListener('offline', callback);
+};

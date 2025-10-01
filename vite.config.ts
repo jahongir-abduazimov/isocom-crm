@@ -11,59 +11,71 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.png'],
+      includeAssets: ['favicon.png', 'icons/*.png', 'icons/*.svg', 'browserconfig.xml'],
       manifest: {
         name: 'IsoCom CRM',
-        short_name: 'IsoCom',
+        short_name: 'IsoCom CRM',
         description: 'IsoCom Customer Relationship Management System',
-        theme_color: '#1e40af',
-        background_color: '#ffffff',
+        theme_color: '#2563eb',
+        background_color: '#F0F5FC',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'portrait-primary',
         scope: '/',
         start_url: '/',
         icons: [
           {
             src: '/icons/icon-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: '/icons/icon-192x192.png',
-            sizes: '192x192',
             type: 'image/png',
-            purpose: 'maskable'
+            purpose: 'any'
           },
           {
             src: '/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable'
+            purpose: 'any'
+          },
+          {
+            src: '/icons/icon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'Dashboard',
+            short_name: 'Dashboard',
+            description: 'Go to dashboard',
+            url: '/dashboard',
+            icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }]
+          },
+          {
+            name: 'Scrap Management',
+            short_name: 'Scrap',
+            description: 'Manage scrap materials',
+            url: '/scrap',
+            icons: [{ src: '/icons/icon-192x192.png', sizes: '192x192' }]
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
-              networkTimeoutSeconds: 10,
-              cacheableResponse: {
-                statuses: [0, 200]
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
               }
             }
           }
         ]
       }
-    }),
+    })
   ],
   resolve: {
     alias: {

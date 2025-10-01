@@ -22,15 +22,6 @@
     "updated": "Yangilangan",
     "back": "Ortga"
   },
-  "pwa": {
-    "install": "Yuklab olish",
-    "installShort": "Yuklash",
-    "installed": "O'rnatilgan",
-    "installedShort": "O'rnatildi",
-    "installPrompt": "Ilovani o'rnating va tezroq kirish imkoniyatiga ega bo'ling",
-    "updateAvailable": "Yangilanish mavjud",
-    "updatePrompt": "Yangilanishni o'rnatish uchun sahifani qayta yuklang"
-  },
   "navigation": {
     "dashboard": "Boshqaruv paneli",
     "products": "Maxsulotlar",

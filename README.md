@@ -12,6 +12,7 @@ A modern CRM system built with React, TypeScript, and Vite.
 - **Warehouse Management** - Locations and warehouse organization
 - **User Management** - System users and access control
 - **Workcenters** - Production equipment and capacity management
+- **Progressive Web App (PWA)** - Install as native app with offline support
 
 ## Technology Stack
 
@@ -23,6 +24,7 @@ A modern CRM system built with React, TypeScript, and Vite.
 - **HTTP Client**: Axios
 - **Routing**: React Router DOM
 - **UI Components**: Radix UI primitives
+- **PWA**: Vite PWA Plugin with Workbox
 
 ## Getting Started
 
@@ -79,6 +81,39 @@ npm run build
 ```
 
 The built files will be in the `dist` directory, ready for deployment to any static hosting service.
+
+## Progressive Web App (PWA)
+
+This application is configured as a Progressive Web App, allowing users to install it on their devices and use it offline.
+
+### PWA Features
+
+- **Installable**: Users can install the app on their desktop or mobile device
+- **Offline Support**: Basic functionality works without internet connection
+- **Auto Updates**: Service worker automatically updates the app in the background
+- **Native-like Experience**: Runs in standalone mode without browser UI
+
+### Installation
+
+Users can install the PWA in several ways:
+
+1. **Browser Prompt**: The app will show an install prompt when conditions are met
+2. **Manual Install**:
+   - **Chrome/Edge**: Click the install icon in the address bar
+   - **Safari**: Use "Add to Home Screen" from the share menu
+   - **Firefox**: Use "Install" from the menu
+
+### PWA Files
+
+The following files are generated during build:
+
+- `sw.js` - Service worker for caching and offline functionality
+- `manifest.webmanifest` - App manifest with metadata
+- `offline.html` - Fallback page shown when offline
+
+### Development
+
+The PWA features are automatically enabled in production builds. For development, the service worker is registered but caching is minimal.
 
 ## Expanding the ESLint configuration
 
